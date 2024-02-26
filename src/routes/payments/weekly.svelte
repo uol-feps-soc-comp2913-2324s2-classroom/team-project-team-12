@@ -1,3 +1,14 @@
+<script>
+    /**
+     * @type {string}
+     */
+     export let plan;  
+    
+    function changePlan() {
+        plan = "weekly";
+    }
+</script>
+
 <div class="panel">
     <center>
         <h2>Weekly</h2>
@@ -5,8 +16,8 @@
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         </p>
         <br>
-        <button>
-            Choose plan
+        <button class={plan === "weekly" ? 'disabled' : ''} on:click={changePlan}>
+            {plan === "weekly" ? 'Current Plan' : 'Choose Plan'}
         </button>
     </center>
 </div>
@@ -33,5 +44,9 @@
         padding: 1%;
         width: 15%;
         height: 100%;
+    }
+    .disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 </style>

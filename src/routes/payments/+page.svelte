@@ -1,7 +1,9 @@
 <script>
     import Weekly from './weekly.svelte'
     import Monthly from './monthly.svelte'
-    import Yearly from './yearly.svelte'
+    import Annual from './annual.svelte'
+
+    let plan = 'monthly';
 
 </script>
 
@@ -10,9 +12,9 @@
     <h1> <center> Payment Plans </center></h1>
     <br>
     <div class="flex">
-        <Weekly />
-        <Monthly />
-        <Yearly />
+        <Weekly bind:plan/>
+        <Monthly bind:plan/>
+        <Annual bind:plan/>
     </div>
 </body>
 
