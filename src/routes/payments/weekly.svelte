@@ -9,7 +9,7 @@
     }
 </script>
 
-<div class="panel">
+<div class={plan === "weekly" ? 'panel active' : 'panel'}>
     <center>
         <h2>Weekly</h2>
         <p>
@@ -48,5 +48,8 @@
     .disabled {
         opacity: 0.6;
         cursor: not-allowed;
+    }
+    .active {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 </style>
