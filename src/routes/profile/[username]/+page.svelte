@@ -2,8 +2,12 @@
     // @ts-nocheck
     import { onMount } from 'svelte';
     import profilepicture from "$lib/profile-picture.png";
-    let activeTab = 'Profile';
-    let tabs = ['Profile', 'Groups', 'Friends', 'Routes'];
+    import { page } from '$app/stores';
+    
+
+    let username = $page.params.username;
+    let activeTab = 'Routes';
+    let tabs = ['Groups', 'Friends', 'Routes'];
   
     onMount(() => {
       setActiveTabContent(activeTab);
@@ -14,9 +18,13 @@
       setActiveTabContent(tab);
     }
   
-  </script>
-  
-  <style>
+
+
+</script>
+
+<link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+ 
+<style>
     .container {
         height: 100vh;
         display: flex;
@@ -27,16 +35,19 @@
 
     .profile-picture { 
         display: inline-block; 
-        position: relative; width: 200px; 
-        height: 200px; overflow: hidden; 
+        position: relative; 
+        width: 20vh; 
+        height: 20vh; 
+        overflow: hidden; 
         border-radius: 50%; 
         margin-bottom: 20px;
+        border: 1px solid #ccc;
     } 
         
     .profile-picture img { 
         width: auto; 
         height: 100%; 
-        margin-left: -40px; 
+        margin-left: -30px; 
     }
   
     .profile-container {
@@ -57,8 +68,9 @@
         border: 1px solid #ccc;
         background-color: #f9f9f9;
         border-radius: 5px 5px 0 0;
-        width: 25%;
+        width: 33.3333%;
         text-align: center;
+        font-family: "Poppins";
     }
   
     .tab:hover {
@@ -78,10 +90,25 @@
         height: 100%;
         box-sizing: border-box;
     }
-  </style>
-  
+
+    .name{
+        font-size: 20px;
+        font-family: "Poppins";
+    }
+
+    .username{
+        font-size: 10px;
+        font-family: "Poppins";
+        color: #1c1c1c;
+        margin-bottom: 10px;
+    }
+</style>
+
+<body>
   <div class="container">
-    <div class="profile-picture"> <img src={profilepicture} alt="profile picture" /> </div>
+    <div class="profile-picture"> <img src={profilepicture} alt="" /></div>
+    <div class="name">First Second</div>
+    <div class="username">@{username}</div>
     <div class="profile-container">
       <div class="tabs">
         {#each tabs as tab}
@@ -89,15 +116,14 @@
         {/each}
       </div>
       <div class="tab-content">
-        {#if activeTab === 'Profile'}
+        {#if activeTab === 'Routes'}
         <p>This is content for User Data.</p>
         {:else if activeTab === 'Groups'}
         <p>This is content for User Groups.</p>
         {:else if activeTab === 'Friends'}
         <p>This is content for User Friends.</p>
-        {:else if activeTab === 'Routes'}
-        <p>This is content for User Routes.</p>
         {/if}
       </div>
     </div>
   </div>
+</body>
