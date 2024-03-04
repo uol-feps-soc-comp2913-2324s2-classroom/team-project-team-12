@@ -23,22 +23,22 @@
         formData.append('email', email);
 
         try {
-        const response = await fetch('/login', {
-            method: 'POST',
-            body: formData,
-        });
+            const response = await fetch('?/register', {
+                method: 'POST',
+                body: formData,
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (response.ok) {
-            registerMessage = result.message || 'Registration successful';
-            // If registration is successful, navigate to the payments
-            // at the moment this doesn't go to payments because i havent pulled that yet
-            // and if it can't find payments, it won't commit to database
-            goto('/');
-        } else {
-            registerMessage = result.message || 'Invalid username or password';
-        }
+            if (response.ok) {
+                registerMessage = result.message || 'Registration successful';
+                // If registration is successful, navigate to the payments
+                // at the moment this doesn't go to payments because i havent pulled that yet
+                // and if it can't find payments, it won't commit to database
+                goto('/');
+            } else {
+                registerMessage = result.message || 'Invalid username or password';
+            }
         } catch (error) {
             console.error('Error during login:', error);
             registerMessage = 'Internal Server Error';

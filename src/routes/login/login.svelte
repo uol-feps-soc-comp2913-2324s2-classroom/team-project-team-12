@@ -1,19 +1,17 @@
 <script>
-    let user = '';
+    let username = '';
     let password = '';
-    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
 
     let loginMessage = '';
 
     const handleLogin = async () => {
         const formData = new FormData();
-        formData.append('type', 'login');
-        formData.append('username', user);
+        formData.append('username', username);
         formData.append('password', password);
 
         try {
-        const response = await fetch('/login', {
+        const response = await fetch('?/login', {
             method: 'POST',
             body: formData,
         });
@@ -22,14 +20,16 @@
 
         if (response.ok) {
             loginMessage = result.message || 'Login successful';
+            console.log('success');
             // If login is successful, navigate to the homepage
-            goto('/');
+            // Replace '/guarded' with the actual URL you want to navigate to
+            goto('/guarded');
         } else {
             loginMessage = result.message || 'Invalid username or password';
         }
         } catch (error) {
-            console.error('Error during login:', error);
-            loginMessage = 'Internal Server Error';
+        console.error('Error during login:', error);
+        loginMessage = 'Internal Server Error';
         }
     };
 </script>
@@ -39,7 +39,7 @@
         <input type="hidden" name="type" value="login">
         <div class="login-box">
             <input  
-                bind:value={user}
+                bind:value={username}
                 type = "text"
                 class = "email ele"
                 name = "username"
