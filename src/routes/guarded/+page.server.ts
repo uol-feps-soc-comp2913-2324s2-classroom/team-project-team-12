@@ -11,8 +11,6 @@ export const load = (async ({ cookies }) => {
         },
     });
 
-    let name = '';
-
     if(user){
         console.log(user.username);
     }

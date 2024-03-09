@@ -28,8 +28,8 @@
             loginMessage = result.message || 'Invalid username or password';
         }
         } catch (error) {
-        console.error('Error during login:', error);
-        loginMessage = 'Internal Server Error';
+            console.error('Error during login:', error);
+            loginMessage = 'Internal Server Error';
         }
     };
 </script>
