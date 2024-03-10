@@ -1,0 +1,38 @@
+[
+    {
+        "route": {
+            "route_name": "Route 1",
+            "creator": 1,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 2",
+            "creator": 2,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 3",
+            "creator": 3,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 4",
+            "creator": 4,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    }
+]

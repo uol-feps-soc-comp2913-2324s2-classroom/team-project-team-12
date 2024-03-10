@@ -1,0 +1,98 @@
+[
+    {
+        "route_coordinate": {
+            "route_id": 1,
+            "latitude": "51.5074",
+            "longitude": "0.1278",
+            "order_position": 1
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 1,
+            "latitude": "51.5075",
+            "longitude": "0.1279",
+            "order_position": 2
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 1,
+            "latitude": "51.5076",
+            "longitude": "0.1280",
+            "order_position": 3
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 2,
+            "latitude": "40.7128",
+            "longitude": "74.0060",
+            "order_position": 1
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 2,
+            "latitude": "40.7129",
+            "longitude": "74.0061",
+            "order_position": 2
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 2,
+            "latitude": "40.7130",
+            "longitude": "74.0062",
+            "order_position": 3
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 3,
+            "latitude": "34.0522",
+            "longitude": "118.2437",
+            "order_position": 1
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 3,
+            "latitude": "34.0523",
+            "longitude": "118.2438",
+            "order_position": 2
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 3,
+            "latitude": "34.0524",
+            "longitude": "118.2439",
+            "order_position": 3
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 4,
+            "latitude": "48.8566",
+            "longitude": "2.3522",
+            "order_position": 1
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 4,
+            "latitude": "48.8567",
+            "longitude": "2.3523",
+            "order_position": 2
+        }
+    },
+    {
+        "route_coordinate": {
+            "route_id": 4,
+            "latitude": "48.8568",
+            "longitude": "2.3524",
+            "order_position": 3
+        }
+    }
+]
