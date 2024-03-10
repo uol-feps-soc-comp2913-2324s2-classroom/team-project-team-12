@@ -1,4 +1,7 @@
 <script>
+    import { Modal, Content, Trigger}  from "sv-popup";
+    import Edit from './edit.svelte';
+    
     export let user;
     const username = user ? user.username : null;
     const membershiptype = user ? user.membership_type : null;
@@ -15,7 +18,16 @@
 <table>
     <tr>
         <td>USERNAME<br>{username}</td>
-        <td><button>Edit</button></td>
+        <td>
+            <Modal basic>
+                <Content>
+                    <Edit />
+                </Content>
+                <Trigger>
+                    <button>Edit</button>
+                </Trigger>
+            </Modal>
+        </td>
     </tr>
     <tr>
         <td>PASSWORD<br>••••••••••</td>

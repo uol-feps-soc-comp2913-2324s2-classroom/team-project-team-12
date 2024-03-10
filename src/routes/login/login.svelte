@@ -11,22 +11,21 @@
         formData.append('password', password);
 
         try {
-        const response = await fetch('?/login', {
-            method: 'POST',
-            body: formData,
-        });
+            const response = await fetch('?/login', {
+                method: 'POST',
+                body: formData,
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (response.ok) {
-            loginMessage = result.message || 'Login successful';
-            console.log('success');
-            // If login is successful, navigate to the homepage
-            // Replace '/guarded' with the actual URL you want to navigate to
-            goto('/guarded');
-        } else {
+            if (response.ok) {
+                loginMessage = result.message || 'Login successful';
+                // If login is successful, navigate to the homepage
+                // Replace '/guarded' with the actual URL you want to navigate to
+                goto('/guarded');
+            } else {
             loginMessage = result.message || 'Invalid username or password';
-        }
+            }
         } catch (error) {
             console.error('Error during login:', error);
             loginMessage = 'Internal Server Error';
