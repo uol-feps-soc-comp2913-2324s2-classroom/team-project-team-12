@@ -14,8 +14,8 @@
 		"prisma:seed": "prisma db seed --preview-feature"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^3.1.1",
-		"@sveltejs/kit": "^2.5.1",
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/cookie-parser": "^1.4.7",
 		"@types/eslint": "^8.56.0",
