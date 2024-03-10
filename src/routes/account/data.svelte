@@ -3,6 +3,13 @@
     const username = user ? user.username : null;
     const membershiptype = user ? user.membership_type : null;
     const publicity = user ? user.default_publicity : null;
+
+    let privacy = 'Private';
+    if(publicity==1){
+        privacy = 'Friends Only';
+    }else if(publicity==2){
+        privacy = 'Public';
+    }
 </script>
 
 <table>
@@ -19,7 +26,7 @@
         <td><button>Switch</button></td>
     </tr>
     <tr>
-        <td>PRIVACY<br>{publicity}</td>
+        <td>PRIVACY<br>{privacy}</td>
         <td><button>Edit</button></td>
     </tr>
 </table>
