@@ -7,36 +7,48 @@ datasource db {
   url      = "file:./database.db"
 }
 
+model group_membership {
+  id       Int    @id @default(autoincrement())
+  group_id Int
+  user_id  Int
+  admin    Int    @default(0)
+  groups   groups @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users    user   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  url      = "file:./database.db"
+}
+
 model group_routes {
   id       Int     @id @default(autoincrement())
-  group_id Int?
-  route_id Int?
+  group_id Int
+  route_id Int
+  priority Int     @default(0)
   routes   routes? @relation(fields: [route_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   groups   groups? @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model groups {
-  id           Int            @id @unique(map: "sqlite_autoindex_groups_1") @default(autoincrement())
-  name         String
-  creator      Int?
-  publicity    Int?           @default(2)
-  group_routes group_routes[]
-  user         user?          @relation(fields: [creator], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id               Int                @id @unique(map: "sqlite_autoindex_groups_1") @default(autoincrement())
+  name             String
+  creator          Int
+  publicity        Int                @default(2)
+  group_routes     group_routes[]
+  user             user?              @relation(fields: [creator], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  group_membership group_membership[]
 }
 
 model journey_coordinates {
   id             Int       @id @unique(map: "sqlite_autoindex_journey_coordinates_1") @default(autoincrement())
-  journey_id     Int?
-  latitude       Decimal?
-  longitude      Decimal?
-  order_position Int?
+  journey_id     Int
+  latitude       Decimal
+  longitude      Decimal
+  order_position Int
   time           DateTime? @default(now())
   journeys       journeys? @relation(fields: [journey_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model journeys {
   id                  Int                   @id @unique(map: "sqlite_autoindex_journeys_1") @default(autoincrement())
-  user_id             Int?
+  user_id             Int
   started             DateTime?             @default(now())
   finished            DateTime?
   label               String?
@@ -49,32 +61,32 @@ model journeys {
 
 model relationship {
   id                               Int   @id @default(autoincrement())
-  user_id1                         Int?
-  user_id2                         Int?
-  friend_request                   Int?  @default(0)
-  is_friend                        Int?  @default(0)
-  is_blocked                       Int?  @default(0)
+  user_id1                         Int
+  user_id2                         Int
+  friend_request                   Int   @default(0)
+  is_friend                        Int   @default(0)
+  is_blocked                       Int   @default(0)
   user_relationship_user_id2Touser user? @relation("relationship_user_id2Touser", fields: [user_id2], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user_relationship_user_id1Touser user? @relation("relationship_user_id1Touser", fields: [user_id1], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model route_coordinates {
-  id             Int      @id @unique(map: "sqlite_autoindex_route_coordinates_1") @default(autoincrement())
-  route_id       Int?
-  latitude       Decimal?
-  longitude      Decimal?
+  id             Int     @id @unique(map: "sqlite_autoindex_route_coordinates_1") @default(autoincrement())
+  route_id       Int
+  latitude       Decimal
+  longitude      Decimal
   order_position Int?
-  routes         routes?  @relation(fields: [route_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  routes         routes? @relation(fields: [route_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model routes {
   id                          Int                 @id @unique(map: "sqlite_autoindex_routes_1") @default(autoincrement())
   route_name                  String
-  created_on                  DateTime?           @default(now())
-  length                      Int?
-  approximate_completion_time Int?
-  creator                     Int?
-  publicity                   Int?                @default(2)
+  created_on                  DateTime            @default(now())
+  length                      Int
+  approximate_completion_time Int
+  creator                     Int
+  publicity                   Int                 @default(2)
   group_routes                group_routes[]
   journeys                    journeys[]
   route_coordinates           route_coordinates[]
@@ -82,20 +94,21 @@ model routes {
 }
 
 model user {
-  id                                       Int            @id @unique(map: "sqlite_autoindex_user_1") @default(autoincrement())
-  username                                 String         @unique(map: "sqlite_autoindex_user_2")
-  first_name                               String?
-  last_name                                String?
-  email                                    String         @unique(map: "sqlite_autoindex_user_3")
+  id                                       Int                @id @unique(map: "sqlite_autoindex_user_1") @default(autoincrement())
+  username                                 String             @unique(map: "sqlite_autoindex_user_2")
+  first_name                               String
+  last_name                                String
+  email                                    String             @unique(map: "sqlite_autoindex_user_3")
   password                                 String
-  membership_type                          Int?
-  next_payment                             DateTime?
-  default_publicity                        Int?           @default(2)
-  admin_status                             Int?
-  stripe_token                             String?
+  membership_type                          Int                @default(0)
+  next_payment                             DateTime           @default("2020-01-01T00:00:00.000Z")
+  default_publicity                        Int                @default(2)
+  admin_status                             Int                @default(0)
+  stripe_token                             String             @default("0")
   groups                                   groups[]
   journeys                                 journeys[]
-  relationship_relationship_user_id2Touser relationship[] @relation("relationship_user_id2Touser")
-  relationship_relationship_user_id1Touser relationship[] @relation("relationship_user_id1Touser")
+  relationship_relationship_user_id2Touser relationship[]     @relation("relationship_user_id2Touser")
+  relationship_relationship_user_id1Touser relationship[]     @relation("relationship_user_id1Touser")
   routes                                   routes[]
+  group_membership                         group_membership[]
 }
