@@ -2,15 +2,14 @@
     import Data from './data.svelte';
     import profilepic from '$lib/pfp.png'
 
-    import type { PageData }  from './$types';
-    export let data: PageData;
-    const user = data as { username?: string };
+    export let data;
+    export const user = data.user;
 </script>
 
 <div class="account-info">
     <div class="header">
         <div class="name">
-            <h1>@{user.username}</h1>
+            <h1>@{user?.username}</h1>
         </div>
         <div class="picture">
             <img src="{profilepic}" alt="">
