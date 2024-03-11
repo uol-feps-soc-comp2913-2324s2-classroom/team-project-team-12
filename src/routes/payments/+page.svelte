@@ -24,7 +24,7 @@
 <body>
     <br>
     <h1><center> Payment Plans </center></h1>
-    <h3 style="text-transform:uppercase"><center>current Plan: {membership_type === undefined ? 'Unselected' : plan}</center></h3>
+    <h3 style="text-transform:uppercase"><center>current Plan: {plan}</center></h3>
     <br>
     <div class="flex">
         <Weekly bind:plan/>
