@@ -1,30 +1,29 @@
-<script>
-    // @ts-nocheck
-    import { onMount } from 'svelte';
-    import profilepicture from "$lib/profile-picture.png";
-    import { page } from '$app/stores';
-    
+<script lang="ts">
+  // @ts-nocheck
+  import { onMount } from 'svelte';
+  import profilepicture from "$lib/profile-picture.png";
 
-    let username = $page.params.username;
-    let activeTab = 'Routes';
-    let tabs = ['Groups', 'Friends', 'Routes'];
-  
-    onMount(() => {
-      setActiveTabContent(activeTab);
-    });
-  
-    function setActiveTab(tab) {
-      activeTab = tab;
-      setActiveTabContent(tab);
-    }
-  
+  import type { PageData }  from './$types';
+  export let data: PageData;
+  const user = data as { username?: string };
 
+  let activeTab = 'Friends';
+  let tabs = ['Friends', 'Groups', 'Routes'];
+
+  function setActiveTab(tab) {
+    activeTab = tab;
+  }
 
 </script>
 
 <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
  
 <style>
+
+    body {
+        overflow: hidden; /* Hide scrollbars */
+    }
+    
     .container {
         height: 100vh;
         display: flex;
@@ -47,7 +46,6 @@
     .profile-picture img { 
         width: auto; 
         height: 100%; 
-        margin-left: -30px; 
     }
   
     .profile-container {
@@ -107,12 +105,12 @@
 <body>
   <div class="container">
     <div class="profile-picture"> <img src={profilepicture} alt="" /></div>
-    <div class="name">First Second</div>
-    <div class="username">@{username}</div>
+    <div class="name">{user.first_name} {user.last_name}</div>
+    <div class="username">@{user.username} <i class="fa-solid fa-plus"></i></div>
     <div class="profile-container">
       <div class="tabs">
         {#each tabs as tab}
-        <button class="tab" class:active={activeTab === tab} on:click={() => setActiveTab(tab)}>{tab}</button>
+          <button class="tab" class:active={activeTab === tab} on:click={() => setActiveTab(tab)}>{tab}</button>
         {/each}
       </div>
       <div class="tab-content">
