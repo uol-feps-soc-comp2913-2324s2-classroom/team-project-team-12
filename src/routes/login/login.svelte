@@ -21,7 +21,7 @@
 
             const result = await response.json();
 
-            if (response.ok) {
+            if (result.status === 200) {
                 console.log(result.message || 'Login successful');
             } else {
                 console.error(result.message || 'Login failed');

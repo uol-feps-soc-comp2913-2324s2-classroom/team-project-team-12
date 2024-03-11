@@ -26,6 +26,6 @@
 
 <p>Enter new username: </p>
 <form on:submit={editUsername}>
-    <input type="text" bind:value={username} />
+    <input type="text" name="newuser" bind:value={username} />
     <input type="submit" />
 </form>

@@ -16,22 +16,20 @@
                 body: formData,
             });
 
-            console.log('Checkpassword response:', matched.ok, matched.status);
+            const result = await matched.json();
 
-            if (matched.ok && matched.status === 200) {
+            if (result.status === 200) {
                 formData.append('type', 'editpass');
-                console.log('password matched');
                 const response = await fetch('/account', {
                     method: 'POST',
                     body: formData,
                 });
 
-                console.log('Editpassword response:', response.ok, response.status);
+                const result = await response.json();
 
-                if (response.ok && response.status === 200) {
-                    console.log('changed password');
+                if (result.status === 200) {
                     // Password updated successfully, reload the page
-                    // location.reload();
+                    location.reload();
                 } else {
                     // Handle error updating password
                     console.error('Error updating password');
@@ -39,7 +37,6 @@
                 }
             } else {
                 // Handle incorrect password
-                console.log('password incorrect');
                 error = 'Incorrect password.';
             }
         } catch (error) {

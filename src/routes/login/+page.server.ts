@@ -7,47 +7,37 @@ export const actions = {
     const type = data.get("type");
 
     if(type==="login"){
-      try {
-        const username = data.get('username');
-        const password = data.get('password');
+      const username = data.get('username');
+      const password = data.get('password');
   
-        const user = await prisma.user.findUnique({
-          where: {
-            username: username as string,
-          },
-        });
-  
-        if (user && user.password === password) {
-          console.log('success');
-          try {
-            cookies.set('sessionId', user.username, {
-              httpOnly: true,
-              sameSite: 'strict',
-              secure: false,
-              path: '/',
-              maxAge: 60 * 60 * 24 * 7
-            });
-          } catch (verificationError) {
-            return fail(400);
-          }
-          return {
-            status: 200,
-            body: user.username,
-          };
-        }else {
-          console.log('fail');
-          return {
-            status: 401,
-            body: user
-          };
+      const user = await prisma.user.findUnique({
+        where: {
+          username: username as string,
+        },
+      });
+
+      if (user && user.password === password) {
+        console.log('success');
+        try {
+          cookies.set('sessionId', user.username, {
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: false,
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7
+          });
+        } catch (verificationError) {
+          return fail(400);
         }
-      } catch (error) {
-        console.error('Error during authentication:', error);
         return {
-          status: 500,
-          body: { message: 'Internal Server Error.' },
+          status: 200,
+          body: user.username,
         };
+      }else {
+        console.log('fail');
+        return fail(401);
       }
+      
     }else if(type==="register"){
       try {
         const firstName = data.get("firstname");
@@ -73,10 +63,7 @@ export const actions = {
   
         if(!valid){
           console.log('username already exists');
-          return {
-            status: 401,
-            body: { message: 'Username already exists' },
-          };
+          return fail(401);
         }
   
         for(let i=0; i<users.length; i++){
@@ -88,10 +75,7 @@ export const actions = {
   
         if(!valid){
           console.log('email already exists');
-          return {
-            status: 401,
-            body: { message: 'Account using email address already exists.' },
-          };
+          return fail(401);
         }
   
         // check if email is valid email
@@ -100,10 +84,7 @@ export const actions = {
   
         if(!valid){
           console.log('invalid email address');
-          return {
-            status: 401,
-            body: { message: 'Invalid Email Address' },
-          };
+          return fail(401);
         }
   
         // everything should be right, so create account
@@ -116,6 +97,18 @@ export const actions = {
               password: password as string,
           },
         });
+
+        try {
+          cookies.set('sessionId', username as string, {
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: false,
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7
+          });
+        } catch (verificationError) {
+          return fail(400);
+        }
   
         return {
           status: 200,

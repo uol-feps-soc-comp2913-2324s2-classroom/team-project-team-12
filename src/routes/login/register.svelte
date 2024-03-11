@@ -30,7 +30,7 @@
 
             const result = await response.json();
 
-            if (response.ok) {
+            if (result.status === 200) {
                 registerMessage = result.message || 'Registration successful';
                 // If registration is successful, navigate to the payments
                 // at the moment this doesn't go to payments because i havent pulled that yet

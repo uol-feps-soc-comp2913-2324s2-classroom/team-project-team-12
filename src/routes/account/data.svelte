@@ -2,6 +2,7 @@
     import { Modal, Content, Trigger}  from "sv-popup";
     import EditUsername from './edituser.svelte';
     import EditPassword from './editpass.svelte';
+    import EditPrivacy from './editprivacy.svelte';
     
     export let user;
     const username = user ? user.username : null;
@@ -49,7 +50,16 @@
     </tr>
     <tr>
         <td>PRIVACY<br>{privacy}</td>
-        <td><button>Edit</button></td>
+        <td>
+            <Modal basic>
+                <Content>
+                    <EditPrivacy />
+                </Content>
+                <Trigger>
+                    <button>Edit</button>
+                </Trigger>
+            </Modal>
+        </td>
     </tr>
 </table>
 

@@ -1,4 +1,5 @@
 import prisma from '$lib/prisma';
+import { fail } from '@sveltejs/kit';
 
 let user: { id: number; username: string; first_name: string | null; last_name: string | null; email: string; password: string; membership_type: number | null; next_payment: Date | null; default_publicity: number | null; admin_status: number | null; stripe_token: string | null; } | null;
 
@@ -10,6 +11,8 @@ export const load = async ({ cookies }) => {
             username: username as string,
         },
     });
+
+    console.log(user?.default_publicity);
 
     return {user};
 };
@@ -91,10 +94,7 @@ export const actions = {
                     };
                 } else {
                     console.log('incorrect');
-                    return {
-                        status: 401,
-                        body: { message: 'Incorrect password.' },
-                    };
+                    return fail(401);
                 }
             } catch (error) {
                 console.error(error);
@@ -102,6 +102,25 @@ export const actions = {
                     status: 500,
                     body: { message: 'Internal server error.' },
                 };
+            }
+        }else if(type === "privacy"){
+            try {
+                const selectedPriv = data.get('selected');
+                if(user){
+                    await prisma.user.update({
+                        where: {
+                            username: user.username as string,
+                        },
+                        data: {
+                            default_publicity: Number(selectedPriv),
+                        },
+                    });
+                }
+                return {
+                    status: 200
+                }
+            }catch (error){
+                return fail(500);
             }
         }
     }
