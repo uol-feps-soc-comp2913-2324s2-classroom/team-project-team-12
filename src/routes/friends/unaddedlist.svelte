@@ -1,18 +1,24 @@
-<script>
-  export let people = [];
-  export let filterText = '';
+<script lang="ts">
+  export let people: { id: number, name: string }[] = [];
+  export let filterText: string = '';
+  export let friends: { id: number, name: string }[] = [];
 
   function filterPeople() {
-    return people.filter(person =>
+    return people.filter((person: { id: number, name: string }) =>
       person.name.toLowerCase().includes(filterText.toLowerCase())
     );
   }
 
-  function addToFriends(person) {
-    // Function for adding friends not implemented yet
-    console.log('Add', person.name, 'to friends list');
-  }
+  function addToFriends(person: { id: number, name: string }) {
+    // Use the friends prop here
+    console.log('Adding friend:', person);
+    friends = [...friends, person]; // Add the person to the list of friends
+    people = people.filter(p => p.id !== person.id); // Remove the person from the unadded list
+    console.log('Updated unadded:', people);
+
+}
 </script>
+
 
 <style>
   ul {
@@ -57,3 +63,4 @@
     {/each}
   </ul>
 </div>
+
