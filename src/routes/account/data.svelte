@@ -1,10 +1,20 @@
 <script>
-    import { onMount } from 'svelte';
+    export let user;
+    const username = user ? user.username : null;
+    const membershiptype = user ? user.membership_type : null;
+    const publicity = user ? user.default_publicity : null;
+
+    let privacy = 'Private';
+    if(publicity==1){
+        privacy = 'Friends Only';
+    }else if(publicity==2){
+        privacy = 'Public';
+    }
 </script>
 
 <table>
     <tr>
-        <td>USERNAME<br></td>
+        <td>USERNAME<br>{username}</td>
         <td><button>Edit</button></td>
     </tr>
     <tr>
@@ -16,7 +26,7 @@
         <td><button>Switch</button></td>
     </tr>
     <tr>
-        <td>PRIVACY<br>Public</td>
+        <td>PRIVACY<br>{privacy}</td>
         <td><button>Edit</button></td>
     </tr>
 </table>
