@@ -5,16 +5,17 @@
     const editUsername = async() => {
         const formData = new FormData();
         formData.append('username', username);
+        formData.append('type', 'editusername');
 
         try {
-            const response = await fetch('?/editusername', {
+            const response = await fetch('/account', {
                 method: 'POST',
                 body: formData,
             });
 
             if(response.ok){
                 // Reload the page
-                goto(location.href, { replaceState: true });
+                location.reload();
             }
         }
         catch {

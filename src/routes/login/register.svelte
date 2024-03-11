@@ -23,7 +23,7 @@
         formData.append('email', email);
 
         try {
-            const response = await fetch('?/register', {
+            const response = await fetch('/login', {
                 method: 'POST',
                 body: formData,
             });

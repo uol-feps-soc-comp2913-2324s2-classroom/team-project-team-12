@@ -1,8 +1,5 @@
 <script lang="ts">
     export let data;
-
-    const typedData = data as { username?: string };
-
-    const username = typedData ? typedData.username : null;
+    export const user = data.user;
 </script>
-<h1>Welcome {username}</h1>
+<h1>Welcome {user?.username}</h1>

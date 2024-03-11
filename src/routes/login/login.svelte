@@ -9,23 +9,24 @@
         const formData = new FormData();
         formData.append('username', username);
         formData.append('password', password);
+        formData.append('type', 'login');
 
         try {
-            const response = await fetch('?/login', {
+            const response = await fetch('/login', {
                 method: 'POST',
                 body: formData,
             });
 
+            console.log("Status: " + response.status);
+
             const result = await response.json();
 
             if (response.ok) {
-                loginMessage = result.message || 'Login successful';
-                // If login is successful, navigate to the homepage
-                // Replace '/guarded' with the actual URL you want to navigate to
-                goto('/guarded');
+                console.log(result.message || 'Login successful');
             } else {
-            loginMessage = result.message || 'Invalid username or password';
+                console.error(result.message || 'Login failed');
             }
+
         } catch (error) {
             console.error('Error during login:', error);
             loginMessage = 'Internal Server Error';

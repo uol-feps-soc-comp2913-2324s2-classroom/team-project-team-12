@@ -3,7 +3,7 @@
     import Register from './register.svelte';
 
     let state = "login";
-    let transition = false;
+    let transition;
     let sliderLeft = 100;
     let formLeft = 0;
 
