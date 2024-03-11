@@ -1,24 +1,33 @@
-<script>
-    /**
-     * @type {string}
-     */
-     export let plan;   
+<script lang="ts">
+    let registerMessage = ""
+    
+    export let plan:string;
+    
+    const handleUpdate = async () => {
+        try {
+            const response = await fetch('?/update', {
+                method: 'POST',
+                body: '2',
+            });
 
-    function changePlan() {
-        plan = "annual";
+            plan = 'annual';
+
+        } catch (error) {
+            console.error('Error during update:', error);
+            registerMessage = 'Internal Server Error';
+        }
     }
-
 </script>
 
-<div class={plan === "annual" ? 'panel active' : 'panel'}>
+<div class={plan === 'annual' ? 'panel active' : 'panel'}>
     <center>
         <h2>Annual</h2>
         <p>
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         </p>
         <br>
-        <button class={plan === "annual" ? 'disabled' : ''} on:click={changePlan}>
-            {plan === "annual" ? 'Current Plan' : 'Choose Plan'}
+        <button class={plan === 'annual' ? 'disabled' : ''} on:click={handleUpdate}>
+            {plan === 'annual' ? 'Current Plan' : 'Choose Plan'}
         </button>
     </center>
 </div>
