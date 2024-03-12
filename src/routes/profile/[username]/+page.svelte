@@ -2,39 +2,17 @@
   // @ts-nocheck
   import profilepicture from "$lib/profile-picture.png";
 
-  import type { PageData }  from './$types';
-  export let data: PageData;
-  const user = data as { username?: string };
+  export let data;
+  export const user = data.user;
+  export const userFriends = data.friends;
 
   let activeTab = 'Friends';
   let tabs = ['Friends', 'Groups', 'Routes'];
-  let privacy = 0;
+  let privacy = 1;
 
   function setActiveTab(tab) {
     activeTab = tab;
   }
-
-  // Generating dummy data for user friends
-  let userFriends = [
-      { 
-          profile_picture: "https://randomuser.me/api/portraits/men/3.jpg",
-          first_name: "Michael",
-          last_name: "Johnson",
-          username: "michio1998"
-      },
-      { 
-          profile_picture: "https://randomuser.me/api/portraits/women/4.jpg",
-          first_name: "Emily",
-          last_name: "Williams",
-          username: "em123"
-        },
-      { 
-          profile_picture: "https://randomuser.me/api/portraits/women/7.jpg",
-          first_name: "Anna",
-          last_name: "Smith",
-          username: "annanana"
-      }
-  ];
 </script>
 
 <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
