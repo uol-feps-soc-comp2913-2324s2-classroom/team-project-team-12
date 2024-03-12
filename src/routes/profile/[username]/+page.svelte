@@ -1,6 +1,5 @@
 <script lang="ts">
   // @ts-nocheck
-  import { onMount } from 'svelte';
   import profilepicture from "$lib/profile-picture.png";
 
   import type { PageData }  from './$types';
