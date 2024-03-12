@@ -1,38 +1,122 @@
-//Admin Page Server-Side Code
-//---------------------------------------------------------------Imports--------------------------------------------
+//Friend Page Server-Side Code
 import prisma from '$lib/prisma';
-import { Decimal } from 'decimal.js';
 
-//---------------------------------------------------------------Loads Data From Database--------------------------------------------
 export async function load() {
-    const users = [];
-    const userList = await prisma.user.findMany();
-    for (var i = 0; i < userList.length; i++) {
-        users.push({
-            id: userList[i].id,
-            username: userList[i].username,
-            first_name: userList[i].first_name,
-            last_name: userList[i].last_name,
-        });
-    }
+    // Load current user's friends based on relationships where is_friend = 1
+    const currentUserFriends = await prisma.relationship.findMany({
+        where: {
+            OR: [
+                { user_id1: 1, is_friend: 1 },
+                { user_id2: 1, is_friend: 1 }
+            ]
+        }
+    });
 
+    // Load unadded people who are not blocked based on relationships
+    const unaddedPeople = await prisma.relationship.findMany({
+        where: {
+            NOT: {
+                OR: [
+                    { user_id1: 1,},
+                    { user_id2: 1,}
+                ]
+            },
+            is_blocked: 0
+        }
+    });
 
-    const relationships = [];
-    const relationshipList = await prisma.relationship.findMany();
-    for (var i = 0; i < relationshipList.length; i++) {
-        relationships.push({
-            id: relationshipList[i].id,
-            user_id1: relationshipList[i].user_id1,
-            user_id2: relationshipList[i].user_id2,
-            friend_request: relationshipList[i].friend_request,
-            is_friend: relationshipList[i].is_friend,
-            is_blocked: relationshipList[i].is_blocked
-        });
-    }
+    // Extract unique user IDs from both sets of relationships
+    const userIds = [
+        ...new Set([
+            ...currentUserFriends.map(rel => rel.user_id1),
+            ...currentUserFriends.map(rel => rel.user_id2),
+            ...unaddedPeople.map(rel => rel.user_id1),
+            ...unaddedPeople.map(rel => rel.user_id2)
+        ])
+    ];
+
+    // Load users corresponding to the extracted IDs
+    const users = await prisma.user.findMany({
+        where: {
+            id: {
+                in: userIds
+            }
+        }
+    });
+
+    // Transform currentUserFriends and unaddedPeople to the required structure
+    const transformedCurrentUserFriends = currentUserFriends.map(rel => ({
+        id: rel.id,
+        name: users.find(user => user.id === rel.user_id1 || user.id === rel.user_id2)?.username || ''
+    }));
+
+    const transformedUnaddedPeople = unaddedPeople.map(rel => ({
+        id: rel.id,
+        name: users.find(user => user.id === rel.user_id1 || user.id === rel.user_id2)?.username || ''
+    }));
 
     return {
         users,
-        relationships
-    }
-
+        currentUserFriends: transformedCurrentUserFriends,
+        unaddedPeople: transformedUnaddedPeople
+    };
 }
+
+
+
+export const actions = {
+    default: async ({ request }) => {
+        const data = await request.formData();
+        const type = data.get("type");
+        const id = Number(data.get("id"));
+
+        try {
+            if (type === "deleteFriend") {
+                const relationshipId = Number(data.get("relationshipId"));
+                if (!relationshipId) {
+                    throw new Error("Relationship ID is missing.");
+                }
+
+                // Delete the relationship
+                await prisma.relationship.delete({
+                    where: {
+                        id: relationshipId,
+                    },
+                });
+
+                return {
+                    status: 200,
+                    body: { message: "Friend deleted successfully." },
+                };
+            } else if (type === "addFriend") {
+                const userId1 = Number(data.get("userId1"));
+                const userId2 = Number(data.get("userId2"));
+
+                if (!userId1 || !userId2) {
+                    throw new Error("User IDs are missing.");
+                }
+
+                // Create a new relationship
+                const newRelationship = await prisma.relationship.create({
+                    data: {
+                        user_id1: userId1,
+                        user_id2: userId2,
+                        is_friend: 1, // Assuming a default value for being friends
+                    },
+                });
+
+                return {
+                    status: 200,
+                    body: { message: "Friend added successfully.", newRelationship },
+                };
+            } else {
+                throw new Error("Invalid action type.");
+            }
+        } catch (error) {
+            return {
+                status: 400,
+                body: { error: error.message },
+            };
+        }
+    }
+};

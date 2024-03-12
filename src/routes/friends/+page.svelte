@@ -1,35 +1,24 @@
 <title>Journeys</title>
 <script>
+  export let data;
   import FriendList from './friendlist.svelte';
   import UnaddedList from './unaddedlist.svelte';
+  import Relationship from './relationship.svelte';
 
-  // Temporary data for friends and unadded people 
-  // Real Data will be added ibced i have acess to database
-  let friends = [
-    { id: 1, name: 'Ayo' },
-    { id: 2, name: 'Dylan' },
-    { id: 3, name: 'Abbie' },
-    { id: 4, name: 'Conner' },
-  ];
-
-  let unaddedPeople = [
-    { id: 5, name: 'Kaitlyn' },
-    { id: 6, name: 'Hari' },
-  ];
-
-  let friendFilterText = '';
-  let unaddedFilterText = '';
+  const currentUserFriends = data.currentUserFriends || [];
+  const unaddedPeople = data.unaddedPeople || [];
+  const users = data.users || [];
 </script>
 
 <div class="container">
   <div class="friends-container">
-    <input type="text" bind:value={friendFilterText} placeholder="Search Friends">
-    <FriendList friends={friends} filterText={friendFilterText} />
+    <input type="text" placeholder="Search Friends">
+    <FriendList friends={currentUserFriends} />
   </div>
 
   <div class="unadded-people-container">
-    <input type="text" bind:value={unaddedFilterText} placeholder="Search People">
-    <UnaddedList people={unaddedPeople} filterText={unaddedFilterText} />
+    <input type="text" placeholder="Search People">
+    <UnaddedList people={unaddedPeople} />
   </div>
 </div>
 
