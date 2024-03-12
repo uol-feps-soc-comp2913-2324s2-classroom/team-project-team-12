@@ -1,19 +1,22 @@
-<script>
+<script lang="ts">
     import Data from './data.svelte';
     import profilepic from '$lib/pfp.png'
+
+    export let data;
+    export const user = data.user;
 </script>
 
 <div class="account-info">
     <div class="header">
         <div class="name">
-            <h1>@</h1>
+            <h1>@{user?.username}</h1>
         </div>
         <div class="picture">
             <img src="{profilepic}" alt="">
         </div>
     </div>
     <div class="data">
-        <Data />
+        <Data {user} />
     </div>
 </div>
 

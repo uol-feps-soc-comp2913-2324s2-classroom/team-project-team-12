@@ -1,10 +1,5 @@
 <script lang="ts">
-    import type { PageData }  from './$types';
-  
-    export let data: PageData;
-
-    const typedData = data as { username?: string };
-
-    const username = typedData ? typedData.username : null;
+    export let data;
+    export const user = data.user;
 </script>
-<h1>Welcome {username}</h1>
+<h1>Welcome {user?.username}</h1>
