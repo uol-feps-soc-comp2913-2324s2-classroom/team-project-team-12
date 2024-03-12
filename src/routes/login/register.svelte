@@ -23,14 +23,14 @@
         formData.append('email', email);
 
         try {
-            const response = await fetch('/login', {
+            const response = await fetch('?/register', {
                 method: 'POST',
                 body: formData,
             });
 
             const result = await response.json();
 
-            if (result.status === 200) {
+            if (response.ok) {
                 registerMessage = result.message || 'Registration successful';
                 // If registration is successful, navigate to the payments
                 // at the moment this doesn't go to payments because i havent pulled that yet
