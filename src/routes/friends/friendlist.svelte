@@ -8,28 +8,13 @@
     );
   }
 
-  const deleteFriend = async (relationshipId) => {
-    const formData = new FormData();
-    formData.append('type', 'deleteFriend');
-    formData.append('relationshipId', relationshipId.toString());
+  function deleteFromFriends(friend: { id: number, name: string }) {
+    console.log('Deleted friend:', friend);
+    friends = friends.filter(f => f.id !== friend.id); // Reassign the filtered array
+    console.log('Updated friends:', friends);
+}
 
-    try {
-        const response = await fetch('/admin', {
-            method: 'POST',
-            body: formData,
-        });
 
-        const result = await response.json();
-
-        if (response.ok) {
-            console.log(result.message || 'Friend deleted successfully');
-        } else {
-            console.error(result.error || 'Failed to delete friend');
-        }
-    } catch (error) {
-        console.error('Error during friend deletion:', error);
-    }
-};
 </script>
 
 <style>
@@ -69,7 +54,7 @@
       <li>
         <div class="profile-pic"></div>
         <span>{friend.name}</span>
-        <button on:click={() => deleteFriend(1)} class="delete-button">Delete</button>
+        <button on:click={() => deleteFromFriends(friend)} class="delete-button">Delete</button>
       </li>
     {/each}
   </ul>

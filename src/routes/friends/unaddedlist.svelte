@@ -1,6 +1,7 @@
 <script lang="ts">
   export let people: { id: number, name: string }[] = [];
   export let filterText: string = '';
+  export let friends: { id: number, name: string }[] = [];
 
   function filterPeople() {
     return people.filter((person: { id: number, name: string }) =>
@@ -8,29 +9,14 @@
     );
   }
 
-  const addFriend = async (userId1, userId2) => {
-    const formData = new FormData();
-    formData.append('type', 'addFriend');
-    formData.append('userId1', userId1.toString());
-    formData.append('userId2', userId2.toString());
+  function addToFriends(person: { id: number, name: string }) {
+    // Use the friends prop here
+    console.log('Adding friend:', person);
+    friends = [...friends, person]; // Add the person to the list of friends
+    people = people.filter(p => p.id !== person.id); // Remove the person from the unadded list
+    console.log('Updated unadded:', people);
 
-    try {
-        const response = await fetch('/admin', {
-            method: 'POST',
-            body: formData,
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            console.log(result.message || 'Friend added successfully');
-        } else {
-            console.error(result.error || 'Failed to add friend');
-        }
-    } catch (error) {
-        console.error('Error during friend addition:', error);
-    }
-};
+}
 </script>
 
 
@@ -43,6 +29,7 @@
   li {
     display: flex;
     align-items: center;
+    /*justify-content: space-between;  Align items evenly in row */
     margin-bottom: 10px;
   }
 
@@ -71,8 +58,9 @@
       <li>
         <div class="profile-pic"></div>
         <span>{person.name}</span>
-        <button on:click={() => addFriend(3,4)} class="add-button">Add</button>
+        <button on:click={() => addToFriends(person)} class="add-button">Add</button>
       </li>
     {/each}
   </ul>
 </div>
+
