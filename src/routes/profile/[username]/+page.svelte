@@ -1,18 +1,52 @@
 <script lang="ts">
-  // @ts-nocheck
-  import profilepicture from "$lib/profile-picture.png";
+    // @ts-nocheck
+    export let data;
+    export const user = data.user;
+    export const userFriends = data.friends;
+    export const userGroups = data.groups;
+    export const groupCreators = data.creators;
 
-  export let data;
-  export const user = data.user;
-  export const userFriends = data.friends;
+    let activeTab = 'Friends';
+    let tabs = ['Friends', 'Groups', 'Routes'];
+    let privacy = 1;
 
-  let activeTab = 'Friends';
-  let tabs = ['Friends', 'Groups', 'Routes'];
-  let privacy = 1;
+    function setActiveTab(tab) {
+        activeTab = tab;
+    }
 
-  function setActiveTab(tab) {
-    activeTab = tab;
-  }
+    function getRandomColor() {
+        return Math.floor(Math.random()*16777215).toString(16);
+    }
+
+    function getInitials(firstName, lastName) {
+        const firstInitial = firstName.charAt(0).toUpperCase();
+        const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+        return firstInitial + lastInitial;
+    }
+
+    function getDefaultProfilePictureUrl(user) {
+        const initials = getInitials(user.first_name, user.last_name);
+        const color = getRandomColor();
+        const imageSize = 200; // Adjust this size according to your requirement
+        const imageUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&size=${imageSize}`;
+        console.log(imageUrl);
+        return imageUrl;
+    }
+
+    function getDefaultGroup(group) {
+        const color = getRandomColor();
+        const imageSize = 200; // Adjust this size according to your requirement
+        const imageUrl = `https://ui-avatars.com/api/?name=${group.name}&background=${color}&size=${imageSize}`;
+        console.log(imageUrl);
+        return imageUrl;
+    }
+
+    const userPictureUrl = getDefaultProfilePictureUrl(user);
+
+    const profilePictureUrls = userFriends.map(user => getDefaultProfilePictureUrl(user))
+    // Generate default group picture URLs for each group
+    const groupPictureUrls = userGroups.map(group => getDefaultGroup(group));
+
 </script>
 
 <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
@@ -120,6 +154,7 @@
         margin: 20px;
         border: 1px solid #ccc;
         padding: 20px;
+        border-radius: 5px;
     }
 
     .friend-profile-picture {
@@ -197,7 +232,7 @@
 
 <body>
   <div class="container">
-    <div class="profile-picture"> <img src={profilepicture} alt="" /></div>
+    <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
     <div class="name">{user.first_name} {user.last_name}</div>
     <div class="username">@{user.username} <i class="fa-solid fa-plus"></i></div>
     <div class="profile-container">
@@ -211,13 +246,28 @@
             {#if activeTab === 'Routes'}
                 <p>This is content for User Data.</p>
             {:else if activeTab === 'Groups'}
-                <p>This is content for User Groups.</p>
-            {:else if activeTab === 'Friends'}
                 <div class="friends-list">
-                    {#each userFriends as friend}
+                    {#each userGroups as group, i}
                         <div class="friend">
                             <div class="friend-profile-picture">
-                                <img src={friend.profile_picture} alt="" />
+                                <img src={groupPictureUrls[i]} alt="" />
+                            </div>
+                            <div class="friend-details">
+                                <div class="friend-name">{group.name}</div>
+                                <div class="user-name">@{groupCreators[i].username}</div>
+                            </div>
+                            <div class="button-container">
+                                <button class="add-button">Join</button>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {:else if activeTab === 'Friends'}
+                <div class="friends-list">
+                    {#each userFriends as friend, i}
+                        <div class="friend">
+                            <div class="friend-profile-picture">
+                                <img src={profilePictureUrls[i]} alt="" />
                             </div>
                             <div class="friend-details">
                                 <div class="friend-name">{friend.first_name} {friend.last_name}</div>
