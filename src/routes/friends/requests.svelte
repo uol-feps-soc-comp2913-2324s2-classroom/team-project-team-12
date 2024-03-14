@@ -7,7 +7,6 @@
       const formData = new FormData();
       formData.append('type', 'acceptFriend');
       formData.append('id', request.id.toString());
-      console.log(friendRequests);
   
       try {
           const response = await fetch('/friends', {

@@ -16,13 +16,13 @@
         const result = await response.json();
 
         if (response.ok) {
-            console.log(result.message || 'Friend deleted successfully');
+            console.log(result.message || 'Friend request sent');
             people = people.filter(f => f.id !== person.id);
         } else {
-            console.error(result.error || 'Failed to delete friend');
+            console.error(result.error || 'Failed to send request');
         }
     } catch (error) {
-        console.error('Error during friend deletion:', error);
+        console.error('Error during sending request:', error);
     }
 };
 

@@ -15,30 +15,61 @@ export const load = async ({ cookies }) => {
 
 
 
-    const currentUserFriends = await prisma.relationship.findMany({
+    const currentUserFriends = await prisma.user.findMany({
         where: {
-            OR: [
-                { user_id1: user?.id, is_friend: 1 },
-                { user_id2: user?.id, is_friend: 1 }
-            ]
+          OR: [
+            {
+              id: {
+                in: [
+                  // Subquery to find IDs of users who are friends with the current user
+                  ...(await prisma.relationship.findMany({
+                    where: {
+                      user_id2: user?.id,
+                      is_friend: 1
+                    },
+                    select: { user_id1: true }
+                  })).map(rel => rel.user_id1)
+                ]
+              }
+            },
+            {
+              id: {
+                in: [
+                  // Subquery to find IDs of users who are friends with the current user
+                  ...(await prisma.relationship.findMany({
+                    where: {
+                      user_id1: user?.id,
+                      is_friend: 1
+                    },
+                    select: { user_id2: true }
+                  })).map(rel => rel.user_id2)
+                ]
+              }
+            }
+          ]
         }
-    });
+      });
+      
+      
+      console.log(currentUserFriends)
 
 
     const friendRequests = await prisma.relationship.findMany({
         where: {
-             user_id1: user?.id, friend_request: 1, is_friend: 0
+             user_id2: user?.id, friend_request: 1, is_friend: 0
         },
     });
 
     // Load unadded people who are not blocked based on relationships
-    const unaddedPeople = await prisma.relationship.findMany({
+    const unaddedPeople = await prisma.user.findMany({
         where: {
-            OR: [
-                { user_id1: user?.id, is_friend: 0 },
-                { user_id2: user?.id, is_friend: 0 }
-            ],
-            is_blocked: 0
+            NOT: {
+                OR: [
+                    { id: { in: currentUserFriends.map(friend => friend.id) } },
+                    {id: { in: friendRequests.map(request => request.user_id1) } },
+                    { id: user?.id }
+                ]
+            }
         }
     });
     
@@ -46,13 +77,14 @@ export const load = async ({ cookies }) => {
     // Extract unique user IDs from both sets of relationships
     const userIds = [
         ...new Set([
-            ...currentUserFriends.map(rel => rel.user_id1),
-            ...currentUserFriends.map(rel => rel.user_id2),
+            ...currentUserFriends.map(person => person.id),
+            ...currentUserFriends.map(person => person.id),
             ...friendRequests.map(rel => rel.user_id1),
-            ...unaddedPeople.map(rel => rel.user_id1),
-            ...unaddedPeople.map(rel => rel.user_id2)
+            ...unaddedPeople.map(person => person.id),
+            ...unaddedPeople.map(person => person.id)
         ])
     ];
+
 
     
     // Load users corresponding to the extracted IDs
@@ -65,9 +97,9 @@ export const load = async ({ cookies }) => {
     });
 
     // Transform currentUserFriends and unaddedPeople to the required structure
-    const transformedCurrentUserFriends = currentUserFriends.map(rel => ({
-        id: rel.id,
-        name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
+    const transformedCurrentUserFriends = currentUserFriends.map(person => ({
+        id: person.id,
+        name: person.username
     }));
 
     const transformedFriendRequests = friendRequests.map(rel => ({
@@ -75,9 +107,9 @@ export const load = async ({ cookies }) => {
         name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
 
-    const transformedUnaddedPeople = unaddedPeople.map(rel => ({
-        id: rel.id,
-        name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
+    const transformedUnaddedPeople = unaddedPeople.map(person => ({
+        id: person.id,
+        name: person.username
     }));
 
 
@@ -95,7 +127,6 @@ export const load = async ({ cookies }) => {
         });
     }
 
-    console.log(transformedFriendRequests)
     return {
         user,
         users,
@@ -119,27 +150,26 @@ export const actions = {
         try {
 
             if (type === "deleteFriend") {
-                
                 //lookup relationship by id
-                const relationship = await prisma.relationship.findUnique({
+                const relationship = await prisma.relationship.findFirst({
                     where: {
-                        id: id
-                      },
+                        OR: [
+                            { user_id1: user?.id, user_id2: id },
+                            { user_id1: id, user_id2: user?.id },
+                        ]
+                    }
                 });
+            
+                const firstRelationshipId = relationship ? relationship.id : undefined;
+            
+                if (firstRelationshipId !== undefined) {
+                    await prisma.relationship.delete({
+                        where: {
+                            id: firstRelationshipId
+                        }
+                    });
+                }
 
-
-                //create copy of relationship
-                const updatedRelationship = Object.assign({}, relationship);
-                //updates relationship with new values
-                updatedRelationship.is_friend = 0;
-                updatedRelationship.friend_request = 0;
-                //update relationship in database
-                const updated = await prisma.relationship.update({
-                    where: {
-                        id: id,
-                    },
-                    data: updatedRelationship,
-                });
                 return {
                 status: 200,
                 body: relationship
@@ -147,32 +177,44 @@ export const actions = {
             }
             
 
-            if (type === "addFriend") {
-                
-                //lookup relationship by id
-                const relationship = await prisma.relationship.findUnique({
-                    where: {
-                        id: id
-                      },
-                });
-
-
-                //create copy of relationship
-                const updatedRelationship = Object.assign({}, relationship);
-                //updates relationship with new values
-                updatedRelationship.friend_request = 1;
-                //update relationship in database
-                const updated = await prisma.relationship.update({
-                    where: {
-                        id: id,
-                    },
-                    data: updatedRelationship,
-                });
-                return {
-                status: 200,
-                body: relationship
-                };
+            if (type === "addFriend" && user?.id !== undefined) {
+                try {
+                    // Check if the relationship already exists
+                    const existingRelationship = await prisma.relationship.findFirst({
+                        where: {
+                            OR: [
+                                { user_id1: user?.id, user_id2: id },
+                            ]
+                        }
+                    });
+            
+                    if (existingRelationship) {
+                        return {
+                            status: 400,
+                            body: { error: "You have already added this" },
+                    
+                        };
+                    } else {
+                        // If the relationship doesn't exist, create a new one
+                        await prisma.relationship.create({
+                            data: {
+                                user_id1: user?.id,
+                                user_id2: id,
+                                friend_request: 1,
+                                is_friend: 0,
+                                is_blocked: 0
+                            },
+                        });
+                        console.log('Friend added:');
+                    }
+                } catch (error) {
+                    console.error('Error adding friend:', error);
+                } finally {
+                    await prisma.$disconnect();
+                }
             }
+            
+            
 
             if (type === "acceptFriend") {
                 
