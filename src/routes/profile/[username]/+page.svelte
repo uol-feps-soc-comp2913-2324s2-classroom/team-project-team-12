@@ -14,8 +14,14 @@
         activeTab = tab;
     }
 
-    function getRandomColor() {
-        return Math.floor(Math.random()*16777215).toString(16);
+    function hashUserId(userId) {
+        return (userId * 2654435761) % Math.pow(2, 32); 
+    }
+
+    function getRandomColor(userId) {
+        const hashedUserId = hashUserId(userId);
+        const color = hashedUserId.toString(16).slice(-6); // Convert to hexadecimal and take the last 6 characters
+        return color;
     }
 
     function getInitials(firstName, lastName) {
@@ -26,7 +32,7 @@
 
     function getDefaultProfilePictureUrl(user) {
         const initials = getInitials(user.first_name, user.last_name);
-        const color = getRandomColor();
+        const color = getRandomColor(user.id);
         const imageSize = 200; // Adjust this size according to your requirement
         const imageUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&size=${imageSize}`;
         console.log(imageUrl);
@@ -34,7 +40,7 @@
     }
 
     function getDefaultGroup(group) {
-        const color = getRandomColor();
+        const color = getRandomColor(group.id);
         const imageSize = 200; // Adjust this size according to your requirement
         const imageUrl = `https://ui-avatars.com/api/?name=${group.name}&background=${color}&size=${imageSize}`;
         console.log(imageUrl);
@@ -228,6 +234,10 @@
         background-color: #0056b3;
     }
 
+    a {
+        text-decoration: none;
+    }
+
 </style>
 
 <body>
@@ -248,23 +258,26 @@
             {:else if activeTab === 'Groups'}
                 <div class="friends-list">
                     {#each userGroups as group, i}
-                        <div class="friend">
-                            <div class="friend-profile-picture">
-                                <img src={groupPictureUrls[i]} alt="" />
+                        <a rel="external" href="../group/{group.name}">
+                            <div class="friend">
+                                <div class="friend-profile-picture">
+                                    <img src={groupPictureUrls[i]} alt="" />
+                                </div>
+                                <div class="friend-details">
+                                    <div class="friend-name">{group.name}</div>
+                                    <div class="user-name">@{groupCreators[i].username}</div>
+                                </div>
+                                <div class="button-container">
+                                    <button class="add-button">Join</button>
+                                </div>
                             </div>
-                            <div class="friend-details">
-                                <div class="friend-name">{group.name}</div>
-                                <div class="user-name">@{groupCreators[i].username}</div>
-                            </div>
-                            <div class="button-container">
-                                <button class="add-button">Join</button>
-                            </div>
-                        </div>
+                        </a>
                     {/each}
                 </div>
             {:else if activeTab === 'Friends'}
                 <div class="friends-list">
                     {#each userFriends as friend, i}
+                    <a rel="external" href="../profile/{friend.username}">
                         <div class="friend">
                             <div class="friend-profile-picture">
                                 <img src={profilePictureUrls[i]} alt="" />
@@ -277,6 +290,7 @@
                                 <button class="add-button">Add</button>
                             </div>
                         </div>
+                    </a>
                     {/each}
                 </div>
             {/if}

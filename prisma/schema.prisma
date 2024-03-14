@@ -27,7 +27,7 @@ model group_routes {
 
 model groups {
   id               Int                @id @unique(map: "sqlite_autoindex_groups_1") @default(autoincrement())
-  name             String
+  name             String             @unique(map: "sqlite_autoindex_groups_2")
   creator          Int
   publicity        Int                @default(2)
   group_routes     group_routes[]
