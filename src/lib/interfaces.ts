@@ -10,17 +10,18 @@ export interface user {
     membership_type: number | null;
     next_payment: Date | null;
     default_publicity: number | null;
-    admin_status: number | null;
+    admin_status: boolean;
     stripe_token: string | null;
+    owner: boolean;
 }
 
 export interface relationship {
     id: number;
     user_id1: number;
     user_id2: number;
-    friend_request: number;
-    is_friend: number;
-    is_blocked: number;
+    friend_request: boolean;
+    is_friend: boolean;
+    is_blocked: boolean;
 }
 
 export interface route {
@@ -44,7 +45,7 @@ export interface group_membership {
     id: number;
     group_id: number;
     user_id: number;
-    admin: number;
+    admin: boolean;
 }
 
 export interface group_route {
