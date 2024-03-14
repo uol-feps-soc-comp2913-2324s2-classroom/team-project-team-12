@@ -37,7 +37,7 @@ export const load = (async ({ params: { username } }) => {
         }
     });
 
-    // Find the user's friends
+    // Find the user's groups
     const userGroups = await prisma.group_membership.findMany({
         where: {
             user_id: user.id
@@ -50,17 +50,8 @@ export const load = (async ({ params: { username } }) => {
     // Extract names of groups associated with the original user
     const groupNames = userGroups.map(groupMembership => groupMembership.groups.name);
 
-    // Fetch the group objects from the database using the group names
-    const groups = await prisma.groups.findMany({
-        where: {
-            name: {
-                in: groupNames
-            }
-        }
-    });
-
     // Extract creator IDs from the fetched group objects
-    const creatorIds = groups.map(group => group.creator);
+    const creatorIds = userGroups.map(groupMembership => groupMembership.groups.creator);
 
     // Fetch the users associated with the creator IDs
     const creators = await prisma.user.findMany({
@@ -70,7 +61,25 @@ export const load = (async ({ params: { username } }) => {
             }
         }
     });
+
+    // Fetch all groups
+    const groups = await prisma.groups.findMany({
+        where: {
+            name: {
+                in: groupNames
+            }
+        }
+    });
+
+    // Loop through each group and find its creator
+    const groupsWithCreators = groups.map(group => {
+        const creator = creators.find(creator => creator.id === group.id);
+        return {
+            ...group,
+            creator: creator // Attach the creator object to the group
+        };
+    });
     
-    return { user, friends, groups, creators };
+    return { user, friends, groups: groupsWithCreators, creators };
 
 }) satisfies PageServerLoad;

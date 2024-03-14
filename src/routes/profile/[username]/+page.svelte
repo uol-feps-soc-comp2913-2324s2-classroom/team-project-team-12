@@ -4,7 +4,6 @@
     export const user = data.user;
     export const userFriends = data.friends;
     export const userGroups = data.groups;
-    export const groupCreators = data.creators;
 
     let activeTab = 'Friends';
     let tabs = ['Friends', 'Groups', 'Routes'];
@@ -265,7 +264,7 @@
                                 </div>
                                 <div class="friend-details">
                                     <div class="friend-name">{group.name}</div>
-                                    <div class="user-name">@{groupCreators[i].username}</div>
+                                    <div class="user-name">@{group.creator.username}</div>
                                 </div>
                                 <div class="button-container">
                                     <button class="add-button">Join</button>
