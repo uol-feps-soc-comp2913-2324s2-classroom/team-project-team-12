@@ -19,7 +19,8 @@ export async function load() {
             next_payment: userList[i].next_payment,
             default_publicity: userList[i].default_publicity,
             admin_status: userList[i].admin_status,
-            stripe_token: userList[i].stripe_token
+            stripe_token: userList[i].stripe_token,
+            owner: userList[i].owner
         });
     }
     //console.log(users);
@@ -99,7 +100,7 @@ export async function load() {
             order_position: routeCoordinateList[i].order_position
         });
     }
-
+    console.log(users[1]);
     return {
         users,
         relationships,
@@ -181,9 +182,9 @@ export const actions = {
             if (defaultPublicity != null)
             updatedUser.default_publicity = defaultPublicity;
         }
-        if (data.get("admin_status") != null) {
-            const adminStatus = Number(data.get("admin_status"));
-            if (adminStatus != null)
+        console.log(data.get("admin_status"));
+        if ((data.get("admin_status") != null)) {
+            const adminStatus = (data.get("admin_status") === "true");
             updatedUser.admin_status = adminStatus;
         }
         if (data.get("stripe_token") != null) {
@@ -191,7 +192,11 @@ export const actions = {
             if (stripeToken != null)
             updatedUser.stripe_token = stripeToken.toString();
         }
-        //update user in database
+        if (data.get("owner") != null) {
+            const owner = (data.get("owner") === "true");
+            if (owner != null && owner != undefined)
+            updatedUser.owner = owner;
+        }
         const updated = await prisma.user.update({
             where: {
                 id: id,
@@ -229,27 +234,28 @@ export const actions = {
             //updates relationship with new values
             if (data.get("user_id1") != null) {
                 const user_id1 = Number(data.get("user_id1"));
-                if (user_id1 != null)
+                if (user_id1 != null && user_id1 != undefined)
                 updatedRelationship.user_id1 = user_id1;
             }
             if (data.get("user_id2") != null) {
                 const user_id2 = Number(data.get("user_id2"));
-                if (user_id2 != null)
+                console.log("here");
+                if (user_id2 != null && user_id2 != undefined)
                 updatedRelationship.user_id2 = user_id2;
             }
             if (data.get("friend_request") != null) {
-                const friendRequest = Number(data.get("friend_request"));
-                if (friendRequest != null)
+                const friendRequest = (data.get("friend_request") === "true");
+                if (friendRequest != null && friendRequest != undefined)
                 updatedRelationship.friend_request = friendRequest;
             }
             if (data.get("is_friend") != null) {
-                const isFriend = Number(data.get("is_friend"));
-                if (isFriend != null)
+                const isFriend = (data.get("is_friend") === "true");
+                if (isFriend != null && isFriend != undefined)
                 updatedRelationship.is_friend = isFriend;
             }
             if (data.get("is_blocked") != null) {
-                const isBlocked = Number(data.get("is_blocked"));
-                if (isBlocked != null)
+                const isBlocked = (data.get("is_blocked") === "true");
+                if (isBlocked != null && isBlocked != undefined)
                 updatedRelationship.is_blocked = isBlocked;
             }
             //update relationship in database
@@ -417,8 +423,8 @@ export const actions = {
                 updatedGroupMembership.user_id = userId;
             }
             if (data.get("admin") != null) {
-                const admin = Number(data.get("admin"));
-                if (admin != null)
+                const admin = (data.get("admin") === "true");
+                if (admin != null && admin != undefined)
                 updatedGroupMembership.admin = admin;
             }
             //update group membership in database

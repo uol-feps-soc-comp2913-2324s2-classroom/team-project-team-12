@@ -3,56 +3,56 @@
         "group_membership": {
             "group_id": 1,
             "user_id": 1,
-            "admin": 1
+            "admin": true
         }
     },
     {
         "group_membership": {
             "group_id": 1,
             "user_id": 2,
-            "admin": 0
+            "admin": false
         }
     },
     {
         "group_membership": {
             "group_id": 2,
             "user_id": 2,
-            "admin": 1
+            "admin": true
         }
     },
     {
         "group_membership": {
             "group_id": 2,
             "user_id": 3,
-            "admin": 0
+            "admin": false
         }
     },
     {
         "group_membership": {
             "group_id": 3,
             "user_id": 3,
-            "admin": 1
+            "admin": true
         }
     },
     {
         "group_membership": {
             "group_id": 3,
             "user_id": 4,
-            "admin": 0
+            "admin": false
         }
     },
     {
         "group_membership": {
             "group_id": 4,
             "user_id": 4,
-            "admin": 1
+            "admin": true
         }
     },
     {
         "group_membership": {
             "group_id": 4,
             "user_id": 5,
-            "admin": 0
+            "admin": false
         }
     }
 ]
