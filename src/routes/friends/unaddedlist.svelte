@@ -17,6 +17,7 @@
 
         if (response.ok) {
             console.log(result.message || 'Friend deleted successfully');
+            people = people.filter(f => f.id !== person.id);
         } else {
             console.error(result.error || 'Failed to delete friend');
         }

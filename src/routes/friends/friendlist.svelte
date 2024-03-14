@@ -17,6 +17,8 @@
 
         if (response.ok) {
             console.log(result.message || 'Friend deleted successfully');
+            currentUserFriends = currentUserFriends.filter(f => f.id !== friend.id);
+            
         } else {
             console.error(result.error || 'Failed to delete friend');
         }
@@ -29,7 +31,7 @@
 $: filteredFriends = currentUserFriends.filter(friend =>
     friend.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  
 </script>
 
 <style>
@@ -65,7 +67,6 @@ $: filteredFriends = currentUserFriends.filter(friend =>
 
 <div>
   <input type="text" placeholder="Search Friends" bind:value={searchTerm} />
-
   <ul>
     {#each filteredFriends as friend}
       <li>

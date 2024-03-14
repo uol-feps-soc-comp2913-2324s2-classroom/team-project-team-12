@@ -2,7 +2,7 @@
 import prisma from '$lib/prisma';
 import type { user } from '$lib/interfaces'
 
-let user: user;
+let user: { id: number; username: string; first_name: string | null; last_name: string | null; email: string; password: string; membership_type: number | null; next_payment: Date | null; default_publicity: number | null; admin_status: number | null; stripe_token: string | null; } | null;
 
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
@@ -18,8 +18,8 @@ export const load = async ({ cookies }) => {
     const currentUserFriends = await prisma.relationship.findMany({
         where: {
             OR: [
-                { user_id1: user.id, is_friend: 1 },
-                { user_id2: user.id, is_friend: 1 }
+                { user_id1: user?.id, is_friend: 1 },
+                { user_id2: user?.id, is_friend: 1 }
             ]
         }
     });
@@ -27,7 +27,7 @@ export const load = async ({ cookies }) => {
 
     const friendRequests = await prisma.relationship.findMany({
         where: {
-             user_id1: user.id, friend_request: 1, is_friend: 0
+             user_id1: user?.id, friend_request: 1, is_friend: 0
         },
     });
 
@@ -35,8 +35,8 @@ export const load = async ({ cookies }) => {
     const unaddedPeople = await prisma.relationship.findMany({
         where: {
             OR: [
-                { user_id1: user.id, is_friend: 0 },
-                { user_id2: user.id, is_friend: 0 }
+                { user_id1: user?.id, is_friend: 0 },
+                { user_id2: user?.id, is_friend: 0 }
             ],
             is_blocked: 0
         }
@@ -67,17 +67,17 @@ export const load = async ({ cookies }) => {
     // Transform currentUserFriends and unaddedPeople to the required structure
     const transformedCurrentUserFriends = currentUserFriends.map(rel => ({
         id: rel.id,
-        name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
+        name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
 
     const transformedFriendRequests = friendRequests.map(rel => ({
         id: rel.id,
-        name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
+        name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
 
     const transformedUnaddedPeople = unaddedPeople.map(rel => ({
         id: rel.id,
-        name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
+        name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
 
 

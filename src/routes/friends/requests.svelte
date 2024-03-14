@@ -18,12 +18,13 @@
           const result = await response.json();
   
           if (response.ok) {
-              console.log(result.message || 'Friend deleted successfully');
+              console.log(result.message || 'Friend accepted successfully');
+              friendRequests = friendRequests.filter(f => f.id !== request.id);
           } else {
-              console.error(result.error || 'Failed to delete friend');
+              console.error(result.error || 'Failed to accept friend');
           }
       } catch (error) {
-          console.error('Error during friend deletion:', error);
+          console.error('Error during friend acception:', error);
       }
   };
 
