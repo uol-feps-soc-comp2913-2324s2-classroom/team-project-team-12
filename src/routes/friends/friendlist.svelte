@@ -1,17 +1,37 @@
-<script>
-  export let friends = [];
-  export let filterText = '';
+<script lang="ts">
+  export let currentUserFriends: { id: number, name: string }[] = [];
+  let searchTerm = "";
 
-  function filterFriends() {
-    return friends.filter(friend =>
-      friend.name.toLowerCase().includes(filterText.toLowerCase())
-    );
-  }
+  const deleteFriend = async (friend: { id: number, name: string }) => {
+    const formData = new FormData();
+    formData.append('type', 'deleteFriend');
+    formData.append('id', friend.id.toString());
 
-  function deleteFromFriends(friend) {
-    // Function for deleting friends not implemented yet
-    console.log('Delete', friend.name, 'to friends list');
-  }
+    try {
+        const response = await fetch('/friends', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log(result.message || 'Friend deleted successfully');
+            currentUserFriends = currentUserFriends.filter(f => f.id !== friend.id);
+            
+        } else {
+            console.error(result.error || 'Failed to delete friend');
+        }
+    } catch (error) {
+        console.error('Error during friend deletion:', error);
+    }
+};
+
+
+$: filteredFriends = currentUserFriends.filter(friend =>
+    friend.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
 </script>
 
 <style>
@@ -46,12 +66,13 @@
 </style>
 
 <div>
+  <input type="text" placeholder="Search Friends" bind:value={searchTerm} />
   <ul>
-    {#each filterFriends() as friend}
+    {#each filteredFriends as friend}
       <li>
         <div class="profile-pic"></div>
         <span>{friend.name}</span>
-        <button on:click={() => deleteFromFriends(friend)} class="delete-button">Delete</button>
+        <button on:click={() => deleteFriend(friend)} class="delete-button">Delete</button>
       </li>
     {/each}
   </ul>
