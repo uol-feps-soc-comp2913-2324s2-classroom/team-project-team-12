@@ -1,20 +1,19 @@
 <script lang="ts">
-  export let friends: { id: number, name: string }[] = [];
+  import type { user } from '$lib/interfaces'
+  export let currentUserFriends: { id: number, name: string }[] = [];
   export let filterText = '';
 
-  function filterFriends() {
-    return friends.filter((friend: { id: number, name: string }) =>
-      friend.name.toLowerCase().includes(filterText.toLowerCase())
-    );
-  }
 
-  const deleteFriend = async (relationshipId) => {
+  const deleteFriend = async (friend: { id: number, name: string }) => {
+    console.log("Hello");
     const formData = new FormData();
     formData.append('type', 'deleteFriend');
-    formData.append('relationshipId', relationshipId.toString());
+    formData.append('id', friend.id.toString());
+    //console.log(friend.id);
+    if (friend.name) formData.append('username', friend.name);
 
     try {
-        const response = await fetch('/admin', {
+        const response = await fetch('/friends', {
             method: 'POST',
             body: formData,
         });
@@ -65,11 +64,11 @@
 
 <div>
   <ul>
-    {#each filterFriends() as friend}
+    {#each currentUserFriends as friend}
       <li>
         <div class="profile-pic"></div>
         <span>{friend.name}</span>
-        <button on:click={() => deleteFriend(1)} class="delete-button">Delete</button>
+        <button on:click={() => deleteFriend(friend)} class="delete-button">Delete</button>
       </li>
     {/each}
   </ul>

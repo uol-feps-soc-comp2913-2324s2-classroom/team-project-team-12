@@ -1,19 +1,18 @@
 <title>Journeys</title>
 <script>
   export let data;
+  export const friends = data.currentUserFriends || [];
   import FriendList from './friendlist.svelte';
   import UnaddedList from './unaddedlist.svelte';
-  import Relationship from './relationship.svelte';
 
   const currentUserFriends = data.currentUserFriends || [];
   const unaddedPeople = data.unaddedPeople || [];
-  const users = data.users || [];
 </script>
 
 <div class="container">
   <div class="friends-container">
     <input type="text" placeholder="Search Friends">
-    <FriendList friends={currentUserFriends} />
+    <FriendList {currentUserFriends}/>
   </div>
 
   <div class="unadded-people-container">

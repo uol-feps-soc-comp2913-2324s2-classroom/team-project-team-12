@@ -1,13 +1,25 @@
 //Friend Page Server-Side Code
 import prisma from '$lib/prisma';
+import type { user } from '$lib/interfaces'
 
-export async function load() {
-    // Load current user's friends based on relationships where is_friend = 1
+let user: user;
+
+export const load = async ({ cookies }) => {
+    const username = cookies.get('sessionId');
+
+    user = await prisma.user.findUnique({
+        where: {
+            username: username as string,
+        },
+    });
+
+
+
     const currentUserFriends = await prisma.relationship.findMany({
         where: {
             OR: [
-                { user_id1: 1, is_friend: 1 },
-                { user_id2: 1, is_friend: 1 }
+                { user_id1: user.id, is_friend: 1 },
+                { user_id2: user.id, is_friend: 1 }
             ]
         }
     });
@@ -15,15 +27,14 @@ export async function load() {
     // Load unadded people who are not blocked based on relationships
     const unaddedPeople = await prisma.relationship.findMany({
         where: {
-            NOT: {
-                OR: [
-                    { user_id1: 1,},
-                    { user_id2: 1,}
-                ]
-            },
+            OR: [
+                { user_id1: user.id, is_friend: 0 },
+                { user_id2: user.id, is_friend: 0 }
+            ],
             is_blocked: 0
         }
     });
+    
 
     // Extract unique user IDs from both sets of relationships
     const userIds = [
@@ -35,11 +46,12 @@ export async function load() {
         ])
     ];
 
+    
     // Load users corresponding to the extracted IDs
     const users = await prisma.user.findMany({
         where: {
             id: {
-                in: userIds
+                in: userIds // Convert set to array
             }
         }
     });
@@ -47,20 +59,37 @@ export async function load() {
     // Transform currentUserFriends and unaddedPeople to the required structure
     const transformedCurrentUserFriends = currentUserFriends.map(rel => ({
         id: rel.id,
-        name: users.find(user => user.id === rel.user_id1 || user.id === rel.user_id2)?.username || ''
+        name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
 
     const transformedUnaddedPeople = unaddedPeople.map(rel => ({
         id: rel.id,
-        name: users.find(user => user.id === rel.user_id1 || user.id === rel.user_id2)?.username || ''
+        name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
 
+    
+    const relationships = [];
+    const relationshipList = await prisma.relationship.findMany();
+    for (var i = 0; i < relationshipList.length; i++) {
+        relationships.push({
+            id: relationshipList[i].id,
+            user_id1: relationshipList[i].user_id1,
+            user_id2: relationshipList[i].user_id2,
+            friend_request: relationshipList[i].friend_request,
+            is_friend: relationshipList[i].is_friend,
+            is_blocked: relationshipList[i].is_blocked
+        });
+    }
     return {
+        user,
         users,
+        relationships,
         currentUserFriends: transformedCurrentUserFriends,
         unaddedPeople: transformedUnaddedPeople
     };
 }
+
+
 
 
 
@@ -69,54 +98,53 @@ export const actions = {
         const data = await request.formData();
         const type = data.get("type");
         const id = Number(data.get("id"));
+        const name = (data.get("username"))
+        console.log("id",id);
+        console.log("name",name);
+        //console.log("user",user.id);
 
         try {
+
             if (type === "deleteFriend") {
-                const relationshipId = Number(data.get("relationshipId"));
-                if (!relationshipId) {
-                    throw new Error("Relationship ID is missing.");
-                }
-
-                // Delete the relationship
-                await prisma.relationship.delete({
+                
+                //lookup relationship by id
+                const relationship = await prisma.relationship.findUnique({
                     where: {
-                        id: relationshipId,
-                    },
+                        id: id
+                      },
                 });
 
-                return {
-                    status: 200,
-                    body: { message: "Friend deleted successfully." },
-                };
-            } else if (type === "addFriend") {
-                const userId1 = Number(data.get("userId1"));
-                const userId2 = Number(data.get("userId2"));
+                console.log(relationship)
 
-                if (!userId1 || !userId2) {
-                    throw new Error("User IDs are missing.");
-                }
-
-                // Create a new relationship
-                const newRelationship = await prisma.relationship.create({
-                    data: {
-                        user_id1: userId1,
-                        user_id2: userId2,
-                        is_friend: 1, // Assuming a default value for being friends
+                //create copy of relationship
+                const updatedRelationship = Object.assign({}, relationship);
+                //updates relationship with new values
+                updatedRelationship.is_friend = 0;
+                //update relationship in database
+                const updated = await prisma.relationship.update({
+                    where: {
+                        id: id,
                     },
+                    data: updatedRelationship,
                 });
-
                 return {
-                    status: 200,
-                    body: { message: "Friend added successfully.", newRelationship },
+                status: 200,
+                body: relationship
                 };
-            } else {
+            }
+
+            else {
                 throw new Error("Invalid action type.");
             }
+            
         } catch (error) {
             return {
                 status: 400,
                 body: { error: error.message },
+        
             };
         }
+        
+
     }
 };
