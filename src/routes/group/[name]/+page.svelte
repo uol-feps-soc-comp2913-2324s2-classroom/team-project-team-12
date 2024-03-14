@@ -5,6 +5,8 @@
     export const members = data.members;
     export const creator = data.creator;
 
+    import crown from "$lib/crown.png";
+
     let activeTab = 'Members';
     let tabs = ['Members', 'Routes'];
 
@@ -125,6 +127,7 @@
     .name{
         font-size: 20px;
         font-family: "Poppins";
+        margin-bottom: 20px;
     }
 
     .friend {
@@ -164,7 +167,6 @@
         font-size: 13px;
         font-family: "Poppins";
         color: #1c1c1c;
-        margin-bottom: 10px;
     }
 
     .button-container {
@@ -189,6 +191,13 @@
     a {
         text-decoration: none;
     }
+
+    .crown {
+        height: 35px;
+        width: 35px;
+        margin-right: 20px;
+    }
+    
 </style>
 
 <body>
@@ -207,7 +216,7 @@
                     <a rel="external" href="../profile/{members.username}">
                         <div class="friend">
                             {#if members.username == creator.username}
-                            d
+                            <img class="crown" src={crown} alt="creator crown">
                             {/if}
                             <div class="friend-profile-picture">
                                 <img src={memberPictureUrls[i]} alt="" />
