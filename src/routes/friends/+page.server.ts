@@ -24,6 +24,13 @@ export const load = async ({ cookies }) => {
         }
     });
 
+
+    const friendRequests = await prisma.relationship.findMany({
+        where: {
+             user_id1: user.id, friend_request: 1, is_friend: 0
+        },
+    });
+
     // Load unadded people who are not blocked based on relationships
     const unaddedPeople = await prisma.relationship.findMany({
         where: {
@@ -41,6 +48,7 @@ export const load = async ({ cookies }) => {
         ...new Set([
             ...currentUserFriends.map(rel => rel.user_id1),
             ...currentUserFriends.map(rel => rel.user_id2),
+            ...friendRequests.map(rel => rel.user_id1),
             ...unaddedPeople.map(rel => rel.user_id1),
             ...unaddedPeople.map(rel => rel.user_id2)
         ])
@@ -62,10 +70,16 @@ export const load = async ({ cookies }) => {
         name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
 
+    const transformedFriendRequests = friendRequests.map(rel => ({
+        id: rel.id,
+        name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
+    }));
+
     const transformedUnaddedPeople = unaddedPeople.map(rel => ({
         id: rel.id,
         name: users.find(u => u.id === (rel.user_id1 === user.id ? rel.user_id2 : rel.user_id1))?.username || ''
     }));
+
 
     
     const relationships = [];
@@ -80,11 +94,14 @@ export const load = async ({ cookies }) => {
             is_blocked: relationshipList[i].is_blocked
         });
     }
+
+    console.log(transformedFriendRequests)
     return {
         user,
         users,
         relationships,
         currentUserFriends: transformedCurrentUserFriends,
+        friendRequests: transformedFriendRequests,
         unaddedPeople: transformedUnaddedPeople
     };
 }
@@ -98,10 +115,6 @@ export const actions = {
         const data = await request.formData();
         const type = data.get("type");
         const id = Number(data.get("id"));
-        const name = (data.get("username"))
-        console.log("id",id);
-        console.log("name",name);
-        //console.log("user",user.id);
 
         try {
 
@@ -114,12 +127,67 @@ export const actions = {
                       },
                 });
 
-                console.log(relationship)
 
                 //create copy of relationship
                 const updatedRelationship = Object.assign({}, relationship);
                 //updates relationship with new values
                 updatedRelationship.is_friend = 0;
+                updatedRelationship.friend_request = 0;
+                //update relationship in database
+                const updated = await prisma.relationship.update({
+                    where: {
+                        id: id,
+                    },
+                    data: updatedRelationship,
+                });
+                return {
+                status: 200,
+                body: relationship
+                };
+            }
+            
+
+            if (type === "addFriend") {
+                
+                //lookup relationship by id
+                const relationship = await prisma.relationship.findUnique({
+                    where: {
+                        id: id
+                      },
+                });
+
+
+                //create copy of relationship
+                const updatedRelationship = Object.assign({}, relationship);
+                //updates relationship with new values
+                updatedRelationship.friend_request = 1;
+                //update relationship in database
+                const updated = await prisma.relationship.update({
+                    where: {
+                        id: id,
+                    },
+                    data: updatedRelationship,
+                });
+                return {
+                status: 200,
+                body: relationship
+                };
+            }
+
+            if (type === "acceptFriend") {
+                
+                //lookup relationship by id
+                const relationship = await prisma.relationship.findUnique({
+                    where: {
+                        id: id
+                      },
+                });
+
+
+                //create copy of relationship
+                const updatedRelationship = Object.assign({}, relationship);
+                //updates relationship with new values
+                updatedRelationship.is_friend = 1;
                 //update relationship in database
                 const updated = await prisma.relationship.update({
                     where: {

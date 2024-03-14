@@ -1,21 +1,14 @@
 <script lang="ts">
   export let people: { id: number, name: string }[] = [];
-  export let filterText: string = '';
+  let searchTerm = "";
 
-  function filterPeople() {
-    return people.filter((person: { id: number, name: string }) =>
-      person.name.toLowerCase().includes(filterText.toLowerCase())
-    );
-  }
-
-  const addFriend = async (userId1, userId2) => {
+  const addFriend = async (person: { id: number, name: string }) => {
     const formData = new FormData();
     formData.append('type', 'addFriend');
-    formData.append('userId1', userId1.toString());
-    formData.append('userId2', userId2.toString());
+    formData.append('id', person.id.toString());
 
     try {
-        const response = await fetch('/admin', {
+        const response = await fetch('/friends', {
             method: 'POST',
             body: formData,
         });
@@ -23,14 +16,19 @@
         const result = await response.json();
 
         if (response.ok) {
-            console.log(result.message || 'Friend added successfully');
+            console.log(result.message || 'Friend deleted successfully');
         } else {
-            console.error(result.error || 'Failed to add friend');
+            console.error(result.error || 'Failed to delete friend');
         }
     } catch (error) {
-        console.error('Error during friend addition:', error);
+        console.error('Error during friend deletion:', error);
     }
 };
+
+$: filteredPeople = people.filter(person =>
+    person.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 </script>
 
 
@@ -66,12 +64,13 @@
 </style>
 
 <div>
+  <input type="text" placeholder="Search People" bind:value={searchTerm} />
   <ul>
-    {#each filterPeople() as person}
+    {#each filteredPeople as person}
       <li>
         <div class="profile-pic"></div>
         <span>{person.name}</span>
-        <button on:click={() => addFriend(3,4)} class="add-button">Add</button>
+        <button on:click={() => addFriend(person)} class="add-button">Add</button>
       </li>
     {/each}
   </ul>

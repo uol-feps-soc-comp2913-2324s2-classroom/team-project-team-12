@@ -1,16 +1,11 @@
 <script lang="ts">
-  import type { user } from '$lib/interfaces'
   export let currentUserFriends: { id: number, name: string }[] = [];
-  export let filterText = '';
-
+  let searchTerm = "";
 
   const deleteFriend = async (friend: { id: number, name: string }) => {
-    console.log("Hello");
     const formData = new FormData();
     formData.append('type', 'deleteFriend');
     formData.append('id', friend.id.toString());
-    //console.log(friend.id);
-    if (friend.name) formData.append('username', friend.name);
 
     try {
         const response = await fetch('/friends', {
@@ -29,6 +24,12 @@
         console.error('Error during friend deletion:', error);
     }
 };
+
+
+$: filteredFriends = currentUserFriends.filter(friend =>
+    friend.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 </script>
 
 <style>
@@ -63,8 +64,10 @@
 </style>
 
 <div>
+  <input type="text" placeholder="Search Friends" bind:value={searchTerm} />
+
   <ul>
-    {#each currentUserFriends as friend}
+    {#each filteredFriends as friend}
       <li>
         <div class="profile-pic"></div>
         <span>{friend.name}</span>
