@@ -237,13 +237,18 @@
         text-decoration: none;
     }
 
+    .add-button{
+        margin-left: 20px;
+        font-size: 10px;
+    }
+
 </style>
 
 <body>
   <div class="container">
     <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
     <div class="name">{user.first_name} {user.last_name}</div>
-    <div class="username">@{user.username} <i class="fa-solid fa-plus"></i></div>
+    <div class="username">@{user.username}<button class="add-button">Add</button></div>
     <div class="profile-container">
         <div class="tabs">
             {#each tabs as tab}

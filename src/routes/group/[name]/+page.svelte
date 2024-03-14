@@ -128,6 +128,9 @@
         font-size: 20px;
         font-family: "Poppins";
         margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .friend {
@@ -181,7 +184,8 @@
         border-radius: 5px;
         cursor: pointer;
         font-family: "Poppins";
-        font-size: 14px;
+        font-size: 10px;
+        margin-left: 20px;
     }
 
     .add-button:hover {
@@ -203,7 +207,7 @@
 <body>
   <div class="container">
     <div class="profile-picture"> <img src={groupUrl} alt="" /></div>
-    <div class="name">{group.name}</div>
+    <div class="name">{group.name}<button class="add-button">Join</button></div>
     <div class="profile-container">
         <div class="tabs">
             {#each tabs as tab}
