@@ -19,8 +19,8 @@ export const load = (async ({ params: { username } }) => {
     const relationships = await prisma.relationship.findMany({
         where: {
             OR: [
-                { user_id1: user.id, is_friend: 1 },
-                { user_id2: user.id, is_friend: 1 }
+                { user_id1: user.id, is_friend: true },
+                { user_id2: user.id, is_friend: true }
             ]
         }
     });
