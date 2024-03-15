@@ -3,7 +3,7 @@
     import profilepic from '$lib/pfp.png'
 
     export let data;
-    export const user = data.user;
+    export const user = data.curUser;
 </script>
 
 <div class="account-info">

@@ -1,20 +1,19 @@
 import prisma from '$lib/prisma';
 import { fail } from '@sveltejs/kit';
+import type { user } from '$lib/interfaces'
 
-let user: { id: number; username: string; first_name: string | null; last_name: string | null; email: string; password: string; membership_type: number | null; next_payment: Date | null; default_publicity: number | null; admin_status: number | null; stripe_token: string | null; } | null;
+let curUser: user;
 
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
 
-    user = await prisma.user.findUnique({
+    curUser = await prisma.user.findUnique({
         where: {
             username: username as string,
         },
-    });
+    }) as user;
 
-    console.log(user?.default_publicity);
-
-    return {user};
+    return {curUser};
 };
 
 export const actions = {
@@ -26,10 +25,10 @@ export const actions = {
             const name = data.get('username');
         
             try {
-                if(user){
+                if(curUser){
                     await prisma.user.update({
                         where: {
-                            username: user.username as string,
+                            username: curUser.username as string,
                         },
                         data: {
                             username: name as string,
@@ -58,10 +57,10 @@ export const actions = {
             const newPass = data.get('newpass');
             console.log('attempting to edit password');
             try{
-                if(user){
+                if(curUser){
                     await prisma.user.update({
                         where: {
-                            username: user.username as string,
+                            username: curUser.username as string,
                         },
                         data: {
                             password: newPass as string,
@@ -83,10 +82,10 @@ export const actions = {
                 // check that the old password is correct before setting a new one
                 const oldPass = data.get('oldpass') as string;
         
-                console.log('User password:', user?.password);
+                console.log('User password:', curUser?.password);
                 console.log('Entered password:', oldPass);
         
-                if (user?.password === oldPass) {
+                if (curUser?.password === oldPass) {
                     console.log('match');
                     return {
                         status: 200,
@@ -106,10 +105,10 @@ export const actions = {
         }else if(type === "privacy"){
             try {
                 const selectedPriv = data.get('selected');
-                if(user){
+                if(curUser){
                     await prisma.user.update({
                         where: {
-                            username: user.username as string,
+                            username: curUser.username as string,
                         },
                         data: {
                             default_publicity: Number(selectedPriv),

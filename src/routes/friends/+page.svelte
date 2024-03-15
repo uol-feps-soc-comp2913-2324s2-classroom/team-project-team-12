@@ -1,35 +1,28 @@
 <title>Journeys</title>
 <script>
+  export let data;
+  export const friends = data.currentUserFriends || [];
   import FriendList from './friendlist.svelte';
   import UnaddedList from './unaddedlist.svelte';
+  import RequestsList from './requests.svelte';
 
-  // Temporary data for friends and unadded people 
-  // Real Data will be added ibced i have acess to database
-  let friends = [
-    { id: 1, name: 'Ayo' },
-    { id: 2, name: 'Dylan' },
-    { id: 3, name: 'Abbie' },
-    { id: 4, name: 'Conner' },
-  ];
+  const currentUserFriends = data.currentUserFriends || [];
+  const friendRequests = data.friendRequests || [];
+  const unaddedPeople = data.unaddedPeople || [];
 
-  let unaddedPeople = [
-    { id: 5, name: 'Kaitlyn' },
-    { id: 6, name: 'Hari' },
-  ];
-
-  let friendFilterText = '';
-  let unaddedFilterText = '';
 </script>
 
 <div class="container">
   <div class="friends-container">
-    <input type="text" bind:value={friendFilterText} placeholder="Search Friends">
-    <FriendList friends={friends} filterText={friendFilterText} />
+    <FriendList {currentUserFriends}/>
   </div>
 
-  <div class="unadded-people-container">
-    <input type="text" bind:value={unaddedFilterText} placeholder="Search People">
-    <UnaddedList people={unaddedPeople} filterText={unaddedFilterText} />
+<div class="requests-container">
+    <RequestsList friendRequests={friendRequests} />
+  </div>
+
+<div class="unadded-people-container">
+    <UnaddedList people={unaddedPeople} />
   </div>
 </div>
 
@@ -41,6 +34,7 @@
   }
 
   .friends-container,
+  .requests-container,
   .unadded-people-container {
     width: 45%;
     margin: 20px;

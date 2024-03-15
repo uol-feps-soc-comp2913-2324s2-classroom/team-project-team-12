@@ -15,9 +15,10 @@
         if (user.membership_type) formData.append('membership_type', user.membership_type.toString());
         if (user.next_payment) formData.append('next_payment', user.next_payment.toString());
         if (user.default_publicity) formData.append('default_publicity', user.default_publicity.toString());
-        if (user.admin_status) formData.append('admin_status', user.admin_status.toString());
+        formData.append('admin_status', user.admin_status.toString());
         if (user.stripe_token) formData.append('stripe_token', user.stripe_token);
-
+        formData.append('owner', user.owner.toString());
+        console.log(user.admin_status, user.owner);
         try {
             if (!formData.has('id')) {
                 console.error('No ID provided');
@@ -92,6 +93,7 @@
             <th>Default Publicity</th>
             <th>Admin Status</th>
             <th>Stripe Token</th>
+            <th>Owner</th>
         </tr>
     </thead>
     <tbody>
@@ -109,6 +111,7 @@
                     <td>{user.default_publicity}</td>
                     <td>{user.admin_status}</td>
                     <td>{user.stripe_token}</td>
+                    <td>{user.owner}</td>
                 </tr>
             {/if}
             {#if !lockedFields}
@@ -122,8 +125,19 @@
                     <td><input type="text" bind:value={user.membership_type} /></td>
                     <td><input type="text" bind:value={user.next_payment} /></td>
                     <td><input type="text" bind:value={user.default_publicity} /></td>
-                    <td><input type="text" bind:value={user.admin_status} /></td>
+                    <td>
+                        <select bind:value={user.admin_status}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
                     <td><input type="text" bind:value={user.stripe_token} /></td>
+                    <td>
+                        <select bind:value={user.owner}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
                     <button on:click={() => handleUpdate(user)}>Submit</button>
                     <button on:click={() => deleteUser(user)}>Delete</button>
                 </tr>

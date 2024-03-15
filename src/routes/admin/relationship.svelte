@@ -9,9 +9,9 @@
         formData.append('id', relationship.id.toString());
         if (relationship.user_id1) formData.append('user_id1', relationship.user_id1.toString());
         if (relationship.user_id2) formData.append('user_id2', relationship.user_id2.toString());
-        if (relationship.friend_request) formData.append('friend_request', relationship.friend_request.toString());
-        if (relationship.is_friend) formData.append('is_friend', relationship.is_friend.toString());
-        if (relationship.is_blocked) formData.append('is_blocked', relationship.is_blocked.toString());
+        formData.append('friend_request', relationship.friend_request.toString());
+        formData.append('is_friend', relationship.is_friend.toString());
+        formData.append('is_blocked', relationship.is_blocked.toString());
 
         try {
             if (!formData.has('id')) {
@@ -101,9 +101,24 @@
                     <td>{relationship.id}</td>
                     <td><input type="text" bind:value={relationship.user_id1} /></td>
                     <td><input type="text" bind:value={relationship.user_id2} /></td>
-                    <td><input type="text" bind:value={relationship.friend_request} /></td>
-                    <td><input type="text" bind:value={relationship.is_friend} /></td>
-                    <td><input type="text" bind:value={relationship.is_blocked} /></td>
+                    <td>
+                        <select bind:value={relationship.friend_request}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select bind:value={relationship.is_friend}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select bind:value={relationship.is_blocked}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
                     <button on:click={() => handleUpdate(relationship)}>Submit</button>
                     <button on:click={() => deleteRelationship(relationship)}>Delete</button>
                 </tr>
