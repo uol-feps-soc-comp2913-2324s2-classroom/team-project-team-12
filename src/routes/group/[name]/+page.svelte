@@ -4,11 +4,12 @@
     export const group = data.group;
     export const members = data.members;
     export const creator = data.creator;
+    export const memberCount = data.memberCount;
 
     import crown from "$lib/crown.png";
 
-    let activeTab = 'Members';
-    let tabs = ['Members', 'Routes'];
+    let activeTab = 'Members: ' + memberCount;
+    let tabs = ['Members: ' + memberCount, 'Routes'];
 
     function setActiveTab(tab) {
         activeTab = tab;
@@ -215,7 +216,7 @@
             {/each}
         </div>
         <div class="tab-content">
-            {#if activeTab === 'Members'}
+            {#if activeTab === 'Members: ' + memberCount}
                 {#each members as members, i}
                     <a rel="external" href="../profile/{members.username}">
                         <div class="friend">

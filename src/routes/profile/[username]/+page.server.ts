@@ -29,6 +29,8 @@ export const load = (async ({ params: { username } }) => {
     const friendIds = relationships.flatMap(friendship => [friendship.user_id1, friendship.user_id2])
                          .filter(id => id !== user.id);
 
+    const friendCount =friendIds.length;
+
     const friends = await prisma.user.findMany({
         where: {
             id: {
@@ -62,6 +64,8 @@ export const load = (async ({ params: { username } }) => {
         }
     });
 
+    const groupCount =groups.length;
+
     // Iterate over each group and calculate the number of members
     const groupsWithMembersCount = groups.map(group => {
         const memberCount = group.group_membership.length; // Calculate the length of group_membership array
@@ -71,6 +75,6 @@ export const load = (async ({ params: { username } }) => {
         };
     });
     
-    return { user, friends, groupsWithMembersCount };
+    return { user, friends, groupsWithMembersCount, friendCount, groupCount };
 
 }) satisfies PageServerLoad;

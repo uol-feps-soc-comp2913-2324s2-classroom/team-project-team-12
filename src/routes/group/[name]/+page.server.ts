@@ -33,6 +33,8 @@ export const load = (async ({ params: { name } }) => {
         }
     });
 
+    const memberCount = members.length;
+
     const creator = await prisma.user.findFirst({
         where: {
             id: group.creator
@@ -40,5 +42,5 @@ export const load = (async ({ params: { name } }) => {
     })
     
 
-    return { group, members, creator };
+    return { group, members, creator, memberCount };
 }) as PageServerLoad;

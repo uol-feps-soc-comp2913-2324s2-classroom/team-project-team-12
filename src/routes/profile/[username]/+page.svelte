@@ -4,9 +4,11 @@
     export const user = data.user;
     export const userFriends = data.friends;
     export const userGroups = data.groupsWithMembersCount;
+    export const friendCount = data.friendCount;
+    export const groupCount = data.groupCount;
 
-    let activeTab = 'Friends';
-    let tabs = ['Friends', 'Groups', 'Routes'];
+    let activeTab = 'Friends: ' + friendCount;
+    let tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
     let privacy = 1;
 
     function setActiveTab(tab) {
@@ -257,7 +259,7 @@
         <div class="tab-content">
             {#if activeTab === 'Routes'}
                 <p>This is content for User Data.</p>
-            {:else if activeTab === 'Groups'}
+            {:else if activeTab === 'Groups: ' + groupCount}
                 <div class="friends-list">
                     {#each userGroups as group, i}
                         <a rel="external" href="../group/{group.name}">
@@ -276,7 +278,7 @@
                         </a>
                     {/each}
                 </div>
-            {:else if activeTab === 'Friends'}
+            {:else if activeTab === 'Friends: '+ friendCount}
                 <div class="friends-list">
                     {#each userFriends as friend, i}
                     <a rel="external" href="../profile/{friend.username}">
