@@ -9,6 +9,8 @@ export interface user {
     password: string;
     membership_type: number | null;
     next_payment: Date | null;
+    last_payment: Date | null;
+    paid: boolean;
     default_publicity: number | null;
     admin_status: boolean;
     stripe_token: string | null;

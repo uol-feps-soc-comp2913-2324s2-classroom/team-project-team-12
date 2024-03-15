@@ -17,6 +17,8 @@ export async function load() {
             password: userList[i].password,
             membership_type: userList[i].membership_type,
             next_payment: userList[i].next_payment,
+            last_payment: userList[i].last_payment,
+            paid: userList[i].paid,
             default_publicity: userList[i].default_publicity,
             admin_status: userList[i].admin_status,
             stripe_token: userList[i].stripe_token,
@@ -176,6 +178,15 @@ export const actions = {
             const nextPayment = data.get("next_payment");
             if (nextPayment != null)
             updatedUser.next_payment = new Date(nextPayment.toString());
+        }
+        if (data.get("last_payment") != null) {
+            const lastPayment = data.get("last_payment");
+            if (lastPayment != null)
+            updatedUser.last_payment = new Date(lastPayment.toString());
+        }
+        if ((data.get("paid") != null)) {
+            const paid = (data.get("paid") === "true");
+            updatedUser.paid = paid;
         }
         if (data.get("default_publicity") != null) {
             const defaultPublicity = Number(data.get("default_publicity"));

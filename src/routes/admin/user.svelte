@@ -14,6 +14,8 @@
         if (user.password) formData.append('password', user.password);
         if (user.membership_type) formData.append('membership_type', user.membership_type.toString());
         if (user.next_payment) formData.append('next_payment', user.next_payment.toString());
+        if (user.last_payment) formData.append('last_payment', user.last_payment.toString());
+        formData.append('paid', user.paid.toString());
         if (user.default_publicity) formData.append('default_publicity', user.default_publicity.toString());
         formData.append('admin_status', user.admin_status.toString());
         if (user.stripe_token) formData.append('stripe_token', user.stripe_token);
@@ -90,6 +92,8 @@
             <th>Password</th>
             <th>Membership Type</th>
             <th>Next Payment</th>
+            <th>Last Payment</th>
+            <th>Paid</th>
             <th>Default Publicity</th>
             <th>Admin Status</th>
             <th>Stripe Token</th>
@@ -108,6 +112,8 @@
                     <td>{user.password}</td>
                     <td>{user.membership_type}</td>
                     <td>{user.next_payment}</td>
+                    <td>{user.last_payment}</td>
+                    <td>{user.paid}</td>
                     <td>{user.default_publicity}</td>
                     <td>{user.admin_status}</td>
                     <td>{user.stripe_token}</td>
@@ -124,6 +130,13 @@
                     <td><input type="text" bind:value={user.password} /></td>
                     <td><input type="text" bind:value={user.membership_type} /></td>
                     <td><input type="text" bind:value={user.next_payment} /></td>
+                    <td><input type="text" bind:value={user.last_payment} /></td>
+                    <td>
+                        <select bind:value={user.paid}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
                     <td><input type="text" bind:value={user.default_publicity} /></td>
                     <td>
                         <select bind:value={user.admin_status}>

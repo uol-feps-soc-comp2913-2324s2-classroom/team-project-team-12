@@ -101,6 +101,8 @@ model user {
   password                                 String
   membership_type                          Int                @default(0)
   next_payment                             DateTime           @default("2020-01-01T00:00:00.000Z")
+  last_payment                             DateTime           @default("2020-01-01T00:00:00.000Z")
+  paid                                     Boolean            @default(false)
   default_publicity                        Int                @default(2)
   admin_status                             Boolean            @default(false)
   stripe_token                             String             @default("0")
