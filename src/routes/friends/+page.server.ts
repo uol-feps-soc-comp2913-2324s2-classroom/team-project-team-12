@@ -132,20 +132,32 @@ export const load = async ({ cookies }) => {
         }
     });
 
+    console.log(currentUserFriends);
+
     // Transform currentUserFriends and unaddedPeople to the required structure
     const transformedCurrentUserFriends = currentUserFriends.map(person => ({
-        id: person.id,
-        name: person.username
+      id: person.id,
+      name: person.username,
+      first_name: person.first_name,
+      last_name: person.last_name
     }));
 
-    const transformedFriendRequests = friendRequests.map(rel => ({
-        id: rel.id,
-        name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
-    }));
+    const transformedFriendRequests = friendRequests.map(rel => {
+      const requestedUserId = rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1;
+      const requestedUser = users.find(u => u.id === requestedUserId);
+      return {
+          id: rel.id,
+          name: requestedUser ? requestedUser.username : '',
+          first_name: requestedUser ? requestedUser.first_name : '',
+          last_name: requestedUser ? requestedUser.last_name : ''
+      };
+    });
 
     const transformedUnaddedPeople = unaddedPeople.map(person => ({
-        id: person.id,
-        name: person.username
+      id: person.id,
+      name: person.username,
+      first_name: person.first_name,
+      last_name: person.last_name
     }));
 
 

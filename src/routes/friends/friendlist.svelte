@@ -31,7 +31,9 @@
 $: filteredFriends = currentUserFriends.filter(friend =>
     friend.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+ 
+  import { getDefaultProfilePictureUrl } from './pfp.js';
+
 </script>
 
 <style>
@@ -70,7 +72,7 @@ $: filteredFriends = currentUserFriends.filter(friend =>
   <ul>
     {#each filteredFriends as friend}
       <li>
-        <div class="profile-pic"></div>
+        <img class = "profile-pic "src={getDefaultProfilePictureUrl(friend)} alt="" />
         <span>{friend.name}</span>
         <button on:click={() => deleteFriend(friend)} class="delete-button">Delete</button>
       </li>
