@@ -3,7 +3,7 @@
     export let data;
     export const user = data.user;
     export const userFriends = data.friends;
-    export const userGroups = data.groups;
+    export const userGroups = data.groupsWithMembersCount;
 
     let activeTab = 'Friends';
     let tabs = ['Friends', 'Groups', 'Routes'];
@@ -34,7 +34,6 @@
         const color = getRandomColor(user.id);
         const imageSize = 200; // Adjust this size according to your requirement
         const imageUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&size=${imageSize}`;
-        console.log(imageUrl);
         return imageUrl;
     }
 
@@ -42,7 +41,6 @@
         const color = getRandomColor(group.id);
         const imageSize = 200; // Adjust this size according to your requirement
         const imageUrl = `https://ui-avatars.com/api/?name=${group.name}&background=${color}&size=${imageSize}`;
-        console.log(imageUrl);
         return imageUrl;
     }
 
@@ -269,7 +267,7 @@
                                 </div>
                                 <div class="friend-details">
                                     <div class="friend-name">{group.name}</div>
-                                    <div class="user-name">@{group.creator.username}</div>
+                                    <div class="user-name">Members: {group.memberCount}</div>
                                 </div>
                                 <div class="button-container">
                                     <button class="add-button">Join</button>
