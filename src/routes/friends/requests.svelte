@@ -71,7 +71,9 @@
     <ul>
       {#each filteredRequests as request}
         <li>
-          <img class = "profile-pic "src={getDefaultProfilePictureUrl(request)} alt="" />
+          <a rel="external" href="../profile/{request.name}">
+            <img class = "profile-pic "src={getDefaultProfilePictureUrl(request)} alt="" />
+          </a>
           <span>{request.name}</span>
           <button on:click={() => acceptFriend(request)} class="accept-button">Accept</button>
         </li>

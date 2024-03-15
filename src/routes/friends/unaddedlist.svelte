@@ -71,7 +71,9 @@ $: filteredPeople = people.filter(person =>
   <ul>
     {#each filteredPeople as person}
       <li>
-        <img class = "profile-pic "src={getDefaultProfilePictureUrl(person)} alt="" />
+        <a rel="external" href="../profile/{person.name}">
+          <img class = "profile-pic "src={getDefaultProfilePictureUrl(person)} alt="" />
+        </a>
         <span>{person.name}</span>
         <button on:click={() => addFriend(person)} class="add-button">Add</button>
       </li>
