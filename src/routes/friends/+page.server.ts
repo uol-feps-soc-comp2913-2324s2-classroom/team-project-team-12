@@ -51,7 +51,6 @@ export const load = async ({ cookies }) => {
       });
       
       
-      console.log(currentUserFriends)
 
 
     const friendRequests = await prisma.relationship.findMany({
@@ -279,9 +278,39 @@ export const actions = {
                 };
             }
 
+            if (type === "declineFriend") {
+                
+              //lookup relationship by id
+              const relationship = await prisma.relationship.findUnique({
+                  where: {
+                      id: id
+                    },
+              });
+
+
+              //create copy of relationship
+              const updatedRelationship = Object.assign({}, relationship);
+              //updates relationship with new values
+              updatedRelationship.friend_request = false;
+              //update relationship in database
+              const updated = await prisma.relationship.update({
+                  where: {
+                      id: id,
+                  },
+                  data: updatedRelationship,
+              });
+              return {
+              status: 200,
+              body: relationship
+              };
+          }
+
             else {
                 throw new Error("Invalid action type.");
             }
+
+
+            
             
         } catch (error) {
             return {

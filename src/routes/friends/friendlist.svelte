@@ -18,6 +18,7 @@
         if (response.ok) {
             console.log(result.message || 'Friend deleted successfully');
             currentUserFriends = currentUserFriends.filter(f => f.id !== friend.id);
+            location.reload();
             
         } else {
             console.error(result.error || 'Failed to delete friend');
