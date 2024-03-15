@@ -1,18 +1,37 @@
-<script>
-  export let people = [];
-  export let filterText = '';
+<script lang="ts">
+  export let people: { id: number, name: string }[] = [];
+  let searchTerm = "";
 
-  function filterPeople() {
-    return people.filter(person =>
-      person.name.toLowerCase().includes(filterText.toLowerCase())
-    );
-  }
+  const addFriend = async (person: { id: number, name: string }) => {
+    const formData = new FormData();
+    formData.append('type', 'addFriend');
+    formData.append('id', person.id.toString());
 
-  function addToFriends(person) {
-    // Function for adding friends not implemented yet
-    console.log('Add', person.name, 'to friends list');
-  }
+    try {
+        const response = await fetch('/friends', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log(result.message || 'Friend request sent');
+            people = people.filter(f => f.id !== person.id);
+        } else {
+            console.error(result.error || 'Failed to send request');
+        }
+    } catch (error) {
+        console.error('Error during sending request:', error);
+    }
+};
+
+$: filteredPeople = people.filter(person =>
+    person.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 </script>
+
 
 <style>
   ul {
@@ -23,7 +42,6 @@
   li {
     display: flex;
     align-items: center;
-    /*justify-content: space-between;  Align items evenly in row */
     margin-bottom: 10px;
   }
 
@@ -47,12 +65,13 @@
 </style>
 
 <div>
+  <input type="text" placeholder="Search People" bind:value={searchTerm} />
   <ul>
-    {#each filterPeople() as person}
+    {#each filteredPeople as person}
       <li>
         <div class="profile-pic"></div>
         <span>{person.name}</span>
-        <button on:click={() => addToFriends(person)} class="add-button">Add</button>
+        <button on:click={() => addFriend(person)} class="add-button">Add</button>
       </li>
     {/each}
   </ul>
