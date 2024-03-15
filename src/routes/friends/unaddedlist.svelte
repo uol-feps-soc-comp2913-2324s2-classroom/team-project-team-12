@@ -18,6 +18,7 @@
         if (response.ok) {
             console.log(result.message || 'Friend request sent');
             people = people.filter(f => f.id !== person.id);
+            location.reload();
         } else {
             console.error(result.error || 'Failed to send request');
         }

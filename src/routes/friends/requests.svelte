@@ -19,6 +19,32 @@
           if (response.ok) {
               console.log(result.message || 'Friend accepted successfully');
               friendRequests = friendRequests.filter(f => f.id !== request.id);
+              location.reload();
+          } else {
+              console.error(result.error || 'Failed to accept friend');
+          }
+      } catch (error) {
+          console.error('Error during friend acception:', error);
+      }
+  };
+
+  const declineFriend = async (request: { id: number, name: string }) => {
+      const formData = new FormData();
+      formData.append('type', 'declineFriend');
+      formData.append('id', request.id.toString());
+  
+      try {
+          const response = await fetch('/friends', {
+              method: 'POST',
+              body: formData,
+          });
+  
+          const result = await response.json();
+  
+          if (response.ok) {
+              console.log(result.message || 'Friend accepted successfully');
+              friendRequests = friendRequests.filter(f => f.id !== request.id);
+              location.reload();
           } else {
               console.error(result.error || 'Failed to accept friend');
           }
@@ -62,6 +88,16 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
+    .decline-button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      background-color: #000a0641;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
   
   <div>
@@ -72,6 +108,7 @@
           <div class="profile-pic"></div>
           <span>{request.name}</span>
           <button on:click={() => acceptFriend(request)} class="accept-button">Accept</button>
+          <button on:click={() => declineFriend(request)} class="decline-button">Decline</button>
         </li>
       {/each}
     </ul>
