@@ -61,7 +61,7 @@ export const actions = {
                         name: route.name,
                         created_on: route.created_on.toString(),
                         length: route.length,
-                        'completion time': route.completion_time,
+                        'completion_time': route.completion_time,
                         path: route.latitudes.split(',').map((latitude, index) => [parseFloat(latitude), parseFloat(route.longitudes.split(',')[index])]) // Parse strings to floats and create an array of [latitude, longitude] pairs
                     }));
 
