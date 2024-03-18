@@ -105,8 +105,13 @@ export const load = (async ({ params: { username }, cookies }) => {
             memberCount // Add a new property to store the member count
         };
     });
+    console.log("########################################");
+    console.log(profile);
+    console.log(user);
+    console.log("########################################");
+
     
-    return { user, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest };
+    return { user, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest, profile };
 
 }) satisfies PageServerLoad;
 

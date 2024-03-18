@@ -7,7 +7,8 @@
     export const friendCount = data.friendCount;
     export const groupCount = data.groupCount;
     export const isFriend = data.isFriend;
-    export const friendRequest = data.friendRequest
+    export const friendRequest = data.friendRequest;
+    export const profile = data.profile;
 
     let activeTab = 'Friends: ' + friendCount;
     let tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
@@ -286,6 +287,18 @@
         margin-left: 5px;
     }
 
+    .account-button {
+        padding: 5px 10px;
+        background-color: #696969;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: "Poppins";
+        font-size: 10px;
+        margin-left: 5px;
+    }
+
     .add-button:hover {
         background-color: #0056b3;
     }
@@ -317,8 +330,10 @@
     <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
     <div class="name">{user.first_name} {user.last_name}</div>
     <div class="username">@{user.username}
-        {#if !isFriend && friendRequest == null}
-            <button class="add-button" on:click={() => addFriend(user)} data-sveltekit-reload>Request</button>
+        {#if user.username == profile.username}
+            <a class="account-button" href="../../account">My Account</a>
+        {:else if !isFriend && friendRequest == null}
+            <button class="add-button" on:click={() => addFriend(user)} >Request</button>
         {:else if friendRequest?.friend_request }
             <button class="request-button" on:click={() => deleteFriend(user)} >Requested</button>
         {:else}
