@@ -230,9 +230,6 @@
                                 <div class="friend-name">{members.first_name} {members.last_name}</div>
                                 <div class="user-name">@{members.username}</div>
                             </div>
-                            <div class="button-container">
-                                <button class="add-button">Add</button>
-                            </div>
                         </div>
                     </a>
                 {/each}

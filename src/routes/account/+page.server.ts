@@ -9,7 +9,7 @@ export const load = async ({ cookies }) => {
 
     curUser = await prisma.user.findUnique({
         where: {
-            username: username as string,
+            username: username
         },
     }) as user;
 

@@ -3,6 +3,7 @@
     import EditUsername from './edituser.svelte';
     import EditPassword from './editpass.svelte';
     import EditPrivacy from './editprivacy.svelte';
+    import { goto } from '$app/navigation';
     
     export let user;
     const username = user ? user.username : null;
@@ -14,6 +15,10 @@
         privacy = 'Friends Only';
     }else if(publicity==2){
         privacy = 'Public';
+    }
+
+    function switchPayment(){
+        goto('/payments');
     }
 </script>
 
@@ -46,7 +51,7 @@
     </tr>
     <tr>
         <td>PAYMENT<br>$5.99/month</td>
-        <td><button>Switch</button></td>
+        <td><button on:click={switchPayment}>Switch</button></td>
     </tr>
     <tr>
         <td>PRIVACY<br>{privacy}</td>

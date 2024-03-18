@@ -7,7 +7,7 @@ import { Decimal } from 'decimal.js';
 export async function load() {
     const users = [];
     const userList = await prisma.user.findMany();
-    for (var i = 0; i < userList.length; i++) {
+    for (let i = 0; i < userList.length; i++) {
         users.push({
             id: userList[i].id,
             username: userList[i].username,
@@ -29,7 +29,7 @@ export async function load() {
 
     const relationships = [];
     const relationshipList = await prisma.relationship.findMany();
-    for (var i = 0; i < relationshipList.length; i++) {
+    for (let i = 0; i < relationshipList.length; i++) {
         relationships.push({
             id: relationshipList[i].id,
             user_id1: relationshipList[i].user_id1,
@@ -43,7 +43,7 @@ export async function load() {
 
     const routes = [];
     const routeList = await prisma.routes.findMany();
-    for (var i = 0; i < routeList.length; i++) {
+    for (let i = 0; i < routeList.length; i++) {
         routes.push({
             id: routeList[i].id,
             route_name: routeList[i].route_name,
@@ -58,7 +58,7 @@ export async function load() {
 
     const groups = [];
     const groupList = await prisma.groups.findMany();
-    for (var i = 0; i < groupList.length; i++) {
+    for (let i = 0; i < groupList.length; i++) {
         groups.push({
             id: groupList[i].id,
             group_name: groupList[i].name,
@@ -70,7 +70,7 @@ export async function load() {
     }
     const group_memberships = [];
     const groupMembershipList = await prisma.group_membership.findMany();
-    for (var i = 0; i < groupMembershipList.length; i++) {
+    for (let i = 0; i < groupMembershipList.length; i++) {
         group_memberships.push({
             id: groupMembershipList[i].id,
             group_id: groupMembershipList[i].group_id,
@@ -82,7 +82,7 @@ export async function load() {
 
     const group_routes = [];
     const groupRouteList = await prisma.group_routes.findMany();
-    for (var i = 0; i < groupRouteList.length; i++) {
+    for (let i = 0; i < groupRouteList.length; i++) {
         group_routes.push({
             id: groupRouteList[i].id,
             group_id: groupRouteList[i].group_id,
@@ -93,7 +93,7 @@ export async function load() {
 
     const route_coordinates = [];
     const routeCoordinateList = await prisma.route_coordinates.findMany();
-    for (var i = 0; i < routeCoordinateList.length; i++) {
+    for (let i = 0; i < routeCoordinateList.length; i++) {
         route_coordinates.push({
             id: routeCoordinateList[i].id,
             route_id: routeCoordinateList[i].route_id,
@@ -208,7 +208,7 @@ export const actions = {
             if (owner != null && owner != undefined)
             updatedUser.owner = owner;
         }
-        const updated = await prisma.user.update({
+        await prisma.user.update({
             where: {
                 id: id,
             },
@@ -270,7 +270,7 @@ export const actions = {
                 updatedRelationship.is_blocked = isBlocked;
             }
             //update relationship in database
-            const updated = await prisma.relationship.update({
+            await prisma.relationship.update({
                 where: {
                     id: id,
                 },
@@ -336,7 +336,7 @@ export const actions = {
                 updatedRoute.publicity = publicity;
             }
             //update route in database
-            const updated = await prisma.routes.update({
+            await prisma.routes.update({
                 where: {
                     id: id,
                 },
@@ -387,7 +387,7 @@ export const actions = {
                 updatedGroup.publicity = publicity;
             }
             //update group in database
-            const updated = await prisma.groups.update({
+            await prisma.groups.update({
                 where: {
                     id: id,
                 },
@@ -439,7 +439,7 @@ export const actions = {
                 updatedGroupMembership.admin = admin;
             }
             //update group membership in database
-            const updated = await prisma.group_membership.update({
+            await prisma.group_membership.update({
                 where: {
                     id: id,
                 },
@@ -490,7 +490,7 @@ export const actions = {
                 updatedGroupRoute.priority = priority;
             }
             //update group route in database
-            const updated = await prisma.group_routes.update({
+            await prisma.group_routes.update({
                 where: {
                     id: id,
                 },
@@ -552,7 +552,7 @@ export const actions = {
                 updatedRouteCoordinate.order_position = orderPosition;
             }
             //update route coordinate in database
-            const updated = await prisma.route_coordinates.update({
+            await prisma.route_coordinates.update({
                 where: {
                     id: id,
                 },

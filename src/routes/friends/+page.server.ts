@@ -2,7 +2,7 @@
 import prisma from '$lib/prisma';
 import type { user } from '$lib/interfaces'
 
-let user: { id: number; username: string; first_name: string | null; last_name: string | null; email: string; password: string; membership_type: number | null; next_payment: Date | null; default_publicity: number | null; admin_status: number | null; stripe_token: string | null; } | null;
+let user: user
 
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
@@ -11,7 +11,7 @@ export const load = async ({ cookies }) => {
         where: {
             username: username as string,
         },
-    });
+    }) as user;
 
 
 
@@ -131,27 +131,39 @@ export const load = async ({ cookies }) => {
         }
     });
 
+    console.log(currentUserFriends);
+
     // Transform currentUserFriends and unaddedPeople to the required structure
     const transformedCurrentUserFriends = currentUserFriends.map(person => ({
-        id: person.id,
-        name: person.username
+      id: person.id,
+      name: person.username,
+      first_name: person.first_name,
+      last_name: person.last_name
     }));
 
-    const transformedFriendRequests = friendRequests.map(rel => ({
-        id: rel.id,
-        name: users.find(u => u.id === (rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1))?.username || ''
-    }));
+    const transformedFriendRequests = friendRequests.map(rel => {
+      const requestedUserId = rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1;
+      const requestedUser = users.find(u => u.id === requestedUserId);
+      return {
+          id: rel.id,
+          name: requestedUser ? requestedUser.username : '',
+          first_name: requestedUser ? requestedUser.first_name : '',
+          last_name: requestedUser ? requestedUser.last_name : ''
+      };
+    });
 
     const transformedUnaddedPeople = unaddedPeople.map(person => ({
-        id: person.id,
-        name: person.username
+      id: person.id,
+      name: person.username,
+      first_name: person.first_name,
+      last_name: person.last_name
     }));
 
 
     
     const relationships = [];
     const relationshipList = await prisma.relationship.findMany();
-    for (var i = 0; i < relationshipList.length; i++) {
+    for (let i = 0; i < relationshipList.length; i++) {
         relationships.push({
             id: relationshipList[i].id,
             user_id1: relationshipList[i].user_id1,
@@ -266,7 +278,7 @@ export const actions = {
                 //updates relationship with new values
                 updatedRelationship.is_friend = true;
                 //update relationship in database
-                const updated = await prisma.relationship.update({
+                await prisma.relationship.update({
                     where: {
                         id: id,
                     },
@@ -293,7 +305,7 @@ export const actions = {
               //updates relationship with new values
               updatedRelationship.friend_request = false;
               //update relationship in database
-              const updated = await prisma.relationship.update({
+              await prisma.relationship.update({
                   where: {
                       id: id,
                   },

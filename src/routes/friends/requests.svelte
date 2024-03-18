@@ -57,6 +57,8 @@
     request.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  import { getDefaultProfilePictureUrl } from './pfp.js';
+
   </script>
   
   <style>
@@ -105,7 +107,9 @@
     <ul>
       {#each filteredRequests as request}
         <li>
-          <div class="profile-pic"></div>
+          <a rel="external" href="../profile/{request.name}">
+            <img class = "profile-pic "src={getDefaultProfilePictureUrl(request)} alt="" />
+          </a>
           <span>{request.name}</span>
           <button on:click={() => acceptFriend(request)} class="accept-button">Accept</button>
           <button on:click={() => declineFriend(request)} class="decline-button">Decline</button>
