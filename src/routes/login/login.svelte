@@ -23,6 +23,7 @@
 
             if (result.status === 200) {
                 console.log(result.message || 'Login successful');
+                goto('/demo');
             } else {
                 console.error(result.message || 'Login failed');
             }

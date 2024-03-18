@@ -2,7 +2,7 @@
 import prisma from '$lib/prisma';
 import type { user } from '$lib/interfaces'
 
-let user: { id: number; username: string; first_name: string | null; last_name: string | null; email: string; password: string; membership_type: number | null; next_payment: Date | null; default_publicity: number | null; admin_status: number | null; stripe_token: string | null; } | null;
+let user: user
 
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
@@ -11,7 +11,7 @@ export const load = async ({ cookies }) => {
         where: {
             username: username as string,
         },
-    });
+    }) as user;
 
 
 
@@ -151,7 +151,7 @@ export const load = async ({ cookies }) => {
     
     const relationships = [];
     const relationshipList = await prisma.relationship.findMany();
-    for (var i = 0; i < relationshipList.length; i++) {
+    for (let i = 0; i < relationshipList.length; i++) {
         relationships.push({
             id: relationshipList[i].id,
             user_id1: relationshipList[i].user_id1,
@@ -266,7 +266,7 @@ export const actions = {
                 //updates relationship with new values
                 updatedRelationship.is_friend = true;
                 //update relationship in database
-                const updated = await prisma.relationship.update({
+                await prisma.relationship.update({
                     where: {
                         id: id,
                     },
@@ -293,7 +293,7 @@ export const actions = {
               //updates relationship with new values
               updatedRelationship.friend_request = false;
               //update relationship in database
-              const updated = await prisma.relationship.update({
+              await prisma.relationship.update({
                   where: {
                       id: id,
                   },
