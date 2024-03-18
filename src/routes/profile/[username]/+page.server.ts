@@ -164,6 +164,7 @@ export const actions = {
                             },
                         });
                         console.log('Friend added:');
+                        window.location.reload();
                     }
                 } catch (error) {
                     console.error('Error adding friend:', error);
@@ -193,7 +194,6 @@ export const actions = {
                         }
                     });
                 }
-
                 return {
                     status: 200,
                     body: relationship

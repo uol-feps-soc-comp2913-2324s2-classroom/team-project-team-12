@@ -73,6 +73,7 @@
             if (response.ok) {
                 console.log(result.message || 'Friend request sent');
                 people = people.filter(f => f.id !== person.id);
+                window.location.reload();
             } else {
                 console.error(result.error || 'Failed to send request');
             }
@@ -99,6 +100,7 @@
             if (response.ok) {
                 console.log(result.message || 'Friend deleted successfully');
                 currentUserFriends = currentUserFriends.filter(f => f.id !== friend.id);
+                window.location.reload();
                 
             } else {
                 console.error(result.error || 'Failed to delete friend');
@@ -315,12 +317,12 @@
     <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
     <div class="name">{user.first_name} {user.last_name}</div>
     <div class="username">@{user.username}
-        {#if !isFriend & friendRequest == null}
-            <button class="add-button" on:click={() => addFriend(user)} >Request</button>
+        {#if !isFriend && friendRequest == null}
+            <button class="add-button" on:click={() => addFriend(user)} data-sveltekit-reload>Request</button>
         {:else if friendRequest?.friend_request }
-            <button class="request-button" on:click={() => deleteFriend(user)}>Requested</button>
+            <button class="request-button" on:click={() => deleteFriend(user)} >Requested</button>
         {:else}
-            <button class="remove-button" on:click={() => deleteFriend(user)}>Remove</button>
+            <button class="remove-button" on:click={() => deleteFriend(user)} >Remove</button>
         {/if}
     </div>
     <div class="profile-container">
