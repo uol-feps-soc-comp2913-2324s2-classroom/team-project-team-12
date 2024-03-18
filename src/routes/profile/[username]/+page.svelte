@@ -6,6 +6,8 @@
     export const userGroups = data.groupsWithMembersCount;
     export const friendCount = data.friendCount;
     export const groupCount = data.groupCount;
+    export const isFriend = data.isFriend;
+    export const friendRequest = data.friendRequest
 
     let activeTab = 'Friends: ' + friendCount;
     let tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
@@ -21,7 +23,7 @@
 
     function getRandomColor(userId) {
         const hashedUserId = hashUserId(userId);
-        const color = hashedUserId.toString(16).slice(-6); // Convert to hexadecimal and take the last 6 characters
+        const color = hashedUserId.toString(16).slice(-6); 
         return color;
     }
 
@@ -34,14 +36,14 @@
     function getDefaultProfilePictureUrl(user) {
         const initials = getInitials(user.first_name, user.last_name);
         const color = getRandomColor(user.id);
-        const imageSize = 200; // Adjust this size according to your requirement
+        const imageSize = 200; 
         const imageUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&size=${imageSize}`;
         return imageUrl;
     }
 
     function getDefaultGroup(group) {
         const color = getRandomColor(group.id);
-        const imageSize = 200; // Adjust this size according to your requirement
+        const imageSize = 200; 
         const imageUrl = `https://ui-avatars.com/api/?name=${group.name}&background=${color}&size=${imageSize}`;
         return imageUrl;
     }
@@ -49,8 +51,62 @@
     const userPictureUrl = getDefaultProfilePictureUrl(user);
 
     const profilePictureUrls = userFriends.map(user => getDefaultProfilePictureUrl(user))
-    // Generate default group picture URLs for each group
+
+    
     const groupPictureUrls = userGroups.map(group => getDefaultGroup(group));
+
+    export let people: { id: number, name: string, first_name: string, last_name: string }[] = [];
+
+    const addFriend = async (person: { id: number, name: string }) => {
+        const formData = new FormData();
+        formData.append('type', 'addFriend');
+        formData.append('id', person.id.toString());
+
+        try {
+            const response = await fetch('/friends', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log(result.message || 'Friend request sent');
+                people = people.filter(f => f.id !== person.id);
+            } else {
+                console.error(result.error || 'Failed to send request');
+            }
+        } catch (error) {
+            console.error('Error during sending request:', error);
+        }
+    };
+
+    export let currentUserFriends: { id: number, name: string }[] = [];
+
+    const deleteFriend = async (friend: { id: number, name: string }) => {
+        const formData = new FormData();
+        formData.append('type', 'deleteFriend');
+        formData.append('id', friend.id.toString());
+
+        try {
+            const response = await fetch('/friends', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log(result.message || 'Friend deleted successfully');
+                currentUserFriends = currentUserFriends.filter(f => f.id !== friend.id);
+                
+            } else {
+                console.error(result.error || 'Failed to delete friend');
+            }
+        } catch (error) {
+            console.error('Error during friend deletion:', error);
+        }
+    };
 
 </script>
 
@@ -192,10 +248,6 @@
         color: #1c1c1c;
     }
 
-    .button-container {
-        margin-left: auto; /* Moves the button to the far right */
-    }
-
     .add-button {
         padding: 5px 10px;
         background-color: #007bff;
@@ -204,7 +256,32 @@
         border-radius: 5px;
         cursor: pointer;
         font-family: "Poppins";
-        font-size: 14px;
+        font-size: 10px;
+        margin-left: 5px;
+    }
+
+    .request-button {
+        padding: 5px 10px;
+        background-color: #c4c4c4;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: "Poppins";
+        font-size: 10px;
+        margin-left: 5px;
+    }
+
+    .remove-button {
+        padding: 5px 10px;
+        background-color: #ff504a;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: "Poppins";
+        font-size: 10px;
+        margin-left: 5px;
     }
 
     .add-button:hover {
@@ -218,19 +295,8 @@
         margin-bottom: 15px;
     }
 
-    .request-button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: "Poppins";
-        font-size: 14px;
-    }
-
     .request-button:hover {
-        background-color: #0056b3;
+        opacity: 0.75;
     }
 
     a {
@@ -248,7 +314,15 @@
   <div class="container">
     <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
     <div class="name">{user.first_name} {user.last_name}</div>
-    <div class="username">@{user.username}<button class="add-button">Add</button></div>
+    <div class="username">@{user.username}
+        {#if !isFriend & friendRequest == null}
+            <button class="add-button" on:click={() => addFriend(user)} >Request</button>
+        {:else if friendRequest?.friend_request }
+            <button class="request-button" on:click={() => deleteFriend(user)}>Requested</button>
+        {:else}
+            <button class="remove-button" on:click={() => deleteFriend(user)}>Remove</button>
+        {/if}
+    </div>
     <div class="profile-container">
         <div class="tabs">
             {#each tabs as tab}
@@ -271,9 +345,6 @@
                                     <div class="friend-name">{group.name}</div>
                                     <div class="user-name">Members: {group.memberCount}</div>
                                 </div>
-                                <div class="button-container">
-                                    <button class="add-button">Join</button>
-                                </div>
                             </div>
                         </a>
                     {/each}
@@ -289,9 +360,6 @@
                             <div class="friend-details">
                                 <div class="friend-name">{friend.first_name} {friend.last_name}</div>
                                 <div class="user-name">@{friend.username}</div>
-                            </div>
-                            <div class="button-container">
-                                <button class="add-button">Add</button>
                             </div>
                         </div>
                     </a>
