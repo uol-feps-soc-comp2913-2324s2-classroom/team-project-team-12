@@ -1,23 +1,17 @@
 <script lang="ts">
-    import { dev } from '$app/environment';
-    import { pipe } from 'ramda';
-
-    import type { LatLngExpression } from 'leaflet';
+    import type { RouteEntry } from '$lib/interfaces';
+    import type { LatLngExpression, LatLngTuple } from 'leaflet';
 
     // Default values used to instantiate the map
-    export let center: LatLngExpression = [53.807099641020486, -1.5549898846545835]; // Leeds Uni
+    export let center: LatLngTuple = [53.807099641020486, -1.5549898846545835]; // Leeds Uni
     export let zoom: number = 17;
     export let zoomControl: boolean = false;
-
-    // Stores coordinates of points visited in the route
-    let path: LatLngExpression[] = [];
-
-    // Print `path` on update (for debugging)
-    // $: if (dev) console.info('LEAFLET PATH:', path);
+    export let routes: RouteEntry[] = [];
 
     const mapHandler = async (container: HTMLElement) => {
         // Dynamically import leaflet (due to bug from leaflet developers)
-        const L = await import('leaflet');
+        let L = await import('leaflet');
+        // import('leaflet-textpath');
 
         // Create and initialize the map
         let map = L.map(container, {
@@ -34,42 +28,45 @@
             maxZoom: 20,
         }).addTo(map);
 
-        // Append a new route to the map
-        let route = new L.Polyline(path, {
-            color: 'red',
-            weight: 3,
-            opacity: 0.5,
-            smoothFactor: 1,
-        });
-
-        route.addTo(map);
-
-        // Convert a `GeolocationPosition` object into a `LatLngExpression` one
-        const geolocationPositionToLatLngExpression = (p: GeolocationPosition): LatLngExpression => [
-            p.coords.latitude,
-            p.coords.longitude,
-        ];
-
-        // Append the user's location to the map path
-        const appendToPath = (p: LatLngExpression): LatLngExpression => {
-            path = [...path, p];
-            route.setLatLngs(path);
-
-            return p;
-        };
-
         // Pan the camera to a new position
         const moveToPos = (p: LatLngExpression): LatLngExpression => {
-            map.flyTo(p, zoom);
+            map.panTo(p);
             return p;
         };
 
-        // Handle new geolocation updates
-        const handleNewPosition = pipe(geolocationPositionToLatLngExpression, appendToPath, moveToPos);
+        if (routes) moveToPos(routes[routes.length - 1].path[routes[routes.length - 1].path.length - 1]);
 
-        // Update the route with user's new locations
-        navigator.geolocation.watchPosition(handleNewPosition, console.error);
+        // Append a new route to the map
+        const createRoute = (r: RouteEntry) => {
+            let route = new L.Polyline(r.path, {
+                color: 'red',
+                weight: 3,
+                opacity: 0.5,
+                smoothFactor: 1,
+            });
+
+            // Handle click events
+            route.on('click', () => {
+                route.setStyle({
+                    color: 'blue',
+                    weight: 6,
+                });
+                console.info(r);
+            });
+
+            // route.on('mouseover', () => {
+            //     route.setText(r.name, { center: true, attributes: { fill: 'black' } });
+            // });
+            // route.on('mouseout', () => {
+            //     route.setText(null);
+            // });
+
+            route.addTo(map);
+        };
+
+        // Append each route to the map
+        routes.forEach(createRoute);
     };
 </script>
 
-<div style="margin: 80px; width: 80vw; height: 80vh;" use:mapHandler></div>
+<div style="margin: 0; padding: 0; width: 100vw; height: 100vh;" use:mapHandler />

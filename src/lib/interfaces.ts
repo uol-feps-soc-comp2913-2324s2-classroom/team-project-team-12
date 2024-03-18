@@ -1,4 +1,15 @@
 import { Decimal } from 'decimal.js';
+import type { LatLngTuple } from 'leaflet';
+
+export type Path = LatLngTuple[];
+
+export interface RouteEntry {
+    name: string;
+    createdOn: Date;
+    completionTime: number;
+    length: number;
+    path: Path;
+}
 
 export interface user {
     id: number;

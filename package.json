@@ -55,6 +55,7 @@
 		"js-cookie": "^3.0.5",
 		"jsonwebtoken": "^9.0.2",
 		"leaflet": "^1.9.4",
+		"leaflet-textpath": "^1.2.3",
 		"ramda": "^0.29.1"
 	},
 	"prisma": {
