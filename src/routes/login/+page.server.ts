@@ -1,8 +1,10 @@
 import prisma from "$lib/prisma";
 import { fail } from '@sveltejs/kit';
+import bcrypt from 'bcrypt';
 
 export const actions = {
   default: async({ request, cookies }) =>{
+
     const data = await request.formData();
     const type = data.get("type");
 
@@ -16,7 +18,14 @@ export const actions = {
         },
       });
 
-      if (user && user.password === password) {
+      let userPassword;
+      // check password against hashed password in the database
+      
+      if(user){
+        userPassword = await bcrypt.compare(password as string, user.password)
+      }
+
+      if (user && userPassword) {
         console.log('success');
         try {
           cookies.set('sessionId', user.username, {
@@ -86,15 +95,20 @@ export const actions = {
           console.log('invalid email address');
           return fail(401);
         }
+
+        // hash password before inputting into database.
+        const hashed = await bcrypt.hash(password as string, 10)
+
+        console.log(hashed);
   
-        // everything should be right, so create account
+        // create account
         await prisma.user.create({
           data: {
               username: username as string,
               first_name: firstName as string,
               last_name: lastName as string,
               email: email as string,
-              password: password as string,
+              password: hashed,
           },
         });
 
