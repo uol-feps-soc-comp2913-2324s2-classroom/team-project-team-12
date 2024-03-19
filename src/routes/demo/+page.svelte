@@ -2,6 +2,7 @@
     import { Modal, Content, Trigger}  from "sv-popup";
     import { GoogleMap, LeafletMap } from '$lib';
     import Download from './downloadData.svelte';
+    import Settings from './settings.svelte';
 
     export let data;
     export const user = data.curUser;
@@ -33,3 +34,6 @@
         </Modal>
     </div>
 </div>
+
+<Settings />
+

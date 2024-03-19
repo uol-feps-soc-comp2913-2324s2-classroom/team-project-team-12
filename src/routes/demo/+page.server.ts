@@ -17,7 +17,7 @@ export const load = async ({ cookies }) => {
 };
 
 export const actions = {
-    default: async ({ request }) => {
+    default: async ({ request, cookies }) => {
         const data = await request.formData();
         const type = data.get('type');
 
@@ -65,11 +65,7 @@ export const actions = {
                         path: route.latitudes.split(',').map((latitude, index) => [parseFloat(latitude), parseFloat(route.longitudes.split(',')[index])]) // Parse strings to floats and create an array of [latitude, longitude] pairs
                     }));
 
-                    console.log(formattedData);
-
                     const jsonData = JSON.stringify(formattedData, null, 2);
-
-                    console.log(jsonData);
 
                     return {
                         status: 200,
@@ -79,6 +75,22 @@ export const actions = {
             }
             catch (error){
                 return 500;
+            }
+        }else if(type=="logout"){
+            try {
+                cookies.delete('sessionId', {
+                    path: '/'
+                });
+
+                return {
+                    status: 200
+                }
+            }
+            catch (error) {
+                return {
+                    status: 500,
+                    body: "Internal Server Error"
+                }
             }
         }
     }
