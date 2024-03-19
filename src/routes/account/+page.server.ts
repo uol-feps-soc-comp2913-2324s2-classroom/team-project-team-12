@@ -1,5 +1,6 @@
 import prisma from '$lib/prisma';
 import { fail } from '@sveltejs/kit';
+import bcrypt from 'bcrypt';
 import type { user } from '$lib/interfaces'
 
 let curUser: user;
@@ -57,13 +58,16 @@ export const actions = {
             const newPass = data.get('newpass');
             console.log('attempting to edit password');
             try{
+                // hash password
+                const newHashed = await bcrypt.hash(newPass as string, 10)
+
                 if(curUser){
                     await prisma.user.update({
                         where: {
                             username: curUser.username as string,
                         },
                         data: {
-                            password: newPass as string,
+                            password: newHashed as string,
                         },
                     });
                 }
@@ -84,8 +88,13 @@ export const actions = {
         
                 console.log('User password:', curUser?.password);
                 console.log('Entered password:', oldPass);
+
+                let userPassword;
+                if(curUser){
+                    userPassword = await bcrypt.compare(oldPass as string, curUser.password);
+                }
         
-                if (curUser?.password === oldPass) {
+                if (userPassword) {
                     console.log('match');
                     return {
                         status: 200,
