@@ -75,6 +75,8 @@ export async function load() {
             id: groupMembershipList[i].id,
             group_id: groupMembershipList[i].group_id,
             user_id: groupMembershipList[i].user_id,
+            request: groupMembershipList[i].request,
+            member: groupMembershipList[i].member,
             admin: groupMembershipList[i].admin
         });
     }
@@ -432,6 +434,16 @@ export const actions = {
                 const userId = Number(data.get("user_id"));
                 if (userId != null)
                 updatedGroupMembership.user_id = userId;
+            }
+            if (data.get("request") != null) {
+                const request = (data.get("request") === "true");
+                if (request != null && request != undefined)
+                updatedGroupMembership.request = request;
+            }
+            if (data.get("member") != null) {
+                const member = (data.get("member") === "true");
+                if (member != null && member != undefined)
+                updatedGroupMembership.member = member;
             }
             if (data.get("admin") != null) {
                 const admin = (data.get("admin") === "true");

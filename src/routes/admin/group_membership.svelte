@@ -9,6 +9,8 @@
         formData.append('id', group_membership.id.toString());
         if (group_membership.group_id) formData.append('group_id', group_membership.group_id.toString());
         if (group_membership.user_id) formData.append('user_id', group_membership.user_id.toString());
+        formData.append('request', group_membership.request.toString());
+        formData.append('member', group_membership.member.toString());
         formData.append('admin', group_membership.admin.toString());
         console.log(group_membership.admin);
         try {
@@ -76,6 +78,8 @@
             <th>ID</th>
             <th>Group ID</th>
             <th>User ID</th>
+            <th>Request</th>
+            <th>Member</th>
             <th>Admin</th>
         </tr>
     </thead>
@@ -86,6 +90,8 @@
                     <td>{group_membership.id}</td>
                     <td>{group_membership.group_id}</td>
                     <td>{group_membership.user_id}</td>
+                    <td>{group_membership.request}</td>
+                    <td>{group_membership.member}</td>
                     <td>{group_membership.admin}</td>
                 </tr>
             {/if}
@@ -94,6 +100,18 @@
                     <td>{group_membership.id}</td>
                     <td><input type="text" bind:value={group_membership.group_id} /></td>
                     <td><input type="text" bind:value={group_membership.user_id} /></td>
+                    <td
+                        ><select bind:value={group_membership.request}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
+                    <td
+                        ><select bind:value={group_membership.member}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </select>
+                    </td>
                     <td
                         ><select bind:value={group_membership.admin}>
                             <option value={true}>true</option>
