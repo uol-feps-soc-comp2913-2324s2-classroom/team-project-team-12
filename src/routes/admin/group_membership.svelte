@@ -1,7 +1,10 @@
 <script lang="ts">
     import type { group_membership } from '$lib/interfaces';
 
-    export let group_memberships: group_membership[];
+    export let prop: group_membership[];
+    let group_memberships = prop;
+
+    
 
     const handleUpdate = async (group_membership: group_membership) => {
         const formData = new FormData();

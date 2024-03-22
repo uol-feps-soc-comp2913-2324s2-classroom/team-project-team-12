@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { route_coordinate } from '$lib/interfaces';
     import Decimal from 'decimal.js';
-    export let route_coordinates: route_coordinate[];
+    export let prop: route_coordinate[];
+    let route_coordinates = prop;
 
     const handleUpdate = async (route_coordinate: route_coordinate) => {
         const formData = new FormData();

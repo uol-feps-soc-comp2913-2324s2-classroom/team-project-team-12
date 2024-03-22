@@ -1,5 +1,6 @@
 <script lang="ts">
     export let data;
+
     import User from './user.svelte';
     export const users = data.users;
 
@@ -20,8 +21,29 @@
 
     import RouteCoordinates from './route_coordinates.svelte';
     export const route_coordinates = data.route_coordinates;
+
+    import Tabs from './Tabs.svelte';
+    let valueCount = 1;
+    let itemTuples: { label: string,value:number, component: any, prop: any } [] = [];
+    if (users) itemTuples.push({ label: 'Users',value: valueCount, component: User, prop: users});
+    if (users) valueCount++;
+    if (relationships) itemTuples.push({ label: 'Relationships',value: valueCount, component: Relationship, prop: relationships});
+    if (relationships) valueCount++;
+    if (routes) itemTuples.push({ label: 'Routes',value: valueCount, component: Routes, prop: routes});
+    if (routes) valueCount++;
+    if (groups) itemTuples.push({ label: 'Groups',value: valueCount, component: Groups, prop: groups});
+    if (groups) valueCount++;
+    if (group_memberships) itemTuples.push({ label: 'Group Memberships',value: valueCount, component: GroupMembership, prop: group_memberships});
+    if (group_memberships) valueCount++;
+    if (group_routes) itemTuples.push({ label: 'Group Routes',value: valueCount, component: GroupRoutes, prop: group_routes});
+    if (group_routes) valueCount++;
+    if (route_coordinates) itemTuples.push({ label: 'Route Coordinates',value: valueCount, component: RouteCoordinates, prop: route_coordinates});
+    if (route_coordinates) valueCount++;
 </script>
 
+<Tabs itemTuples={itemTuples} />
+
+<!---
 {#if users}
     <User {users} />
 {/if}
@@ -43,3 +65,4 @@
 {#if route_coordinates}
     <RouteCoordinates {route_coordinates} />
 {/if}
+-->

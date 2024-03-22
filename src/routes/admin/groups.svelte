@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { group } from '$lib/interfaces';
 
-    export let groups: group[];
+    export let prop: group[];
+    let groups = prop;
 
     const handleUpdate = async (group: group) => {
         const formData = new FormData();

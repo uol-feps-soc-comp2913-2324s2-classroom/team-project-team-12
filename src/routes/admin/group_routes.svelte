@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { group_route } from '$lib/interfaces';
-    export let group_routes: group_route[];
+    export let prop: group_route[];
+    let group_routes = prop;
     const handleUpdate = async (group_route: group_route) => {
         const formData = new FormData();
         formData.append('type', 'updateGroupRoute');

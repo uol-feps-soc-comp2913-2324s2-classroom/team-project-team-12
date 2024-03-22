@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { user } from '$lib/interfaces';
-
-    export let users: user[];
+    export let prop: user[];
+    let users = prop;
 
     const handleUpdate = async (user: user) => {
         const formData = new FormData();

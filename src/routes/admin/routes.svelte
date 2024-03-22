@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { route } from '$lib/interfaces';
-
-    export let routes: route[];
+    export let prop: route[];
+    let routes = prop;
 
     const handleUpdate = async (route: route) => {
         const formData = new FormData();

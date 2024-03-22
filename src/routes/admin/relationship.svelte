@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { relationship } from '$lib/interfaces';
 
-    export let relationships: relationship[];
+    export let prop: relationship[];
+    let relationships = prop;
 
     const handleUpdate = async (relationship: relationship) => {
         const formData = new FormData();
