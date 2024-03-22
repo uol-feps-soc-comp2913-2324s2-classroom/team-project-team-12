@@ -7,7 +7,6 @@ export interface RouteEntry {
     name: string;
     createdOn: Date;
     completionTime: number;
-    length: number;
     path: Path;
 }
 

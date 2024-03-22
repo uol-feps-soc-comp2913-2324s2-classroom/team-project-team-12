@@ -35,7 +35,6 @@ export const load = async ({ cookies }) => {
             name: r.route_name,
             createdOn: r.created_on,
             completionTime: r.approximate_completion_time,
-            length: r.length,
             path: await getRoutePath(r.id),
         }),
     );
