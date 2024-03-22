@@ -99,13 +99,14 @@ model user {
   last_name                                String
   email                                    String             @unique(map: "sqlite_autoindex_user_3")
   password                                 String
-  membership_type                          Int                @default(0)
+  membership_type                          Int                @default(4)
   next_payment                             DateTime           @default("2020-01-01T00:00:00.000Z")
   last_payment                             DateTime           @default("2020-01-01T00:00:00.000Z")
   paid                                     Boolean            @default(false)
   default_publicity                        Int                @default(2)
   admin_status                             Boolean            @default(false)
-  stripe_token                             String             @default("0")
+  stripe_token                             String             @default("")
+  subscription_id                          String             @default("")
   owner                                    Boolean            @default(false)
   groups                                   groups[]
   journeys                                 journeys[]

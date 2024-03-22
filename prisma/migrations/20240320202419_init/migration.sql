@@ -93,13 +93,14 @@ CREATE TABLE "user" (
     "last_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "membership_type" INTEGER NOT NULL DEFAULT 0,
+    "membership_type" INTEGER NOT NULL DEFAULT 4,
     "next_payment" DATETIME NOT NULL DEFAULT '2020-01-01 00:00:00 +00:00',
     "last_payment" DATETIME NOT NULL DEFAULT '2020-01-01 00:00:00 +00:00',
     "paid" BOOLEAN NOT NULL DEFAULT false,
     "default_publicity" INTEGER NOT NULL DEFAULT 2,
     "admin_status" BOOLEAN NOT NULL DEFAULT false,
-    "stripe_token" TEXT NOT NULL DEFAULT '0',
+    "stripe_token" TEXT NOT NULL DEFAULT '',
+    "subscription_id" TEXT NOT NULL DEFAULT '',
     "owner" BOOLEAN NOT NULL DEFAULT false
 );
 
