@@ -17,6 +17,9 @@ export const load = (async ({ cookies }) => {
     },
   });
 
+  if(type === user?.membership_type){
+    throw redirect(303, '/payments')
+  }
 
   const customerId = user?.stripe_token;
   const subscriptionId = user?.subscription_id;
