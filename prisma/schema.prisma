@@ -105,8 +105,8 @@ model user {
   paid                                     Boolean            @default(false)
   default_publicity                        Int                @default(2)
   admin_status                             Boolean            @default(false)
-  stripe_token                             String             @default("")
-  subscription_id                          String             @default("")
+  stripe_token                             String             @default("undefined")
+  subscription_id                          String             @default("undefined")
   owner                                    Boolean            @default(false)
   groups                                   groups[]
   journeys                                 journeys[]

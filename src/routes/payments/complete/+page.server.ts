@@ -5,6 +5,7 @@ import prisma from '$lib/prisma';
 export async function load({ cookies, url }) {
     const username = cookies.get('sessionId');
     const type = cookies.get('paymentPlan');
+    const subscriptionId = cookies.get('subscriptionId');
     const id = url.searchParams.get('payment_intent')
     const paymentIntent = await stripe.paymentIntents.retrieve(id)
     const currentDate = new Date()
@@ -20,7 +21,8 @@ export async function load({ cookies, url }) {
                     },
                     data: {
                         membership_type: Number(type),
-                        last_payment: currentDate.toISOString()
+                        last_payment: currentDate.toISOString(),
+                        subscription_id: subscriptionId,
                     },
                 })
                 message = 'Success! Payment received.'

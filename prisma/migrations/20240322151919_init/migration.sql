@@ -99,8 +99,8 @@ CREATE TABLE "user" (
     "paid" BOOLEAN NOT NULL DEFAULT false,
     "default_publicity" INTEGER NOT NULL DEFAULT 2,
     "admin_status" BOOLEAN NOT NULL DEFAULT false,
-    "stripe_token" TEXT NOT NULL DEFAULT '',
-    "subscription_id" TEXT NOT NULL DEFAULT '',
+    "stripe_token" TEXT NOT NULL DEFAULT 'undefined',
+    "subscription_id" TEXT NOT NULL DEFAULT 'undefined',
     "owner" BOOLEAN NOT NULL DEFAULT false
 );
 
