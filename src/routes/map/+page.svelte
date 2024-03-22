@@ -55,17 +55,19 @@
     />
 </svelte:head>
 
-<Sidebar class="m-4 rounded drop-shadow">
-    <SidebarWrapper>
-        <SidebarGroup>
-            <SidebarDropdownWrapper isOpen={true} label="Routes">
-                {#each data.routes as route}
-                    <SidebarDropdownItem on:click={() => map.selectRoute(route.name)} label={route.name} />
-                {/each}
-            </SidebarDropdownWrapper>
-        </SidebarGroup>
-    </SidebarWrapper>
-</Sidebar>
+{#if data.userRoutes.length > 0}
+    <Sidebar class="m-4 rounded drop-shadow">
+        <SidebarWrapper>
+            <SidebarGroup>
+                <SidebarDropdownWrapper isOpen={true} label="User's Routes">
+                    {#each data.userRoutes as route}
+                        <SidebarDropdownItem on:click={() => map.selectRoute(route.name)} label={route.name} />
+                    {/each}
+                </SidebarDropdownWrapper>
+            </SidebarGroup>
+        </SidebarWrapper>
+    </Sidebar>
+{/if}
 
 {#if selectedRoute}
     <Card class="m-4">
@@ -81,5 +83,5 @@
 {/if}
 
 <div style="position: absolute; top: 0; left: 0; z-index: -1;">
-    <LeafletMap bind:this={map} bind:selectedRoute {...data} />
+    <LeafletMap bind:this={map} bind:selectedRoute routes={data.userRoutes} />
 </div>

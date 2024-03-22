@@ -11,10 +11,10 @@ const appendRouteToDB = async (userId: number, route: RouteEntry) => {
         data: {
             route_name: route.name,
             created_on: route.createdOn,
-            length: route.length,
             approximate_completion_time: route.completionTime,
             creator: userId,
             publicity: 1,
+            length: 0,
         },
     });
 

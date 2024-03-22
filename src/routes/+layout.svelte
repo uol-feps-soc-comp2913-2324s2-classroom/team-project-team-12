@@ -1,7 +1,7 @@
 <script>
     import './app.css';
     import { Navbar, NavBrand, NavUl, NavLi, ToolbarButton, DarkMode, NavHamburger } from 'flowbite-svelte';
-    import { GlobeOutline } from 'flowbite-svelte-icons';
+    import { GlobeSolid } from 'flowbite-svelte-icons';
 
     export let data;
 </script>
@@ -9,7 +9,7 @@
 <Navbar class="drop-shadow">
     <NavHamburger />
     <NavBrand href="/map">
-        <!-- <GlobeOutline size="lg" class="self-center whitespace-nowrap text-red-500" /> -->
+        <GlobeSolid size="lg" class="self-center whitespace-nowrap text-red-500" />
         <span class="self-center whitespace-nowrap text-2xl font-semibold text-gray-900 dark:text-white">
             Journeys
         </span>

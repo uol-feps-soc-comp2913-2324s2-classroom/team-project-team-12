@@ -1,36 +1,46 @@
 <script lang="ts">
     import type { RouteEntry } from '$lib/interfaces';
-    import type { FeatureGroup, LatLngExpression, LatLngTuple, Map } from 'leaflet';
+    import type { LatLngTuple, Map } from 'leaflet';
 
     // Default values used to instantiate the map
     export let center: LatLngTuple = [53.807099641020486, -1.5549898846545835]; // Leeds Uni
     export let zoom: number = 17;
     export let zoomControl: boolean = false;
     export let routes: RouteEntry[] = [];
-    export let selectedRoute: RouteEntry;
+    export let selectedRoute: RouteEntry | undefined = undefined;
 
     let map: Map;
     let polylines: any = {};
 
+    let polylineStyle = {
+        color: 'red',
+        weight: 3,
+        opacity: 0.5,
+        smoothFactor: 1,
+    };
+
+    let polylineSelectedStyle = {
+        color: 'blue',
+        weight: 6,
+    };
+
     export const selectRoute = (name: string) => {
-        for (let polyline in polylines) {
-            polylines[polyline].setStyle({
-                color: 'red',
-                weight: 3,
-                opacity: 0.5,
-                smoothFactor: 1,
-            });
-        }
+        // Unset the selected polyline styles
+        resetPolylineStyles();
 
+        // Update the selected polyline's style
         let polyline = polylines[name];
-        polyline.setStyle({
-            color: 'blue',
-            weight: 6,
-        });
+        polyline.setStyle(polylineSelectedStyle);
 
+        // Fit the map within the user's viewport
         map.fitBounds(polyline.getBounds());
 
-        selectedRoute = routes.find((r) => r.name == name) as RouteEntry;
+        // Assign selectedRoute to the route
+        selectedRoute = routes.find((r) => r.name == name);
+    };
+
+    const resetPolylineStyles = () => {
+        for (let polyline in polylines) polylines[polyline].setStyle(polylineStyle);
     };
 
     const mapHandler = async (container: HTMLElement) => {
@@ -48,34 +58,27 @@
         // Add a tile layer (styles) to the map
         L.tileLayer.provider('CartoDB.Voyager').addTo(map);
 
-        // Pan the camera to a new position
-        const moveToPos = (p: LatLngExpression): LatLngExpression => {
-            map.panTo(p);
-            return p;
-        };
-
         // Append a new route to the map
         const createRoute = (r: RouteEntry) => {
+            // Create the new polyline
             let route = new L.Polyline(r.path, {
                 color: 'red',
                 weight: 3,
                 opacity: 0.5,
                 smoothFactor: 1,
-            });
+            }).addTo(map);
 
             // Handle click events
-            route.on('click', () => {
-                selectRoute(r.name);
-            });
+            route.on('click', () => selectRoute(r.name));
 
-            route.addTo(map);
+            // Track the new polyline throughout the program
             polylines[r.name] = route;
         };
 
         // Append each route to the map
         routes.forEach(createRoute);
 
-        // Get the most recent route
+        // Find the most recent route
         let recentRoute = routes.reduce((a, b) => (new Date(a.createdOn) > new Date(b.createdOn) ? a : b));
 
         // Display the most recent route on the user's screen
@@ -83,4 +86,4 @@
     };
 </script>
 
-<div style="margin: 0; padding: 0; width: 100vw; height: 100vh;" use:mapHandler />
+<div style="margin: 0; padding: 0; width: 100%; height: 100%;" use:mapHandler />

@@ -40,6 +40,7 @@ export const load = async ({ cookies }) => {
     );
 
     return {
-        routes: await Promise.all(routesData),
+        userRoutes: await Promise.all(routesData),
+        groupRoutes: [],
     };
 };
