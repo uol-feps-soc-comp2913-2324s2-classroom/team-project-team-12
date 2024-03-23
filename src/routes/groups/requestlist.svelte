@@ -32,11 +32,11 @@
 
   const declineRequest = async ( group: { id: number, user_id: number, group_id: number, groups: { name: string }, users: { username: string} }) => {
       const formData = new FormData();
-      formData.append('type', 'declineFriend');
+      formData.append('type', 'declineRequest');
       formData.append('id', group.id.toString());
   
       try {
-          const response = await fetch('/friends', {
+          const response = await fetch('/groups', {
               method: 'POST',
               body: formData,
           });
@@ -45,7 +45,7 @@
   
           if (response.ok) {
               console.log(result.message || 'Friend accepted successfully');
-              friendRequests = friendRequests.filter(f => f.id !== request.id);
+              groupRequests = groupRequests.filter(f => f.id !== group.id);
               location.reload();
           } else {
               console.error(result.error || 'Failed to accept friend');

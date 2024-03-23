@@ -18,14 +18,12 @@ export const load = async ({ cookies }) => {
             {
               id: {
                 in: [
-                  // Subquery to find IDs of users who are friends with the current user
                   ...(await prisma.group_membership.findMany({
                     where: {
-                      id: user?.id,
-                      member: true
+                      user_id: user?.id, member: true
                     },
-                    select: { id: true }
-                  })).map(mem => mem.id)
+                    select: { group_id: true }
+                  })).map(mem => mem.group_id)
                 ]
               }
             },
@@ -76,7 +74,14 @@ export const load = async ({ cookies }) => {
         }
     });
     
-    
+    const Groups = await prisma.group_membership.findMany({})
+
+    console.log("Current",currentUserGroups)
+    /*console.log("Requests",groupRequests)
+    console.log("Not",notMemberOfGroups)*/
+
+    console.log("Current",Groups)
+
     return {
         currentUserGroups,
         groupRequests,
