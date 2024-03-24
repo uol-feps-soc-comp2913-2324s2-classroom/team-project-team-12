@@ -3,6 +3,20 @@
     export let prop: user[];
     let users = prop;
 
+    let currentPage = 0;
+    const usersPerPage = 10;
+
+    const nextPage = () => {
+        currentPage++;
+    };
+    const prevPage = () => {
+        if (currentPage > 0) {
+        currentPage--;
+        }
+    };
+
+    let searchTerm = '';
+
     const handleUpdate = async (user: user) => {
         const formData = new FormData();
         formData.append('type', 'updateUser');
@@ -76,11 +90,13 @@
         } catch (error) {
             console.error('Error during delete:', error);
         }
+
+        users = users.filter((u) => u.id !== user.id);
     };
 
     var lockedFields = 1;
 </script>
-
+<input type="text" placeholder="Search..." bind:value={searchTerm} />
 <table>
     <thead>
         <tr>
@@ -101,7 +117,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each users as user}
+        {#each users.filter(user => user.username.includes(searchTerm)  || user.id.toString().includes(searchTerm) || user.first_name && user.first_name.includes(searchTerm) || (user.last_name && user.last_name.includes(searchTerm))).slice(currentPage * usersPerPage, (currentPage + 1) * usersPerPage) as user (user.id)}
             {#if lockedFields}
                 <tr>
                     <td>{user.id}</td>
@@ -158,4 +174,7 @@
         {/each}
     </tbody>
 </table>
+
 <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
+<button on:click={nextPage} disabled={(currentPage + 1) * usersPerPage >= users.length}>Next</button>
