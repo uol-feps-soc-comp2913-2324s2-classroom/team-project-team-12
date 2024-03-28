@@ -3,56 +3,72 @@
         "group_membership": {
             "group_id": 1,
             "user_id": 1,
-            "admin": true
+            "admin": true,
+            "request": true,
+            "member": true
         }
     },
     {
         "group_membership": {
             "group_id": 1,
             "user_id": 2,
-            "admin": false
+            "admin": false,
+            "request": true,
+            "member": true
         }
     },
     {
         "group_membership": {
             "group_id": 2,
             "user_id": 2,
-            "admin": true
+            "admin": true,
+            "request": true,
+            "member": true
         }
     },
     {
         "group_membership": {
             "group_id": 2,
             "user_id": 3,
-            "admin": false
+            "admin": false,
+            "request": true,
+            "member": true
         }
     },
     {
         "group_membership": {
             "group_id": 3,
             "user_id": 3,
-            "admin": true
+            "admin": true,
+            "request": true,
+            "member": true
         }
     },
     {
         "group_membership": {
             "group_id": 3,
             "user_id": 4,
-            "admin": false
+            "admin": false,
+            "request": true,
+            "member": true
         }
     },
     {
         "group_membership": {
             "group_id": 4,
             "user_id": 4,
-            "admin": true
+            "admin": true,
+            "request": true,
+            "member": true
         }
     },
     {
         "group_membership": {
             "group_id": 4,
             "user_id": 5,
-            "admin": false
+            "admin": false,
+            "request": true,
+            "member": true
         }
     }
 ]
