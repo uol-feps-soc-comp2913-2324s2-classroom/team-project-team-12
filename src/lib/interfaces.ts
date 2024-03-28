@@ -25,6 +25,7 @@ export interface user {
     default_publicity: number | null;
     admin_status: boolean;
     stripe_token: string | null;
+    subscription_id: string | null;
     owner: boolean;
 }
 
