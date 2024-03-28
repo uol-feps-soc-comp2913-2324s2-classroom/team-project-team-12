@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { onMount } from 'svelte';
     import { Button, Label, Fileupload, Select } from 'flowbite-svelte';
 
     let privacySettings = [
@@ -6,6 +9,10 @@
         { value: 2, name: 'Private' },
         { value: 3, name: 'Friends Only' },
     ];
+
+    onMount(() => {
+        if ($page.form && $page.form.success) goto('/map');
+    });
 </script>
 
 <main>

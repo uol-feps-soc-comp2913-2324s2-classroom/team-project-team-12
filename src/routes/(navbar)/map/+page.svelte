@@ -57,7 +57,7 @@
 
 {#await data.userRoutes then userRoutes}
     {#if userRoutes.length > 0}
-        <Sidebar class="m-4 drop-shadow opacity-95">
+        <Sidebar class="m-4 max-h-[40vh] overflow-y-auto drop-shadow opacity-95">
             <SidebarWrapper>
                 <SidebarGroup>
                     <SidebarDropdownWrapper
@@ -77,10 +77,10 @@
 
 {#await data.groupRoutes then groupRoutes}
     {#if Object.keys(groupRoutes).length > 0}
-        <Sidebar class="m-4 rounded drop-shadow opacity-95">
+        <Sidebar class="m-4 rounded max-h-[40vh] overflow-y-auto drop-shadow opacity-95">
             <SidebarWrapper>
-                <SidebarGroup>
-                    <span class="ms-3 pl-2 font-semibold text-gray-900 dark:text-white">Group Routes</span>
+                <span class="ms-3 pl-2 font-semibold text-gray-900 dark:text-white">Group Routes</span>
+                <SidebarGroup border>
                     {#each Object.keys(groupRoutes) as group}
                         {#if Object.values(groupRoutes[group]).flat(1).length > 0}
                             <SidebarDropdownWrapper label={group}>

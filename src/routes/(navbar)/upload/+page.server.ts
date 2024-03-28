@@ -1,8 +1,8 @@
+import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import prisma from '$lib/prisma';
 
 import type { RouteEntry } from '$lib/interfaces';
-import { redirect } from '@sveltejs/kit';
 
 // Append a route to the DB
 const appendRouteToDB = async (userId: number, privacy: number, route: RouteEntry) => {
@@ -63,10 +63,14 @@ export const actions = {
             if (dev) console.log(routes);
 
             // Append the route to the DB
-            routes.forEach((r) => appendRouteToDB(userId, privacy, r));
+            routes.forEach((r) => appendRouteToDB(userId as number, Number(privacy), r));
+
+            // Load the map page
+            return { success: true };
         } catch {
             // Handle errors
             console.error('Invalid data provided');
+            return { success: false };
         }
     },
 };
