@@ -1,16 +1,24 @@
 import prisma from '$lib/prisma';
 import { fail } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
-import type { user } from '$lib/interfaces'
+import type { user } from '$lib/interfaces';
 
 let curUser: user;
+let invalid = true;
 
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
 
+    if(!username){
+        invalid = true;
+        return {invalid};
+    }
+
+    invalid = false;
+
     curUser = await prisma.user.findUnique({
         where: {
-            username: username
+            username: username as string,
         },
     }) as user;
 

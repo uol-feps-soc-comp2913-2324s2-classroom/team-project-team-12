@@ -2,21 +2,71 @@
 import prisma from '$lib/prisma';
 import type { user } from '$lib/interfaces'
 
-let user: user
+let user: user;
+let invalid = true;
 
 export const load = async ({ cookies }) => {
-    const username = cookies.get('sessionId');
+  const username = cookies.get('sessionId');
 
-    user = await prisma.user.findUnique({
-        where: {
-            username: username as string,
-        },
-    }) as user;
+  if(!username){
+    invalid = true;
+    return {invalid};
+  }
+
+  invalid = false;
+
+  user = await prisma.user.findUnique({
+    where: {
+      username: username as string,
+    },
+  }) as user;
+
+  const currentUserFriends = await prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            id: {
+              in: [
+                // Subquery to find IDs of users who are friends with the current user
+                ...(await prisma.relationship.findMany({
+                  where: {
+                    user_id2: user?.id,
+                    is_friend: true
+                  },
+                  select: { user_id1: true }
+                })).map(rel => rel.user_id1)
+              ]
+            }
+          },
+          {
+            id: {
+              in: [
+                // Subquery to find IDs of users who are friends with the current user
+                ...(await prisma.relationship.findMany({
+                  where: {
+                    user_id1: user?.id,
+                    is_friend: true
+                  },
+                  select: { user_id2: true }
+                })).map(rel => rel.user_id2)
+              ]
+            }
+          }
+        ]
+      }
+    });
+      
+      
 
 
+  const friendRequests = await prisma.relationship.findMany({
+      where: {
+            user_id2: user?.id, friend_request: true, is_friend: false
+      },
+  });
 
-    const currentUserFriends = await prisma.user.findMany({
-        where: {
+  const blockedPeople = await prisma.user.findMany({
+      where: {
           OR: [
             {
               id: {
@@ -25,7 +75,7 @@ export const load = async ({ cookies }) => {
                   ...(await prisma.relationship.findMany({
                     where: {
                       user_id2: user?.id,
-                      is_friend: true
+                      is_blocked: true
                     },
                     select: { user_id1: true }
                   })).map(rel => rel.user_id1)
@@ -39,7 +89,7 @@ export const load = async ({ cookies }) => {
                   ...(await prisma.relationship.findMany({
                     where: {
                       user_id1: user?.id,
-                      is_friend: true
+                      is_blocked: true
                     },
                     select: { user_id2: true }
                   })).map(rel => rel.user_id2)
@@ -49,76 +99,32 @@ export const load = async ({ cookies }) => {
           ]
         }
       });
-      
-      
 
-
-    const friendRequests = await prisma.relationship.findMany({
-        where: {
-             user_id2: user?.id, friend_request: true, is_friend: false
-        },
-    });
-
-    const blockedPeople = await prisma.user.findMany({
-        where: {
-            OR: [
-              {
-                id: {
-                  in: [
-                    // Subquery to find IDs of users who are friends with the current user
-                    ...(await prisma.relationship.findMany({
-                      where: {
-                        user_id2: user?.id,
-                        is_blocked: true
-                      },
-                      select: { user_id1: true }
-                    })).map(rel => rel.user_id1)
-                  ]
-                }
-              },
-              {
-                id: {
-                  in: [
-                    // Subquery to find IDs of users who are friends with the current user
-                    ...(await prisma.relationship.findMany({
-                      where: {
-                        user_id1: user?.id,
-                        is_blocked: true
-                      },
-                      select: { user_id2: true }
-                    })).map(rel => rel.user_id2)
-                  ]
-                }
-              }
-            ]
+  // Load unadded people who are not blocked based on relationships
+  const unaddedPeople = await prisma.user.findMany({
+      where: {
+          NOT: {
+              OR: [
+                  { id: { in: currentUserFriends.map(friend => friend.id) } },
+                  {id: { in: friendRequests.map(request => request.user_id1) } },
+                  {id: { in: blockedPeople.map(blocked => blocked.id) } },
+                  { id: user?.id }
+              ]
           }
-        });
+      }
+  });
+  
 
-    // Load unadded people who are not blocked based on relationships
-    const unaddedPeople = await prisma.user.findMany({
-        where: {
-            NOT: {
-                OR: [
-                    { id: { in: currentUserFriends.map(friend => friend.id) } },
-                    {id: { in: friendRequests.map(request => request.user_id1) } },
-                    {id: { in: blockedPeople.map(blocked => blocked.id) } },
-                    { id: user?.id }
-                ]
-            }
-        }
-    });
-    
-
-    // Extract unique user IDs from both sets of relationships
-    const userIds = [
-        ...new Set([
-            ...currentUserFriends.map(person => person.id),
-            ...currentUserFriends.map(person => person.id),
-            ...friendRequests.map(rel => rel.user_id1),
-            ...unaddedPeople.map(person => person.id),
-            ...unaddedPeople.map(person => person.id)
-        ])
-    ];
+  // Extract unique user IDs from both sets of relationships
+  const userIds = [
+      ...new Set([
+          ...currentUserFriends.map(person => person.id),
+          ...currentUserFriends.map(person => person.id),
+          ...friendRequests.map(rel => rel.user_id1),
+          ...unaddedPeople.map(person => person.id),
+          ...unaddedPeople.map(person => person.id)
+      ])
+  ];
 
 
     

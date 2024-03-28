@@ -1,15 +1,40 @@
 <script lang="ts">
     // @ts-nocheck
+    import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
     export let data;
-    export const group = data.group;
-    export const members = data.members;
-    export const creator = data.creator;
-    export const memberCount = data.memberCount;
+    
+    export let group;
+    export let members;
+    export let creator;
+    export let memberCount;
 
+    let activeTab;
+    let tabs;
+
+    let groupUrl;
+    let memberPictureUrls;
+
+    onMount(() => {
+        // Check if data is invalid and redirect if necessary
+        if (data.invalid) {
+            goto('/');
+        }
+    });
+
+    if(data && data.curUser){
+        group = data.group;
+        members = data.members;
+        creator = data.creator;
+        memberCount = data.memberCount;
+        activeTab = 'Members: ' + memberCount;
+        tabs = ['Members: ' + memberCount, 'Routes'];
+
+        groupUrl = getDefaultGroup(group);
+        memberPictureUrls = members.map(user => getDefaultProfilePictureUrl(user))
+    }
+    
     import crown from "$lib/crown.png";
-
-    let activeTab = 'Members: ' + memberCount;
-    let tabs = ['Members: ' + memberCount, 'Routes'];
 
     function setActiveTab(tab) {
         activeTab = tab;
@@ -45,11 +70,6 @@
         const imageUrl = `https://ui-avatars.com/api/?name=${group.name}&background=${color}&size=${imageSize}`;
         return imageUrl;
     }
-
-    const groupUrl = getDefaultGroup(group);
-
-    const memberPictureUrls = members.map(user => getDefaultProfilePictureUrl(user))
-
 </script>
 
 <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
@@ -173,10 +193,6 @@
         color: #1c1c1c;
     }
 
-    .button-container {
-        margin-left: auto; /* Moves the button to the far right */
-    }
-
     .add-button {
         padding: 5px 10px;
         background-color: #007bff;
@@ -205,6 +221,7 @@
     
 </style>
 
+{#if !data.invalid}
 <body>
   <div class="container">
     <div class="profile-picture"> <img src={groupUrl} alt="" /></div>
@@ -240,3 +257,4 @@
     </div>
   </div>
 </body>
+{/if}
