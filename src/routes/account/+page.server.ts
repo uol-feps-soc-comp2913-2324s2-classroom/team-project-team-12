@@ -64,10 +64,10 @@ export const actions = {
                 if(curUser){
                     await prisma.user.update({
                         where: {
-                            username: curUser.username as string,
+                            username: curUser.username,
                         },
                         data: {
-                            password: newHashed as string,
+                            password: newHashed,
                         },
                     });
                 }

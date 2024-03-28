@@ -26,7 +26,6 @@ export const actions = {
       }
 
       if (user && userPassword) {
-        console.log('success');
         try {
           cookies.set('sessionId', user.username, {
             httpOnly: true,
