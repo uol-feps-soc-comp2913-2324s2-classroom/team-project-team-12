@@ -48,6 +48,8 @@ export interface group_membership {
     group_id: number;
     user_id: number;
     admin: boolean;
+    request: boolean;
+    member: boolean;
 }
 
 export interface group_route {
