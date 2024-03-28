@@ -5,7 +5,7 @@ import type { RouteEntry } from '$lib/interfaces';
 import { redirect } from '@sveltejs/kit';
 
 // Append a route to the DB
-const appendRouteToDB = async (userId: number, route: RouteEntry) => {
+const appendRouteToDB = async (userId: number, privacy: number, route: RouteEntry) => {
     // Append the route metadata to its respective table
     let newRoute = await prisma.routes.create({
         data: {
@@ -13,7 +13,7 @@ const appendRouteToDB = async (userId: number, route: RouteEntry) => {
             created_on: route.createdOn,
             approximate_completion_time: route.completionTime,
             creator: userId,
-            publicity: 1,
+            publicity: privacy,
             length: 0,
         },
     });
@@ -35,6 +35,7 @@ export const actions = {
     default: async ({ cookies, request }) => {
         const formData = await request.formData();
         const file = formData?.get('file') as File;
+        const privacy = formData?.get('privacy');
 
         // Get the user's login session
         const username = cookies.get('sessionId');
@@ -62,7 +63,7 @@ export const actions = {
             if (dev) console.log(routes);
 
             // Append the route to the DB
-            routes.forEach((r) => appendRouteToDB(userId, r));
+            routes.forEach((r) => appendRouteToDB(userId, privacy, r));
         } catch {
             // Handle errors
             console.error('Invalid data provided');

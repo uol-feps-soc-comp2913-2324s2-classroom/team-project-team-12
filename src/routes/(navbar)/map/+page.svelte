@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { LeafletMap } from '$lib';
     import type { RouteEntry } from '$lib/interfaces.js';
     import {
+        Button,
         Card,
         Sidebar,
         SidebarDropdownItem,
@@ -9,6 +11,7 @@
         SidebarGroup,
         SidebarWrapper,
     } from 'flowbite-svelte';
+    import { UploadSolid } from 'flowbite-svelte-icons';
     import { onMount } from 'svelte';
 
     export let data;
@@ -19,11 +22,8 @@
     let miles: number;
     $: if (selectedRoute) [km, miles] = getRouteDistance(selectedRoute);
 
-    let L;
-
-    onMount(async () => {
-        L = await import('leaflet');
-    });
+    let L: any;
+    onMount(async () => (L = await import('leaflet')));
 
     const getRouteDistance = (route: RouteEntry) => {
         let totalDistance = 0;
@@ -55,33 +55,109 @@
     />
 </svelte:head>
 
-{#if data.userRoutes.length > 0}
-    <Sidebar class="m-4 rounded drop-shadow">
-        <SidebarWrapper>
-            <SidebarGroup>
-                <SidebarDropdownWrapper isOpen={true} label="User's Routes">
-                    {#each data.userRoutes as route}
-                        <SidebarDropdownItem on:click={() => map.selectRoute(route.name)} label={route.name} />
+{#await data.userRoutes then userRoutes}
+    {#if userRoutes.length > 0}
+        <Sidebar class="m-4 drop-shadow opacity-95">
+            <SidebarWrapper>
+                <SidebarGroup>
+                    <SidebarDropdownWrapper
+                        class="font-semibold text-gray-900 dark:text-white"
+                        isOpen={true}
+                        label="User's Routes"
+                    >
+                        {#each userRoutes as route}
+                            <SidebarDropdownItem on:click={() => map.selectRoute(route.name)} label={route.name} />
+                        {/each}
+                    </SidebarDropdownWrapper>
+                </SidebarGroup>
+            </SidebarWrapper>
+        </Sidebar>
+    {/if}
+{/await}
+
+{#await data.groupRoutes then groupRoutes}
+    {#if Object.keys(groupRoutes).length > 0}
+        <Sidebar class="m-4 rounded drop-shadow opacity-95">
+            <SidebarWrapper>
+                <SidebarGroup>
+                    <span class="ms-3 pl-2 font-semibold text-gray-900 dark:text-white">Group Routes</span>
+                    {#each Object.keys(groupRoutes) as group}
+                        {#if Object.values(groupRoutes[group]).flat(1).length > 0}
+                            <SidebarDropdownWrapper label={group}>
+                                {#each Object.values(groupRoutes[group]).flat(1) as route}
+                                    <SidebarDropdownItem
+                                        on:click={() => map.selectRoute(route.name)}
+                                        label={route.name}
+                                    />
+                                {/each}
+                            </SidebarDropdownWrapper>
+                        {/if}
                     {/each}
-                </SidebarDropdownWrapper>
-            </SidebarGroup>
-        </SidebarWrapper>
-    </Sidebar>
-{/if}
+                </SidebarGroup>
+            </SidebarWrapper>
+        </Sidebar>
+    {/if}
+{/await}
 
 {#if selectedRoute}
-    <Card class="m-4">
+    <Card class="m-4 absolute right-0 md:top-[4.5em] top-[3.75em] opacity-95">
         <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">{selectedRoute.name}</h5>
 
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
+            Created: {selectedRoute.createdOn.toLocaleDateString('en-GB')}
+            at {selectedRoute.createdOn.toLocaleTimeString('en-GB')}
+        </p>
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
             Duration: {getRouteDuration(selectedRoute)}
         </p>
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Distance: {km.toFixed(2)} km -> {miles.toFixed(2)} miles
+            Distance: {km.toFixed(2)} km &lt;-&gt; {miles.toFixed(2)} miles
+        </p>
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
+            Avg Speed: {(km / (selectedRoute.completionTime / 60 / 60)).toFixed(2)} km/h &lt;-&gt; {(
+                miles /
+                (selectedRoute.completionTime / 60 / 60)
+            ).toFixed(2)} miles/h
         </p>
     </Card>
 {/if}
 
-<div style="position: absolute; top: 0; left: 0; z-index: -1;">
-    <LeafletMap bind:this={map} bind:selectedRoute routes={data.userRoutes} />
-</div>
+<!-- Journeys Map -->
+{#await Promise.all([data.userRoutes, data.groupRoutes])}
+    <div
+        class="mapContainer"
+        style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;"
+    >
+        <div class="self-center whitespace-nowrap text-2xl my-5 font-semibold text-gray-900 dark:text-white">
+            Loading...
+        </div>
+    </div>
+{:then routes}
+    <div class="mapContainer">
+        <LeafletMap bind:this={map} bind:selectedRoute userRoutes={routes[0]} groupRoutes={routes[1]} />
+    </div>
+{/await}
+
+<Button class="m-4 absolute bottom-0 right-0" color="red" size="xl" on:click={() => goto('/upload')}>
+    <UploadSolid class="me-2" />
+    Upload GPS Data</Button
+>
+
+<style lang="sass">
+    // Disable pointer events for body to enable draggable map
+    :global(body)
+        pointer-events: none
+
+    // Re-enable pointer events for child elements
+    :global(body > *)
+        pointer-events: auto
+
+    :global(nav)
+        opacity: 98%
+
+    .mapContainer
+        position: absolute
+        top: 0
+        left: 0
+        z-index: -1
+</style>

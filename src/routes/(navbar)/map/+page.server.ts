@@ -13,9 +13,7 @@ export const load = async ({ cookies }) => {
     // Get the user's ID
     const user = await prisma.user.findUnique({ where: { username } });
     const userId = user?.id;
-
-    // Get each route for the user
-    let routes = await prisma.routes.findMany({ where: { creator: userId } });
+    const userGroups = await prisma.groups.findMany({ where: { user } });
 
     // Retrieve a route's path
     const getRoutePath = async (id: number): Promise<Path> => {
@@ -29,8 +27,11 @@ export const load = async ({ cookies }) => {
         return path.map((c) => [Number(c.latitude), Number(c.longitude)]);
     };
 
+    // Get each route for the user
+    let userRoutes = await prisma.routes.findMany({ where: { creator: userId } });
+
     // Parse the route data as an array of `RouteEntry` objects
-    let routesData = routes.map(
+    let userRoutesData = userRoutes.map(
         async (r): Promise<RouteEntry> => ({
             name: r.route_name,
             createdOn: r.created_on,
@@ -39,8 +40,43 @@ export const load = async ({ cookies }) => {
         }),
     );
 
+    const getGroupRoutesData = async () => {
+        let groupRoutesData: any = {};
+
+        for (const group of userGroups) {
+            const members = await prisma.group_membership.findMany({
+                where: {
+                    AND: [{ NOT: { user_id: userId } }, { group_id: group.id }],
+                },
+            });
+
+            let memberData: any = {};
+
+            for (const member of members) {
+                let memberRoutes = await prisma.routes.findMany({ where: { creator: member.id } });
+
+                let memberRoutesData = await Promise.all(
+                    memberRoutes.map(
+                        async (r): Promise<RouteEntry> => ({
+                            name: r.route_name,
+                            createdOn: r.created_on,
+                            completionTime: r.approximate_completion_time,
+                            path: await getRoutePath(r.id),
+                        }),
+                    ),
+                );
+
+                memberData[member] = memberRoutesData;
+            }
+
+            groupRoutesData[group.name] = memberData;
+        }
+
+        return groupRoutesData;
+    };
+
     return {
-        userRoutes: await Promise.all(routesData),
-        groupRoutes: [],
+        userRoutes: Promise.all(userRoutesData),
+        groupRoutes: getGroupRoutesData(),
     };
 };

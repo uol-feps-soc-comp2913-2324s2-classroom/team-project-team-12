@@ -6,8 +6,17 @@
     export let center: LatLngTuple = [53.807099641020486, -1.5549898846545835]; // Leeds Uni
     export let zoom: number = 17;
     export let zoomControl: boolean = false;
-    export let routes: RouteEntry[] = [];
+    export let userRoutes: RouteEntry[] = [];
+    export let groupRoutes: any = {};
     export let selectedRoute: RouteEntry | undefined = undefined;
+
+    // TODO: Rewrite
+    $: routes = [
+        ...userRoutes,
+        ...Object.values(groupRoutes)
+            .map((i) => Object.values(i))
+            .flat(1)[0],
+    ];
 
     let map: Map;
     let polylines: any = {};
@@ -53,6 +62,7 @@
             center,
             zoom,
             zoomControl,
+            attributionControl: false,
         });
 
         // Add a tile layer (styles) to the map
@@ -79,7 +89,7 @@
         routes.forEach(createRoute);
 
         // Find the most recent route
-        let recentRoute = routes.reduce((a, b) => (new Date(a.createdOn) > new Date(b.createdOn) ? a : b));
+        let recentRoute = userRoutes.reduce((a, b) => (new Date(a.createdOn) > new Date(b.createdOn) ? a : b));
 
         // Display the most recent route on the user's screen
         if (routes) map.fitBounds(polylines[recentRoute.name].getBounds());

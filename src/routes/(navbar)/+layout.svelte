@@ -10,12 +10,12 @@
     <NavHamburger />
     <NavBrand href="/map">
         <GlobeSolid size="lg" class="self-center whitespace-nowrap text-red-500" />
-        <span class="self-center whitespace-nowrap text-2xl font-semibold text-gray-900 dark:text-white">
+        <span class="self-center whitespace-nowrap text-2xl ml-1 font-semibold text-gray-900 dark:text-white">
             Journeys
         </span>
     </NavBrand>
     <NavUl>
-        <NavLi href="/">Home</NavLi>
+        <NavLi href="/map">Home</NavLi>
         <NavLi href="/friends">Friends</NavLi>
         <NavLi href="/routes">Routes</NavLi>
         <NavLi href="/payments">Pricing</NavLi>
@@ -23,13 +23,7 @@
 
     <div class="flex items-center">
         {#if data.user == undefined}
-            <ToolbarButton
-                href="/login"
-                class="hidden font-semibold xl:inline-block"
-                size="lg"
-                target="_blank"
-                rel="noreferrer"
-            >
+            <ToolbarButton href="/login" class="hidden font-semibold xl:inline-block" size="lg" rel="noreferrer">
                 Sign In
             </ToolbarButton>
         {:else}
@@ -37,7 +31,6 @@
                 href="/profile/{data.user}"
                 class="hidden font-semibold xl:inline-block"
                 size="lg"
-                target="_blank"
                 rel="noreferrer"
             >
                 {data.user}
