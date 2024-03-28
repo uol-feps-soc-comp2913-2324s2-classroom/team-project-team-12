@@ -2,6 +2,7 @@
 //---------------------------------------------------------------Imports--------------------------------------------
 import prisma from '$lib/prisma';
 import { Decimal } from 'decimal.js';
+import bcrypt from 'bcrypt';
 
 //---------------------------------------------------------------Loads Data From Database--------------------------------------------
 export async function load() {
@@ -104,7 +105,7 @@ export async function load() {
             order_position: routeCoordinateList[i].order_position
         });
     }
-    console.log(users[1]);
+    
     return {
         users,
         relationships,
@@ -135,6 +136,48 @@ export const actions = {
             body: deleted
             };
         }
+
+        if (type === "login") {
+            const username = data.get("username")?.toString();
+            const password = data.get("password")?.toString();
+            console.log(username + " " + password);
+            if (username != null && password != null) {
+                const user = await prisma.user.findUnique({
+                    where: {
+                        username: username,
+                    },
+                });
+                console.log(user);
+                if (user != null) {
+                    const match = await bcrypt.compare(password, user.password);
+                    console.log(match);
+                    if (match) {
+                        if (user.admin_status) {
+                            return {
+                                status: 200,
+                                body: 'Success'
+                            };
+                        } else {
+                            return {
+                                status: 404,
+                                body: 'Access Denied'
+                            };
+                        }
+                    } else {
+                        return {
+                            status: 404,
+                            body: 'Invalid username or password'
+                        };
+                }
+            }
+            return {
+                status: 404,
+                body: 'Invalid username or password'
+            };
+        }
+    }
+                
+
 
       if (type === "updateUser" ) {
         //lookup user by id

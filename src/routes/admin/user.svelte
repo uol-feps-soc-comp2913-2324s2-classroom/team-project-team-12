@@ -4,7 +4,7 @@
     let users = prop;
 
     let currentPage = 0;
-    const usersPerPage = 10;
+    let usersPerPage = 10;
 
     const nextPage = () => {
         currentPage++;
@@ -178,3 +178,12 @@
 <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
 <button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
 <button on:click={nextPage} disabled={(currentPage + 1) * usersPerPage >= users.length}>Next</button>
+<div>
+Results Per Page
+<select bind:value={usersPerPage}>
+    <option value={1}>10</option>
+    <option value={2}>25</option>
+    <option value={5}>50</option>
+    <option value={10}>100</option>
+</select>
+</div>
