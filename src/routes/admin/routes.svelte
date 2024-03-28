@@ -1,7 +1,21 @@
 <script lang="ts">
     import type { route } from '$lib/interfaces';
+    export let prop: route[];
+    let routes = prop;
 
-    export let routes: route[];
+    let currentPage = 0;
+    let routesPerPage = 10;
+
+    let searchTerm = '';
+
+    const nextPage = () => {
+        currentPage++;
+    };
+    const prevPage = () => {
+        if (currentPage > 0) {
+            currentPage--;
+        }
+    };
 
     const handleUpdate = async (route: route) => {
         const formData = new FormData();
@@ -41,6 +55,12 @@
         }
     };
 
+    const handleUpdateAll = async () => {
+        for (const route of routes) {
+            await handleUpdate(route);
+        }
+    };
+
     const deleteRoute = async (route: route) => {
         const formData = new FormData();
         formData.append('type', 'deleteRoute');
@@ -64,6 +84,7 @@
 
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                routes = routes.filter((r) => r.id !== route.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }
@@ -71,9 +92,10 @@
             console.error('Error during delete:', error);
         }
     };
+
     var lockedFields = 1;
 </script>
-
+<input type="text" placeholder="Search..." bind:value={searchTerm} />
 <table>
     <thead>
         <tr>
@@ -87,7 +109,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each routes as route}
+        {#each routes.filter(route => route.id.toString().includes(searchTerm) || (route.route_name != null && route.route_name.includes(searchTerm)) || (route.creator != null && route.creator.toString().includes(searchTerm))).slice(currentPage * routesPerPage, (currentPage + 1) * routesPerPage) as route}
             {#if lockedFields}
                 <tr>
                     <td>{route.id}</td>
@@ -102,7 +124,6 @@
             {#if !lockedFields}
                 <tr>
                     <td>{route.id}</td>
-                    <td><input type="text" bind:value={route.id} /></td>
                     <td><input type="text" bind:value={route.route_name} /></td>
                     <td><input type="text" bind:value={route.created_on} /></td>
                     <td><input type="text" bind:value={route.length} /></td>
@@ -117,3 +138,17 @@
     </tbody>
 </table>
 <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+{#if !lockedFields}
+    <button on:click={handleUpdateAll}>Update All</button>
+{/if}
+<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
+<button on:click={nextPage} disabled={(currentPage + 1) * routesPerPage >= routes.length}>Next</button>
+<div>
+    Results Per Page
+    <select bind:value={routesPerPage} on:change={() => currentPage = 0}>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+    </select>
+</div>

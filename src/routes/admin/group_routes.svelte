@@ -1,6 +1,22 @@
 <script lang="ts">
     import type { group_route } from '$lib/interfaces';
-    export let group_routes: group_route[];
+    export let prop: group_route[];
+    let group_routes = prop;
+
+    let currentPage = 0;
+    let group_routesPerPage = 10;
+
+    let searchTerm = '';
+
+    const nextPage = () => {
+        currentPage++;
+    };
+    const prevPage = () => {
+        if (currentPage > 0) {
+            currentPage--;
+        }
+    };
+
     const handleUpdate = async (group_route: group_route) => {
         const formData = new FormData();
         formData.append('type', 'updateGroupRoute');
@@ -29,6 +45,12 @@
             }
         } catch (error) {
             console.error('Error during update:', error);
+        }
+    };
+
+    const handleUpdateAll = async () => {
+        for (const group_route of group_routes) {
+            await handleUpdate(group_route);
         }
     };
 
@@ -62,7 +84,7 @@
 
     var lockedFields = 1;
 </script>
-
+<input type="text" bind:value={searchTerm} />
 <table>
     <thead>
         <tr>
@@ -73,7 +95,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each group_routes as group_route}
+        {#each group_routes.filter((gr) => ((gr.route_id != null && gr.route_id.toString().includes(searchTerm)) || (gr.group_id != null && gr.group_id.toString().includes(searchTerm)))).slice(currentPage * group_routesPerPage, (currentPage + 1) * group_routesPerPage) as group_route}
             {#if lockedFields == 1}
                 <tr>
                     <td>{group_route.id}</td>
@@ -93,6 +115,20 @@
                 </tr>
             {/if}
         {/each}
-        <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
     </tbody>
 </table>
+<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+{#if lockedFields == 0}
+    <button on:click={handleUpdateAll}>Update All</button>
+{/if}
+<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
+<button on:click={nextPage} disabled={(currentPage + 1) * group_routesPerPage >= group_routes.length}>Next</button>
+<div>
+    Results Per Page
+    <select bind:value={group_routesPerPage} on:change={() => currentPage = 0} >
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+    </select>
+</div>

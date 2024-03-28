@@ -2,6 +2,7 @@
 //---------------------------------------------------------------Imports--------------------------------------------
 import prisma from '$lib/prisma';
 import { Decimal } from 'decimal.js';
+import bcrypt from 'bcrypt';
 
 //---------------------------------------------------------------Loads Data From Database--------------------------------------------
 export async function load() {
@@ -75,6 +76,8 @@ export async function load() {
             id: groupMembershipList[i].id,
             group_id: groupMembershipList[i].group_id,
             user_id: groupMembershipList[i].user_id,
+            request: groupMembershipList[i].request,
+            member: groupMembershipList[i].member,
             admin: groupMembershipList[i].admin
         });
     }
@@ -102,7 +105,7 @@ export async function load() {
             order_position: routeCoordinateList[i].order_position
         });
     }
-    console.log(users[1]);
+    
     return {
         users,
         relationships,
@@ -133,6 +136,48 @@ export const actions = {
             body: deleted
             };
         }
+
+        if (type === "login") {
+            const username = data.get("username")?.toString();
+            const password = data.get("password")?.toString();
+            console.log(username + " " + password);
+            if (username != null && password != null) {
+                const user = await prisma.user.findUnique({
+                    where: {
+                        username: username,
+                    },
+                });
+                console.log(user);
+                if (user != null) {
+                    const match = await bcrypt.compare(password, user.password);
+                    console.log(match);
+                    if (match) {
+                        if (user.admin_status) {
+                            return {
+                                status: 200,
+                                body: 'Success'
+                            };
+                        } else {
+                            return {
+                                status: 404,
+                                body: 'Access Denied'
+                            };
+                        }
+                    } else {
+                        return {
+                            status: 404,
+                            body: 'Invalid username or password'
+                        };
+                }
+            }
+            return {
+                status: 404,
+                body: 'Invalid username or password'
+            };
+        }
+    }
+                
+
 
       if (type === "updateUser" ) {
         //lookup user by id
@@ -433,6 +478,16 @@ export const actions = {
                 if (userId != null)
                 updatedGroupMembership.user_id = userId;
             }
+            if (data.get("request") != null) {
+                const request = (data.get("request") === "true");
+                if (request != null && request != undefined)
+                updatedGroupMembership.request = request;
+            }
+            if (data.get("member") != null) {
+                const member = (data.get("member") === "true");
+                if (member != null && member != undefined)
+                updatedGroupMembership.member = member;
+            }
             if (data.get("admin") != null) {
                 const admin = (data.get("admin") === "true");
                 if (admin != null && admin != undefined)
@@ -562,6 +617,6 @@ export const actions = {
             status: 200
             };
         }
-
+        
 
     }};

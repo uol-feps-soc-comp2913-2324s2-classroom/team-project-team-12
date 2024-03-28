@@ -1,7 +1,22 @@
 <script lang="ts">
     import type { group } from '$lib/interfaces';
 
-    export let groups: group[];
+    export let prop: group[];
+    let groups = prop;
+
+    let currentPage = 0;
+    let groupsPerPage = 10;
+
+    let searchTerm = '';
+
+    const nextPage = () => {
+        currentPage++;
+    };
+    const prevPage = () => {
+        if (currentPage > 0) {
+            currentPage--;
+        }
+    };
 
     const handleUpdate = async (group: group) => {
         const formData = new FormData();
@@ -34,6 +49,12 @@
             }
         } catch (error) {
             console.error('Error during update:', error);
+        }
+    };
+
+    const handleUpdateAll = async () => {
+        for (const group of groups) {
+            await handleUpdate(group);
         }
     };
 
@@ -71,6 +92,7 @@
     var lockedFields = 1;
 </script>
 
+<input type="text" bind:value={searchTerm} placeholder="Search" />
 <table>
     <thead>
         <tr>
@@ -81,7 +103,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each groups as group}
+        {#each groups.filter((g) => (g.id.toString().includes(searchTerm) || g.group_name.includes(searchTerm) || g.creator.toString().includes(searchTerm))).slice(currentPage * groupsPerPage, (currentPage + 1) * groupsPerPage) as group}
             {#if lockedFields == 1}
                 <tr>
                     <td>{group.id}</td>
@@ -101,6 +123,20 @@
                 </tr>
             {/if}
         {/each}
-        <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
     </tbody>
 </table>
+<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+{#if !lockedFields}
+    <button on:click={handleUpdateAll}>Update All</button>
+{/if}
+<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
+<button on:click={nextPage} disabled={(currentPage + 1) * groupsPerPage >= groups.length}>Next</button>
+<div>
+    Results Per Page
+    <select bind:value={groupsPerPage} on:change={() => currentPage = 0}>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+    </select>
+</div>

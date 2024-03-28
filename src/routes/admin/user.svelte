@@ -1,7 +1,21 @@
 <script lang="ts">
     import type { user } from '$lib/interfaces';
+    export let prop: user[];
+    let users = prop;
 
-    export let users: user[];
+    let currentPage = 0;
+    let usersPerPage = 10;
+
+    const nextPage = () => {
+        currentPage++;
+    };
+    const prevPage = () => {
+        if (currentPage > 0) {
+        currentPage--;
+        }
+    };
+
+    let searchTerm = '';
 
     const handleUpdate = async (user: user) => {
         const formData = new FormData();
@@ -45,7 +59,16 @@
         } catch (error) {
             console.error('Error during update:', error);
         }
+
+        
     };
+
+    const handleUpdateAll = async () => {
+        for (const user of users) {
+            await handleUpdate(user);
+        }
+    };
+
 
     const deleteUser = async (user: user) => {
         const formData = new FormData();
@@ -76,11 +99,13 @@
         } catch (error) {
             console.error('Error during delete:', error);
         }
+
+        users = users.filter((u) => u.id !== user.id);
     };
 
     var lockedFields = 1;
 </script>
-
+<input type="text" placeholder="Search..." bind:value={searchTerm} />
 <table>
     <thead>
         <tr>
@@ -101,7 +126,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each users as user}
+        {#each users.filter(user => user.username.includes(searchTerm)  || user.id.toString().includes(searchTerm) || user.first_name && user.first_name.includes(searchTerm) || (user.last_name && user.last_name.includes(searchTerm))).slice(currentPage * usersPerPage, (currentPage + 1) * usersPerPage) as user (user.id)}
             {#if lockedFields}
                 <tr>
                     <td>{user.id}</td>
@@ -158,4 +183,19 @@
         {/each}
     </tbody>
 </table>
+
 <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+{#if !lockedFields}
+    <button on:click={handleUpdateAll}>Update All</button>
+{/if}
+<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
+<button on:click={nextPage} disabled={(currentPage + 1) * usersPerPage >= users.length}>Next</button>
+<div>
+Results Per Page
+<select bind:value={usersPerPage} on:change={() => currentPage = 0}>
+    <option value={10}>10</option>
+    <option value={25}>25</option>
+    <option value={50}>50</option>
+    <option value={100}>100</option>
+</select>
+</div>
