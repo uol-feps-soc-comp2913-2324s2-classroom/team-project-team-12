@@ -8,6 +8,7 @@
     export let zoomControl: boolean = false;
     export let userRoutes: RouteEntry[] = [];
     export let groupRoutes: any = {};
+    export let style: string = 'CartoDB.Voyager';
     export let selectedRoute: RouteEntry | undefined = undefined;
 
     // TODO: Rewrite
@@ -15,7 +16,8 @@
         ...userRoutes,
         ...Object.values(groupRoutes)
             .map((i) => Object.values(i))
-            .flat(1)[0],
+            .flat(1)
+            .flat(1),
     ];
 
     let map: Map;
@@ -42,10 +44,10 @@
         polyline.setStyle(polylineSelectedStyle);
 
         // Fit the map within the user's viewport
-        map.fitBounds(polyline.getBounds());
+        map.fitBounds(polyline.getBounds().pad(0.15));
 
         // Assign selectedRoute to the route
-        selectedRoute = routes.find((r) => r.name == name);
+        selectedRoute = routes.find((r) => r.name == name) as RouteEntry;
     };
 
     const resetPolylineStyles = () => {
@@ -66,7 +68,7 @@
         });
 
         // Add a tile layer (styles) to the map
-        L.tileLayer.provider('CartoDB.Voyager').addTo(map);
+        L.tileLayer.provider(style).addTo(map);
 
         // Append a new route to the map
         const createRoute = (r: RouteEntry) => {
@@ -92,8 +94,8 @@
         let recentRoute = userRoutes.reduce((a, b) => (new Date(a.createdOn) > new Date(b.createdOn) ? a : b));
 
         // Display the most recent route on the user's screen
-        if (routes) map.fitBounds(polylines[recentRoute.name].getBounds());
+        if (routes) map.fitBounds(polylines[recentRoute.name].getBounds().pad(0.1));
     };
 </script>
 
-<div style="margin: 0; padding: 0; width: 100vw; height: 100vh;" use:mapHandler />
+<div class="m-0 p-0 w-full h-full" use:mapHandler />

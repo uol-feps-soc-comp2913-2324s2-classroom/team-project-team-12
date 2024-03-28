@@ -34,6 +34,7 @@ export const load = async ({ cookies }) => {
     let userRoutesData = userRoutes.map(
         async (r): Promise<RouteEntry> => ({
             name: r.route_name,
+            creator: username,
             createdOn: r.created_on,
             completionTime: r.approximate_completion_time,
             path: await getRoutePath(r.id),
@@ -54,11 +55,13 @@ export const load = async ({ cookies }) => {
 
             for (const member of members) {
                 let memberRoutes = await prisma.routes.findMany({ where: { creator: member.id } });
+                let memberName = await prisma.user.findUnique({ where: { id: member.id } });
 
                 let memberRoutesData = await Promise.all(
                     memberRoutes.map(
                         async (r): Promise<RouteEntry> => ({
                             name: r.route_name,
+                            creator: memberName?.username as string,
                             createdOn: r.created_on,
                             completionTime: r.approximate_completion_time,
                             path: await getRoutePath(r.id),
@@ -66,7 +69,7 @@ export const load = async ({ cookies }) => {
                     ),
                 );
 
-                memberData[member] = memberRoutesData;
+                memberData[memberName?.username as string] = memberRoutesData;
             }
 
             groupRoutesData[group.name] = memberData;

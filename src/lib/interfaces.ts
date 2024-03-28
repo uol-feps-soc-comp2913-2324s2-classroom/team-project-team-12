@@ -5,6 +5,7 @@ export type Path = LatLngTuple[];
 
 export interface RouteEntry {
     name: string;
+    creator: string;
     createdOn: Date;
     completionTime: number;
     path: Path;

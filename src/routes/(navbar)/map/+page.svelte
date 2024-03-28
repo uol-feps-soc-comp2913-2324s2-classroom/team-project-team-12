@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { LeafletMap } from '$lib';
+    import { LeafletMap, SingleRoute } from '$lib';
     import type { RouteEntry } from '$lib/interfaces.js';
     import {
         Button,
@@ -55,6 +55,7 @@
     />
 </svelte:head>
 
+<!-- User routes -->
 {#await data.userRoutes then userRoutes}
     {#if userRoutes.length > 0}
         <Sidebar class="m-4 max-h-[40vh] overflow-y-auto drop-shadow opacity-95">
@@ -75,12 +76,15 @@
     {/if}
 {/await}
 
+<!-- Group Routes Selector -->
 {#await data.groupRoutes then groupRoutes}
+    <!-- Only show if group routes exist -->
     {#if Object.keys(groupRoutes).length > 0}
         <Sidebar class="m-4 rounded max-h-[40vh] overflow-y-auto drop-shadow opacity-95">
             <SidebarWrapper>
                 <span class="ms-3 pl-2 font-semibold text-gray-900 dark:text-white">Group Routes</span>
                 <SidebarGroup border>
+                    <!-- List routes per group -->
                     {#each Object.keys(groupRoutes) as group}
                         {#if Object.values(groupRoutes[group]).flat(1).length > 0}
                             <SidebarDropdownWrapper label={group}>
@@ -99,35 +103,64 @@
     {/if}
 {/await}
 
+<!-- Selected Route Card -->
 {#if selectedRoute}
     <Card class="m-4 absolute right-0 md:top-[4.5em] top-[3.75em] opacity-95">
-        <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">{selectedRoute.name}</h5>
+        <!-- Route Name -->
+        <div>
+            <h5 class="mb-4 font-bold tracking-tight text-gray-900 dark:text-white inline-block">
+                {selectedRoute.name}
+            </h5>
+            <span class="float-right">
+                {selectedRoute.createdOn.toLocaleDateString('en-GB')}
+            </span>
+        </div>
 
+        <!-- Optional Route Preview -->
+        <!-- {#key selectedRoute}
+            <SingleRoute route={selectedRoute} />
+        {/key} -->
+
+        <!-- Created By -->
+        {#if data.user != selectedRoute.creator}
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
+                Created By:
+                <span class="float-right">
+                    {selectedRoute.creator}
+                </span>
+            </p>
+        {/if}
+
+        <!-- Elapsed Time -->
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Created: {selectedRoute.createdOn.toLocaleDateString('en-GB')}
-            at {selectedRoute.createdOn.toLocaleTimeString('en-GB')}
+            Elapsed Time:
+            <span class="float-right">
+                {getRouteDuration(selectedRoute)}
+            </span>
         </p>
+
+        <!-- Total Distance -->
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Duration: {getRouteDuration(selectedRoute)}
+            Total Distance:
+            <span class="float-right">
+                {km.toFixed(2)} km ⟷ {miles.toFixed(2)} miles
+            </span>
         </p>
+
+        <!-- Average Speed -->
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Distance: {km.toFixed(2)} km &lt;-&gt; {miles.toFixed(2)} miles
-        </p>
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Avg Speed: {(km / (selectedRoute.completionTime / 60 / 60)).toFixed(2)} km/h &lt;-&gt; {(
-                miles /
-                (selectedRoute.completionTime / 60 / 60)
-            ).toFixed(2)} miles/h
+            Average Speed:
+            <span class="float-right">
+                {(km / (selectedRoute.completionTime / 3600)).toFixed(2)} km/h ⟷
+                {(miles / (selectedRoute.completionTime / 3600)).toFixed(2)} miles/h
+            </span>
         </p>
     </Card>
 {/if}
 
 <!-- Journeys Map -->
 {#await Promise.all([data.userRoutes, data.groupRoutes])}
-    <div
-        class="mapContainer"
-        style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;"
-    >
+    <div class="mapContainer flex justify-center">
         <div class="self-center whitespace-nowrap text-2xl my-5 font-semibold text-gray-900 dark:text-white">
             Loading...
         </div>
@@ -160,4 +193,6 @@
         top: 0
         left: 0
         z-index: -1
+        width: 100vw
+        height: 100vh
 </style>
