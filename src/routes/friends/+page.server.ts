@@ -131,8 +131,6 @@ export const load = async ({ cookies }) => {
         }
     });
 
-    console.log(currentUserFriends);
-
     // Transform currentUserFriends and unaddedPeople to the required structure
     const transformedCurrentUserFriends = currentUserFriends.map(person => ({
       id: person.id,
@@ -327,7 +325,7 @@ export const actions = {
         } catch (error) {
             return {
                 status: 400,
-                body: { error: error.message },
+                body: { error: "Error completing action" },
         
             };
         }
