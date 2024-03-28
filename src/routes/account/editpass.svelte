@@ -19,10 +19,13 @@
             const result = await matched.json();
 
             if (result.status === 200) {
-                formData.append('type', 'editpass');
+                const formDataEditPass = new FormData();
+                formDataEditPass.append('newpass', password);
+                formDataEditPass.append('type', 'editpass');
+                console.log("editing password");
                 const response = await fetch('/account', {
                     method: 'POST',
-                    body: formData,
+                    body: formDataEditPass,
                 });
 
                 const result = await response.json();

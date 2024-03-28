@@ -60,6 +60,7 @@ export const actions = {
             try{
                 // hash password
                 const newHashed = await bcrypt.hash(newPass as string, 10)
+                console.log(newHashed);
 
                 if(curUser){
                     await prisma.user.update({
