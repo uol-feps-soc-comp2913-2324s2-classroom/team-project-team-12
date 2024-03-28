@@ -4,6 +4,20 @@
     export let prop: relationship[];
     let relationships = prop;
 
+    let currentPage = 0;
+    let relationshipsPerPage = 10;
+
+    let searchTerm = '';
+
+    const nextPage = () => {
+        currentPage++;
+    };
+    const prevPage = () => {
+        if (currentPage > 0) {
+            currentPage--;
+        }
+    };
+
     const handleUpdate = async (relationship: relationship) => {
         const formData = new FormData();
         formData.append('type', 'updateRelationship');
@@ -40,6 +54,12 @@
         }
     };
 
+    const handleUpdateAll = async () => {
+        for (const relationship of relationships) {
+            await handleUpdate(relationship);
+        }
+    };
+
     const deleteRelationship = async (relationship: relationship) => {
         const formData = new FormData();
         formData.append('type', 'deleteRelationship');
@@ -63,6 +83,7 @@
 
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                relationships = relationships.filter((r) => r.id !== relationship.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }
@@ -73,6 +94,8 @@
 
     var lockedFields = 1;
 </script>
+
+<input type="text" bind:value={searchTerm} placeholder="Search..." />
 
 <table>
     <thead>
@@ -86,7 +109,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each relationships as relationship}
+        {#each relationships.filter(((r) => r.user_id1.toString().includes(searchTerm) || r.user_id2.toString().includes(searchTerm))).slice(currentPage * relationshipsPerPage, (currentPage + 1) * relationshipsPerPage) as relationship}
             {#if lockedFields == 1}
                 <tr>
                     <td>{relationship.id}</td>
@@ -125,6 +148,20 @@
                 </tr>
             {/if}
         {/each}
-        <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
     </tbody>
 </table>
+<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+{#if !lockedFields}
+    <button on:click={handleUpdateAll}>Update All</button>
+{/if}
+<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
+<button on:click={nextPage} disabled={(currentPage + 1) * relationshipsPerPage >= relationships.length}>Next</button>
+<div>
+    Results Per Page
+    <select bind:value={relationshipsPerPage} on:change={() => currentPage = 0}>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+    </select>
+</div>

@@ -4,7 +4,20 @@
     export let prop: group_membership[];
     let group_memberships = prop;
 
-    
+    let currentPage = 0;
+    let group_membershipsPerPage = 10;
+
+    let searchTerm = '';
+
+    const nextPage = () => {
+        currentPage++;
+    };
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            currentPage--;
+        }
+    };
 
     const handleUpdate = async (group_membership: group_membership) => {
         const formData = new FormData();
@@ -42,6 +55,12 @@
         }
     };
 
+    const handleUpdateAll = async () => {
+        for (const group_membership of group_memberships) {
+            await handleUpdate(group_membership);
+        }
+    };
+
     const deleteGroupMembership = async (group_membership: group_membership) => {
         const formData = new FormData();
         formData.append('type', 'deleteGroupMembership');
@@ -74,7 +93,7 @@
     };
     var lockedFields = 1;
 </script>
-
+<input type="text" bind:value={searchTerm} placeholder="Search" />
 <table>
     <thead>
         <tr>
@@ -87,7 +106,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each group_memberships as group_membership}
+        {#each group_memberships.filter((gm) => (gm.group_id.toString().includes(searchTerm) || gm.user_id.toString().includes(searchTerm))).slice(currentPage * group_membershipsPerPage, (currentPage + 1) * group_membershipsPerPage) as group_membership}
             {#if lockedFields == 1}
                 <tr>
                     <td>{group_membership.id}</td>
@@ -126,6 +145,20 @@
                 </tr>
             {/if}
         {/each}
-        <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
     </tbody>
 </table>
+<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+{#if !lockedFields}
+    <button on:click={handleUpdateAll}>Update All</button>
+{/if}
+<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
+<button on:click={nextPage} disabled={(currentPage + 1) * group_membershipsPerPage >= group_memberships.length}>Next</button>
+<div>
+    Results Per Page
+    <select bind:value={group_membershipsPerPage} on:change={() => currentPage = 0}>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+    </select>
+</div>

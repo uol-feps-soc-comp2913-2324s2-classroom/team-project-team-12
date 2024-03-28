@@ -59,7 +59,16 @@
         } catch (error) {
             console.error('Error during update:', error);
         }
+
+        
     };
+
+    const handleUpdateAll = async () => {
+        for (const user of users) {
+            await handleUpdate(user);
+        }
+    };
+
 
     const deleteUser = async (user: user) => {
         const formData = new FormData();
@@ -176,14 +185,17 @@
 </table>
 
 <button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+{#if !lockedFields}
+    <button on:click={handleUpdateAll}>Update All</button>
+{/if}
 <button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
 <button on:click={nextPage} disabled={(currentPage + 1) * usersPerPage >= users.length}>Next</button>
 <div>
 Results Per Page
-<select bind:value={usersPerPage}>
-    <option value={1}>10</option>
-    <option value={2}>25</option>
-    <option value={5}>50</option>
-    <option value={10}>100</option>
+<select bind:value={usersPerPage} on:change={() => currentPage = 0}>
+    <option value={10}>10</option>
+    <option value={25}>25</option>
+    <option value={50}>50</option>
+    <option value={100}>100</option>
 </select>
 </div>
