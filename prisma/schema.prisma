@@ -11,6 +11,8 @@ model group_membership {
   id       Int     @id @default(autoincrement())
   group_id Int
   user_id  Int
+  request  Boolean @default(false)
+  member   Boolean @default(false)
   admin    Boolean @default(false)
   request  Boolean
   member   Boolean @default(false)

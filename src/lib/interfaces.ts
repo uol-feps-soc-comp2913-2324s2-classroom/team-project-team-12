@@ -47,6 +47,8 @@ export interface group_membership {
     id: number;
     group_id: number;
     user_id: number;
+    request: boolean;
+    member: boolean;
     admin: boolean;
     request: boolean;
     member: boolean;
