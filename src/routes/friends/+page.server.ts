@@ -250,7 +250,6 @@ export const actions = {
                                 is_blocked: false
                             },
                         });
-                        console.log('Friend added:');
                     }
                 } catch (error) {
                     console.error('Error adding friend:', error);

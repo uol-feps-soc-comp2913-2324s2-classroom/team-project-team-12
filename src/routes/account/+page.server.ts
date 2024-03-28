@@ -56,11 +56,9 @@ export const actions = {
             }
         }else if(type==="editpass"){
             const newPass = data.get('newpass');
-            console.log('attempting to edit password');
             try{
                 // hash password
                 const newHashed = await bcrypt.hash(newPass as string, 10)
-                console.log(newHashed);
 
                 if(curUser){
                     await prisma.user.update({
@@ -86,9 +84,6 @@ export const actions = {
             try {
                 // check that the old password is correct before setting a new one
                 const oldPass = data.get('oldpass') as string;
-        
-                console.log('User password:', curUser?.password);
-                console.log('Entered password:', oldPass);
 
                 let userPassword;
                 if(curUser){
@@ -96,13 +91,11 @@ export const actions = {
                 }
         
                 if (userPassword) {
-                    console.log('match');
                     return {
                         status: 200,
                         body: { message: 'Password match!' },
                     };
                 } else {
-                    console.log('incorrect');
                     return fail(401);
                 }
             } catch (error) {
