@@ -9,6 +9,11 @@
     export const isFriend = data.isFriend;
     export const friendRequest = data.friendRequest;
     export const profile = data.profile;
+    export const userRoutes = data.userRoutes;
+    export const resolvedRoutes = data.resolvedRoutes;
+
+    import { SingleRoute } from '$lib';
+    import type { RouteEntry } from '$lib/interfaces';
 
     let activeTab = 'Friends: ' + friendCount;
     let tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
@@ -323,6 +328,11 @@
         font-size: 10px;
     }
 
+    .map-container{
+        width:200px;
+        height:200px;
+    }
+
 </style>
 
 <body>
@@ -349,7 +359,17 @@
         {#if privacy == 1}
         <div class="tab-content">
             {#if activeTab === 'Routes'}
-                <p>This is content for User Data.</p>
+                <div class="friends-list">
+                    {#each userRoutes as route, i}
+                        <div class="friend">
+                            <SingleRoute route={resolvedRoutes[i]}/>
+                            <div class="friend-details">
+                                <div class="friend-name">{route.route_name}</div>
+                                <div class="user-name">Date Created: {route.created_on.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
             {:else if activeTab === 'Groups: ' + groupCount}
                 <div class="friends-list">
                     {#each userGroups as group, i}

@@ -1,6 +1,7 @@
 import prisma from "$lib/prisma";
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import type { Path, RouteEntry } from '$lib/interfaces';
 import type { user } from '$lib/interfaces'
 
 export const load = (async ({ params: { username }, cookies }) => {
@@ -28,6 +29,32 @@ export const load = (async ({ params: { username }, cookies }) => {
         });
     }
 
+    // Retrieve a route's path
+    const getRoutePath = async (id: number): Promise<Path> => {
+        // Retrieve the path from the database
+        let path = await prisma.route_coordinates.findMany({
+            where: { route_id: id },
+            orderBy: { order_position: 'asc' },
+        });
+
+        // Return the route's path as a `Path` object
+        return path.map((c) => [Number(c.latitude), Number(c.longitude)]);
+    };
+
+    // Get each route for the user
+    let userRoutes = await prisma.routes.findMany({ where: { creator: user.id } });
+
+    // Parse the route data as an array of `RouteEntry` objects
+    let userRoutesData = userRoutes.map(
+        async (r): Promise<RouteEntry> => ({
+            name: r.route_name,
+            creator: username,
+            createdOn: r.created_on,
+            completionTime: r.approximate_completion_time,
+            path: await getRoutePath(r.id),
+        }),
+    );
+
     // Check if the logged-in user has requested to follow the user whose profile is being visited
     const friendRequest = await prisma.relationship.findFirst({
         where: {
@@ -38,9 +65,6 @@ export const load = (async ({ params: { username }, cookies }) => {
             is_blocked: false
         }
     });
-
-    console.log(friendRequest);
-
 
     // Find the user's friends
     const relationships = await prisma.relationship.findMany({
@@ -105,13 +129,10 @@ export const load = (async ({ params: { username }, cookies }) => {
             memberCount // Add a new property to store the member count
         };
     });
-    console.log("########################################");
-    console.log(profile);
-    console.log(user);
-    console.log("########################################");
 
-    
-    return { user, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest, profile };
+    const resolvedRoutes = await Promise.all(userRoutesData);
+   
+    return { user, userRoutes, resolvedRoutes, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest, profile };
 
 }) satisfies PageServerLoad;
 
