@@ -1,3 +1,12 @@
+<svelte:head>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+</svelte:head>
+
 <script lang="ts">
     // @ts-nocheck
     export let data;
@@ -13,7 +22,6 @@
     export const resolvedRoutes = data.resolvedRoutes;
 
     import { SingleRoute } from '$lib';
-    import type { RouteEntry } from '$lib/interfaces';
 
     let activeTab = 'Friends: ' + friendCount;
     let tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
@@ -126,8 +134,9 @@
     }
     
     
-    .container {
+    .main-container {
         height: 100vh;
+        width: 100vw;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -154,7 +163,7 @@
         display: flex;
         flex-direction: column;
         width: 40%;
-        height: 60%;
+        height: 50%;
     }
   
     .tabs {
@@ -323,20 +332,22 @@
         text-decoration: none;
     }
 
-    .add-button{
+    .add-button {
         margin-left: 20px;
         font-size: 10px;
     }
 
-    .map-container{
-        width:200px;
-        height:200px;
+    .map-container {
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        margin-right: 15px;
     }
 
 </style>
 
 <body>
-  <div class="container">
+  <div class="main-container">
     <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
     <div class="name">{user.first_name} {user.last_name}</div>
     <div class="username">@{user.username}
@@ -353,7 +364,7 @@
     <div class="profile-container">
         <div class="tabs">
             {#each tabs as tab}
-            <button class="tab" class:active={activeTab === tab} on:click={() => setActiveTab(tab)}>{tab}</button>
+                <button class="tab" class:active={activeTab === tab} on:click={() => setActiveTab(tab)}>{tab}</button>
             {/each}
         </div>
         {#if privacy == 1}
@@ -362,7 +373,9 @@
                 <div class="friends-list">
                     {#each userRoutes as route, i}
                         <div class="friend">
-                            <SingleRoute route={resolvedRoutes[i]}/>
+                            <div class="map-container">
+                                <SingleRoute route={resolvedRoutes[i]}/>
+                            </div>
                             <div class="friend-details">
                                 <div class="friend-name">{route.route_name}</div>
                                 <div class="user-name">Date Created: {route.created_on.toLocaleString()}</div>
