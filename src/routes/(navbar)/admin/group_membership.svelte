@@ -84,6 +84,7 @@
 
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                group_memberships = group_memberships.filter((gm) => gm.id !== group_membership.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }

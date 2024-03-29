@@ -84,6 +84,7 @@
 
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                route_coordinates = route_coordinates.filter((rc) => rc.id !== route_coordinate.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }

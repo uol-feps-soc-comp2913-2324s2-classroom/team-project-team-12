@@ -82,6 +82,7 @@
 
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                groups = groups.filter((g) => g.id !== group.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }

@@ -75,6 +75,7 @@
             const result = await response.json();
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                group_routes = group_routes.filter((gr) => gr.id !== group_route.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }
