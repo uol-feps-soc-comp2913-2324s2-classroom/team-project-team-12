@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { route } from '$lib/interfaces';
+    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     export let prop: route[];
     let routes = prop;
 
@@ -95,60 +96,65 @@
 
     var lockedFields = 1;
 </script>
-<input type="text" placeholder="Search..." bind:value={searchTerm} />
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Route Name</th>
-            <th>Created On</th>
-            <th>Length</th>
-            <th>Approx. Completion Time</th>
-            <th>Creator</th>
-            <th>Publicity</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each routes.filter(route => route.id.toString().includes(searchTerm) || (route.route_name != null && route.route_name.includes(searchTerm)) || (route.creator != null && route.creator.toString().includes(searchTerm))).slice(currentPage * routesPerPage, (currentPage + 1) * routesPerPage) as route}
+
+<Input type="text" placeholder="Search..." bind:value={searchTerm} />
+<Table>
+    <TableHead>
+        <TableHeadCell>ID</TableHeadCell>
+        <TableHeadCell>Route Name</TableHeadCell>
+        <TableHeadCell>Created On</TableHeadCell>
+        <TableHeadCell>Length</TableHeadCell>
+        <TableHeadCell>Approx. Completion Time</TableHeadCell>
+        <TableHeadCell>Creator</TableHeadCell>
+        <TableHeadCell>Publicity</TableHeadCell>
+    </TableHead>
+    <TableBody>
+        {#each routes
+            .filter((route) => route.id
+                        .toString()
+                        .includes(searchTerm) || (route.route_name != null && route.route_name.includes(searchTerm)) || (route.creator != null && route.creator
+                            .toString()
+                            .includes(searchTerm)))
+            .slice(currentPage * routesPerPage, (currentPage + 1) * routesPerPage) as route}
             {#if lockedFields}
-                <tr>
-                    <td>{route.id}</td>
-                    <td>{route.route_name}</td>
-                    <td>{route.created_on}</td>
-                    <td>{route.length}</td>
-                    <td>{route.approximate_completion_time}</td>
-                    <td>{route.creator}</td>
-                    <td>{route.publicity}</td>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{route.id}</TableBodyCell>
+                    <TableBodyCell>{route.route_name}</TableBodyCell>
+                    <TableBodyCell>{route.created_on}</TableBodyCell>
+                    <TableBodyCell>{route.length}</TableBodyCell>
+                    <TableBodyCell>{route.approximate_completion_time}</TableBodyCell>
+                    <TableBodyCell>{route.creator}</TableBodyCell>
+                    <TableBodyCell>{route.publicity}</TableBodyCell>
+                </TableBodyRow>
             {/if}
             {#if !lockedFields}
-                <tr>
-                    <td>{route.id}</td>
-                    <td><input type="text" bind:value={route.route_name} /></td>
-                    <td><input type="text" bind:value={route.created_on} /></td>
-                    <td><input type="text" bind:value={route.length} /></td>
-                    <td><input type="text" bind:value={route.approximate_completion_time} /></td>
-                    <td><input type="text" bind:value={route.creator} /></td>
-                    <td><input type="text" bind:value={route.publicity} /></td>
-                    <button on:click={() => handleUpdate(route)}>Submit</button>
-                    <button on:click={() => deleteRoute(route)}>Delete</button>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{route.id}</TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route.route_name} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route.created_on} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route.length} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route.approximate_completion_time} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route.creator} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route.publicity} /></TableBodyCell>
+                    <Button color="blue" on:click={() => handleUpdate(route)}>Submit</Button>
+                    <Button color="red" on:click={() => deleteRoute(route)}>Delete</Button>
+                </TableBodyRow>
             {/if}
         {/each}
-    </tbody>
-</table>
-<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+    </TableBody>
+</Table>
+<Button color="dark" pill on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if !lockedFields}
-    <button on:click={handleUpdateAll}>Update All</button>
+    <Button color="green" pill on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
-<button on:click={nextPage} disabled={(currentPage + 1) * routesPerPage >= routes.length}>Next</button>
+<Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * routesPerPage >= routes.length}>Next</Button>
 <div>
     Results Per Page
-    <select bind:value={routesPerPage} on:change={() => currentPage = 0}>
+    <Select bind:value={routesPerPage} on:change={() => (currentPage = 0)}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>
         <option value={100}>100</option>
-    </select>
+    </Select>
 </div>

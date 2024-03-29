@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { group_route } from '$lib/interfaces';
+    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     export let prop: group_route[];
     let group_routes = prop;
 
@@ -84,51 +85,49 @@
 
     var lockedFields = 1;
 </script>
-<input type="text" bind:value={searchTerm} />
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Group ID</th>
-            <th>Route ID</th>
-            <th>Priority</th>
-        </tr>
-    </thead>
-    <tbody>
+<Input type="text" bind:value={searchTerm} />
+<Table>
+    <TableHead>
+            <TableHeadCell>ID</TableHeadCell>
+            <TableHeadCell>Group ID</TableHeadCell>
+            <TableHeadCell>Route ID</TableHeadCell>
+            <TableHeadCell>Priority</TableHeadCell>
+    </TableHead>
+    <TableBody>
         {#each group_routes.filter((gr) => ((gr.route_id != null && gr.route_id.toString().includes(searchTerm)) || (gr.group_id != null && gr.group_id.toString().includes(searchTerm)))).slice(currentPage * group_routesPerPage, (currentPage + 1) * group_routesPerPage) as group_route}
             {#if lockedFields == 1}
-                <tr>
-                    <td>{group_route.id}</td>
-                    <td>{group_route.group_id}</td>
-                    <td>{group_route.route_id}</td>
-                    <td>{group_route.priority}</td>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{group_route.id}</TableBodyCell>
+                    <TableBodyCell>{group_route.group_id}</TableBodyCell>
+                    <TableBodyCell>{group_route.route_id}</TableBodyCell>
+                    <TableBodyCell>{group_route.priority}</TableBodyCell>
+                </TableBodyRow>
             {/if}
             {#if lockedFields == 0}
-                <tr>
-                    <td>{group_route.id}</td>
-                    <td><input type="text" bind:value={group_route.group_id} /></td>
-                    <td><input type="text" bind:value={group_route.route_id} /></td>
-                    <td><input type="text" bind:value={group_route.priority} /></td>
-                    <button on:click={() => handleUpdate(group_route)}>Submit</button>
-                    <button on:click={() => deleteGroupRoute(group_route)}>Delete</button>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{group_route.id}</TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group_route.group_id} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group_route.route_id} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group_route.priority} /></TableBodyCell>
+                    <Button on:click={() => handleUpdate(group_route)}>Submit</Button>
+                    <Button on:click={() => deleteGroupRoute(group_route)}>Delete</Button>
+                </TableBodyRow>
             {/if}
         {/each}
-    </tbody>
-</table>
-<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+    </TableBody>
+</Table>
+<Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if lockedFields == 0}
-    <button on:click={handleUpdateAll}>Update All</button>
+    <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
-<button on:click={nextPage} disabled={(currentPage + 1) * group_routesPerPage >= group_routes.length}>Next</button>
+<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button on:click={nextPage} disabled={(currentPage + 1) * group_routesPerPage >= group_routes.length}>Next</Button>
 <div>
     Results Per Page
-    <select bind:value={group_routesPerPage} on:change={() => currentPage = 0} >
+    <Select bind:value={group_routesPerPage} on:change={() => currentPage = 0} >
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>
         <option value={100}>100</option>
-    </select>
+    </Select>
 </div>

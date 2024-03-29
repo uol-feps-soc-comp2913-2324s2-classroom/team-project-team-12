@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { group_membership } from '$lib/interfaces';
-
+    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     export let prop: group_membership[];
     let group_memberships = prop;
 
@@ -93,72 +93,70 @@
     };
     var lockedFields = 1;
 </script>
-<input type="text" bind:value={searchTerm} placeholder="Search" />
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Group ID</th>
-            <th>User ID</th>
-            <th>Request</th>
-            <th>Member</th>
-            <th>Admin</th>
-        </tr>
-    </thead>
-    <tbody>
+<Input type="text" bind:value={searchTerm} placeholder="Search" />
+<Table>
+    <TableHead>
+            <TableHeadCell>ID</TableHeadCell>
+            <TableHeadCell>Group ID</TableHeadCell>
+            <TableHeadCell>User ID</TableHeadCell>
+            <TableHeadCell>Request</TableHeadCell>
+            <TableHeadCell>Member</TableHeadCell>
+            <TableHeadCell>Admin</TableHeadCell>
+    </TableHead>
+    <TableBody>
         {#each group_memberships.filter((gm) => (gm.group_id.toString().includes(searchTerm) || gm.user_id.toString().includes(searchTerm))).slice(currentPage * group_membershipsPerPage, (currentPage + 1) * group_membershipsPerPage) as group_membership}
             {#if lockedFields == 1}
-                <tr>
-                    <td>{group_membership.id}</td>
-                    <td>{group_membership.group_id}</td>
-                    <td>{group_membership.user_id}</td>
-                    <td>{group_membership.request}</td>
-                    <td>{group_membership.member}</td>
-                    <td>{group_membership.admin}</td>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{group_membership.id}</TableBodyCell>
+                    <TableBodyCell>{group_membership.group_id}</TableBodyCell>
+                    <TableBodyCell>{group_membership.user_id}</TableBodyCell>
+                    <TableBodyCell>{group_membership.request}</TableBodyCell>
+                    <TableBodyCell>{group_membership.member}</TableBodyCell>
+                    <TableBodyCell>{group_membership.admin}</TableBodyCell>
+                </TableBodyRow>
             {/if}
             {#if lockedFields == 0}
-                <tr>
-                    <td>{group_membership.id}</td>
-                    <td><input type="text" bind:value={group_membership.group_id} /></td>
-                    <td><input type="text" bind:value={group_membership.user_id} /></td>
-                    <td
-                        ><select bind:value={group_membership.request}>
+                <TableBodyRow>
+                    <TableBodyCell>{group_membership.id}</TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group_membership.group_id} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group_membership.user_id} /></TableBodyCell>
+                    <TableBodyCell
+                        ><Select bind:value={group_membership.request}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
-                        </select>
-                    </td>
-                    <td
-                        ><select bind:value={group_membership.member}>
+                        </Select>
+                    </TableBodyCell>
+                    <TableBodyCell
+                        ><Select bind:value={group_membership.member}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
-                        </select>
-                    </td>
-                    <td
-                        ><select bind:value={group_membership.admin}>
+                        </Select>
+                    </TableBodyCell>
+                    <TableBodyCell
+                        ><Select bind:value={group_membership.admin}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
-                        </select>
-                    </td>
-                    <button on:click={() => handleUpdate(group_membership)}>Submit</button>
-                    <button on:click={() => deleteGroupMembership(group_membership)}>Delete</button>
-                </tr>
+                        </Select>
+                    </TableBodyCell>
+                    <Button on:click={() => handleUpdate(group_membership)}>Submit</Button>
+                    <Button on:click={() => deleteGroupMembership(group_membership)}>Delete</Button>
+                </TableBodyRow>
             {/if}
         {/each}
-    </tbody>
-</table>
-<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+    </TableBody>
+</Table>
+<Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if !lockedFields}
-    <button on:click={handleUpdateAll}>Update All</button>
+    <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
-<button on:click={nextPage} disabled={(currentPage + 1) * group_membershipsPerPage >= group_memberships.length}>Next</button>
+<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button on:click={nextPage} disabled={(currentPage + 1) * group_membershipsPerPage >= group_memberships.length}>Next</Button>
 <div>
     Results Per Page
-    <select bind:value={group_membershipsPerPage} on:change={() => currentPage = 0}>
+    <Select bind:value={group_membershipsPerPage} on:change={() => currentPage = 0}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>
         <option value={100}>100</option>
-    </select>
+    </Select>
 </div>

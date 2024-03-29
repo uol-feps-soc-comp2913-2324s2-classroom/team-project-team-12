@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { relationship } from '$lib/interfaces';
-
+    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     export let prop: relationship[];
     let relationships = prop;
 
@@ -95,73 +95,71 @@
     var lockedFields = 1;
 </script>
 
-<input type="text" bind:value={searchTerm} placeholder="Search..." />
+<Input type="text" bind:value={searchTerm} placeholder="Search..." />
 
-<table>
-    <thead>
-        <tr>
-            <th>id</th>
-            <th>user_id1</th>
-            <th>user_id2</th>
-            <th>friend_request</th>
-            <th>is_friend</th>
-            <th>is_blocked</th>
-        </tr>
-    </thead>
-    <tbody>
+<Table>
+    <TableHead>
+            <TableHeadCell>id</TableHeadCell>
+            <TableHeadCell>user_id1</TableHeadCell>
+            <TableHeadCell>user_id2</TableHeadCell>
+            <TableHeadCell>friend_request</TableHeadCell>
+            <TableHeadCell>is_friend</TableHeadCell>
+            <TableHeadCell>is_blocked</TableHeadCell>
+    </TableHead>
+    <TableBody>
         {#each relationships.filter(((r) => r.user_id1.toString().includes(searchTerm) || r.user_id2.toString().includes(searchTerm))).slice(currentPage * relationshipsPerPage, (currentPage + 1) * relationshipsPerPage) as relationship}
             {#if lockedFields == 1}
-                <tr>
-                    <td>{relationship.id}</td>
-                    <td>{relationship.user_id1}</td>
-                    <td>{relationship.user_id2}</td>
-                    <td>{relationship.friend_request}</td>
-                    <td>{relationship.is_friend}</td>
-                    <td>{relationship.is_blocked}</td>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{relationship.id}</TableBodyCell>
+                    <TableBodyCell>{relationship.user_id1}</TableBodyCell>
+                    <TableBodyCell>{relationship.user_id2}</TableBodyCell>
+                    <TableBodyCell>{relationship.friend_request}</TableBodyCell>
+                    <TableBodyCell>{relationship.is_friend}</TableBodyCell>
+                    <TableBodyCell>{relationship.is_blocked}</TableBodyCell>
+                </TableBodyRow>
             {/if}
             {#if lockedFields == 0}
-                <tr>
-                    <td>{relationship.id}</td>
-                    <td><input type="text" bind:value={relationship.user_id1} /></td>
-                    <td><input type="text" bind:value={relationship.user_id2} /></td>
-                    <td>
-                        <select bind:value={relationship.friend_request}>
+                <TableBodyRow>
+                    <TableBodyCell>{relationship.id}</TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={relationship.user_id1} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={relationship.user_id2} /></TableBodyCell>
+                    <TableBodyCell>
+                        <Select bind:value={relationship.friend_request}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select bind:value={relationship.is_friend}>
+                        </Select>
+                    </TableBodyCell>
+                    <TableBodyCell>
+                        <Select bind:value={relationship.is_friend}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select bind:value={relationship.is_blocked}>
+                        </Select>
+                    </TableBodyCell>
+                    <TableBodyCell>
+                        <Select bind:value={relationship.is_blocked}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
-                        </select>
-                    </td>
-                    <button on:click={() => handleUpdate(relationship)}>Submit</button>
-                    <button on:click={() => deleteRelationship(relationship)}>Delete</button>
-                </tr>
+                        </Select>
+                    </TableBodyCell>
+                    <Button on:click={() => handleUpdate(relationship)}>Submit</Button>
+                    <Button on:click={() => deleteRelationship(relationship)}>Delete</Button>
+                </TableBodyRow>
             {/if}
         {/each}
-    </tbody>
-</table>
-<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+    </TableBody>
+</Table>
+<Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if !lockedFields}
-    <button on:click={handleUpdateAll}>Update All</button>
+    <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
-<button on:click={nextPage} disabled={(currentPage + 1) * relationshipsPerPage >= relationships.length}>Next</button>
+<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button on:click={nextPage} disabled={(currentPage + 1) * relationshipsPerPage >= relationships.length}>Next</Button>
 <div>
     Results Per Page
-    <select bind:value={relationshipsPerPage} on:change={() => currentPage = 0}>
+    <Select bind:value={relationshipsPerPage} on:change={() => currentPage = 0}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>
         <option value={100}>100</option>
-    </select>
+    </Select>
 </div>
