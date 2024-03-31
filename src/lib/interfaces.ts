@@ -20,7 +20,7 @@ export interface user {
     password: string;
     membership_type: number | null;
     next_payment: Date | null;
-    last_payment: Date | null;
+    last_payment: Date;
     paid: boolean;
     default_publicity: number | null;
     admin_status: boolean;
@@ -62,8 +62,6 @@ export interface group_membership {
     request: boolean;
     member: boolean;
     admin: boolean;
-    request: boolean;
-    member: boolean;
 }
 
 export interface group_route {

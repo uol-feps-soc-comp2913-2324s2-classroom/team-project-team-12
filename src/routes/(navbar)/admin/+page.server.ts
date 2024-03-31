@@ -3,7 +3,6 @@
 import prisma from '$lib/prisma';
 import { Decimal } from 'decimal.js';
 import bcrypt from 'bcrypt';
-
 //---------------------------------------------------------------Loads Data From Database--------------------------------------------
 export async function load() {
     const users = [];
