@@ -20,6 +20,9 @@
     export const profile = data.profile;
     export const userRoutes = data.userRoutes;
     export const resolvedRoutes = data.resolvedRoutes;
+    import type { RouteEntry } from '$lib/interfaces';
+    import { Button } from 'flowbite-svelte';
+    import { Tabs, TabItem } from 'flowbite-svelte';
 
     import { SingleRoute } from '$lib';
 
@@ -96,6 +99,12 @@
         }
     };
 
+    const getRouteDuration = (route: RouteEntry) => {
+        let date = new Date(0);
+        date.setSeconds(route.completionTime);
+        return date.toISOString().substring(11, 19);
+    };
+
     export let currentUserFriends: { id: number, name: string }[] = [];
 
     const deleteFriend = async (friend: { id: number, name: string }) => {
@@ -146,8 +155,8 @@
     .profile-picture { 
         display: inline-block; 
         position: relative; 
-        width: 20vh; 
-        height: 20vh; 
+        width: 100px; 
+        height: 100px; 
         overflow: hidden; 
         border-radius: 50%; 
         margin-bottom: 20px;
@@ -226,6 +235,11 @@
         margin-bottom: 10px;
     }
 
+    .friends-list {
+        width: 30vw;
+        height: 40vh;
+    }
+
     .friend {
         display: flex;
         align-items: center;
@@ -236,8 +250,8 @@
     }
 
     .friend-profile-picture {
-        width: 50px;
-        height: 50px;
+        width: 100px;
+        height: 100px;
         overflow: hidden;
         border-radius: 50%;
         margin-right: 15px;
@@ -347,60 +361,24 @@
 </style>
 
 <body>
-  <div class="main-container">
-    <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
-    <div class="name">{user.first_name} {user.last_name}</div>
-    <div class="username">@{user.username}
-        {#if user.username == profile.username}
-            <a class="account-button" href="../../account">My Account</a>
-        {:else if !isFriend && friendRequest == null}
-            <button class="add-button" on:click={() => addFriend(user)} >Request</button>
-        {:else if friendRequest?.friend_request }
-            <button class="request-button" on:click={() => deleteFriend(user)} >Requested</button>
-        {:else}
-            <button class="remove-button" on:click={() => deleteFriend(user)} >Remove</button>
-        {/if}
-    </div>
-    <div class="profile-container">
-        <div class="tabs">
-            {#each tabs as tab}
-                <button class="tab" class:active={activeTab === tab} on:click={() => setActiveTab(tab)}>{tab}</button>
-            {/each}
-        </div>
-        {#if privacy == 1}
-        <div class="tab-content">
-            {#if activeTab === 'Routes'}
-                <div class="friends-list">
-                    {#each userRoutes as route, i}
-                        <div class="friend">
-                            <div class="map-container">
-                                <SingleRoute route={resolvedRoutes[i]}/>
-                            </div>
-                            <div class="friend-details">
-                                <div class="friend-name">{route.route_name}</div>
-                                <div class="user-name">Date Created: {route.created_on.toLocaleString()}</div>
-                            </div>
-                        </div>
-                    {/each}
-                </div>
-            {:else if activeTab === 'Groups: ' + groupCount}
-                <div class="friends-list">
-                    {#each userGroups as group, i}
-                        <a rel="external" href="../group/{group.name}">
-                            <div class="friend">
-                                <div class="friend-profile-picture">
-                                    <img src={groupPictureUrls[i]} alt="" />
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">{group.name}</div>
-                                    <div class="user-name">Members: {group.memberCount}</div>
-                                </div>
-                            </div>
-                        </a>
-                    {/each}
-                </div>
-            {:else if activeTab === 'Friends: '+ friendCount}
-                <div class="friends-list">
+    <div class="main-container">
+        <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
+        <div class="name">{user.first_name} {user.last_name}</div>
+        <div class="username">{user.username}</div>
+            {#if user.username == profile.username}
+                <Button color="green" href="../../account">My Account</Button>
+            {:else if !isFriend && friendRequest == null}
+                <Button color="blue" on:click={() => addFriend(user)} >Request</Button>
+            {:else if friendRequest?.friend_request }
+                <Button color="light" on:click={() => deleteFriend(user)} >Requested</Button>
+            {:else}
+                <Button color="red" on:click={() => deleteFriend(user)} >Remove</Button>
+            {/if}
+            <br>
+        <div class="friends-list">
+            <Tabs style="full" tabStype="full" defaultClass="flex rounded-lg divide-x rtl:divide-x-reverse divide-gray-200 shadow dark:divide-gray-700">
+                <TabItem class="w-full" open>
+                    <span slot="title">Friends</span>
                     {#each userFriends as friend, i}
                     <a rel="external" href="../profile/{friend.username}">
                         <div class="friend">
@@ -414,15 +392,40 @@
                         </div>
                     </a>
                     {/each}
-                </div>
-            {/if}
+                </TabItem>
+                <TabItem class="w-full" >
+                    <span slot="title">Groups</span>
+                    {#each userGroups as group, i}
+                        <a rel="external" href="../group/{group.name}">
+                            <div class="friend">
+                                <div class="friend-profile-picture">
+                                    <img src={groupPictureUrls[i]} alt="" />
+                                </div>
+                                <div class="friend-details">
+                                    <div class="friend-name">{group.name}</div>
+                                    <div class="user-name">Members: {group.memberCount}</div>
+                                </div>
+                            </div>
+                        </a>
+                    {/each}
+                </TabItem>
+                <TabItem class="w-full" >
+                    <span slot="title">Routes</span>
+                    {#each userRoutes as route, i}
+                        <div class="friend">
+                            <div class="map-container">
+                                <SingleRoute route={resolvedRoutes[i]}/>
+                            </div>
+                            <div class="friend-details">
+                                <div class="friend-name">{route.route_name}</div>
+                                <div class="user-name">Date Created: {route.created_on.toLocaleString()}</div>
+                                <div class="user-name">Length: {route.length}</div>
+                                <div class="user-name">Completion Time: {getRouteDuration(resolvedRoutes[i])}</div>
+                            </div>
+                        </div>
+                    {/each}
+                </TabItem>
+            </Tabs>
         </div>
-    {:else}
-        <div class="tab-content-priv">
-            <p class="private-message">This user's profile is private.</p>
-            <button class="request-button">Send Request</button>
-        </div>
-    {/if}
     </div>
-  </div>
 </body>

@@ -15,10 +15,12 @@
         </span>
     </NavBrand>
     <NavUl>
+        {#if data.user != undefined}
         <NavLi href="/map">Home</NavLi>
         <NavLi href="/friends">Friends</NavLi>
         <NavLi href="/routes">Routes</NavLi>
         <NavLi href="/payments">Pricing</NavLi>
+        {/if}
     </NavUl>
 
     <div class="flex items-center">
