@@ -1,9 +1,8 @@
 <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
 
 <script lang="ts">
-    import { DeviceMockup, Heading, P, Hr, Card, Button, Badge, GradientButton } from 'flowbite-svelte';
-    import { Footer, FooterCopyright } from 'flowbite-svelte';
-    import { CheckCircleSolid } from 'flowbite-svelte-icons';
+    import { DeviceMockup, Heading, P, Hr, Card, Button, Badge, GradientButton, NavBrand, Footer, FooterCopyright, FooterLinkGroup, FooterBrand, FooterLink } from 'flowbite-svelte';
+    import { CheckCircleSolid, GlobeSolid  } from 'flowbite-svelte-icons';
     import light from "$lib/screen1.png";
     import dark from "$lib/screen2.png";
     import lightm from "$lib/mobile1.png";
@@ -14,7 +13,6 @@
     body {
         margin: 0;
         padding: 0;
-        height: 275vh;
     }
 
     :global(body::-webkit-scrollbar) {
@@ -91,6 +89,10 @@
     
     .text-container {
         width: 40%;
+    }
+
+    .margin-footer {
+        margin-bottom: 10px;
     }
 
 </style>
@@ -256,8 +258,15 @@
         <Hr classHr="my-8" />
     </div>
 
-    <Footer>
-        <FooterCopyright href="/" by="Journeys™" year={2024} />
+    <Footer footerType="logo">
+        <div class="sm:flex sm:items-center sm:justify-between">
+            <NavBrand href="/map">
+                <GlobeSolid size="lg" class="self-center whitespace-nowrap text-red-500" />
+                <span class="self-center whitespace-nowrap text-2xl ml-1 font-semibold text-gray-900 dark:text-white">
+                    Journeys
+                </span>
+            </NavBrand>
+        </div>
+        <FooterCopyright href="/" by="Journeys™" />
     </Footer>
-
 </body>
