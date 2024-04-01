@@ -1,16 +1,24 @@
 import prisma from '$lib/prisma';
 import { fail } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
-import type { user } from '$lib/interfaces'
+import type { user } from '$lib/interfaces';
 
 let curUser: user;
+let invalid = true;
 
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
 
+    if(!username){
+        invalid = true;
+        return {invalid};
+    }
+
+    invalid = false;
+
     curUser = await prisma.user.findUnique({
         where: {
-            username: username
+            username: username as string,
         },
     }) as user;
 
@@ -56,7 +64,6 @@ export const actions = {
             }
         }else if(type==="editpass"){
             const newPass = data.get('newpass');
-            console.log('attempting to edit password');
             try{
                 // hash password
                 const newHashed = await bcrypt.hash(newPass as string, 10)
@@ -64,10 +71,10 @@ export const actions = {
                 if(curUser){
                     await prisma.user.update({
                         where: {
-                            username: curUser.username as string,
+                            username: curUser.username,
                         },
                         data: {
-                            password: newHashed as string,
+                            password: newHashed,
                         },
                     });
                 }
@@ -85,9 +92,6 @@ export const actions = {
             try {
                 // check that the old password is correct before setting a new one
                 const oldPass = data.get('oldpass') as string;
-        
-                console.log('User password:', curUser?.password);
-                console.log('Entered password:', oldPass);
 
                 let userPassword;
                 if(curUser){
@@ -95,13 +99,11 @@ export const actions = {
                 }
         
                 if (userPassword) {
-                    console.log('match');
                     return {
                         status: 200,
                         body: { message: 'Password match!' },
                     };
                 } else {
-                    console.log('incorrect');
                     return fail(401);
                 }
             } catch (error) {

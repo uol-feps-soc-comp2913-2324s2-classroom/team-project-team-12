@@ -1,18 +1,52 @@
 <script lang="ts">
     // @ts-nocheck
+    import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
     export let data;
-    export const user = data.user;
-    export const userFriends = data.friends;
-    export const userGroups = data.groupsWithMembersCount;
-    export const friendCount = data.friendCount;
-    export const groupCount = data.groupCount;
-    export const isFriend = data.isFriend;
-    export const friendRequest = data.friendRequest;
-    export const profile = data.profile;
+    export let user;
+    export let userFriends;
+    export let userGroups;
+    export let friendCount;
+    export let groupCount;
+    export let isFriend;
+    export let friendRequest;
+    export let profile;
 
-    let activeTab = 'Friends: ' + friendCount;
-    let tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
-    let privacy = 1;
+    let activeTab;
+    let tabs;
+    let privacy;
+
+    let userPictureUrl;
+    let profilePictureUrls;
+    let groupPictureUrls;
+
+    export let people: { id: number, name: string, first_name: string, last_name: string }[] = [];
+    export let currentUserFriends: { id: number, name: string }[] = [];
+
+    onMount(() => {
+        // Check if data is invalid and redirect if necessary
+        if (data.invalid) {
+            goto('/');
+        }
+    });
+
+    if(data.user){
+        user = data.user;
+        userFriends = data.friends;
+        userGroups = data.groupsWithMembersCount;
+        friendCount = data.friendCount;
+        groupCount = data.groupCount;
+        isFriend = data.isFriend;
+        friendRequest = data.friendRequest;
+        profile = data.profile;
+        activeTab = 'Friends: ' + friendCount;
+        tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
+        privacy = 1;
+
+        userPictureUrl = getDefaultProfilePictureUrl(user);
+        profilePictureUrls = userFriends.map(user => getDefaultProfilePictureUrl(user));
+        groupPictureUrls = userGroups.map(group => getDefaultGroup(group));
+    }
 
     function setActiveTab(tab) {
         activeTab = tab;
@@ -49,15 +83,6 @@
         return imageUrl;
     }
 
-    const userPictureUrl = getDefaultProfilePictureUrl(user);
-
-    const profilePictureUrls = userFriends.map(user => getDefaultProfilePictureUrl(user))
-
-    
-    const groupPictureUrls = userGroups.map(group => getDefaultGroup(group));
-
-    export let people: { id: number, name: string, first_name: string, last_name: string }[] = [];
-
     const addFriend = async (person: { id: number, name: string }) => {
         const formData = new FormData();
         formData.append('type', 'addFriend');
@@ -82,8 +107,6 @@
             console.error('Error during sending request:', error);
         }
     };
-
-    export let currentUserFriends: { id: number, name: string }[] = [];
 
     const deleteFriend = async (friend: { id: number, name: string }) => {
         const formData = new FormData();
@@ -325,6 +348,7 @@
 
 </style>
 
+{#if !data.invalid}
 <body>
   <div class="container">
     <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
@@ -393,3 +417,4 @@
     </div>
   </div>
 </body>
+{/if}

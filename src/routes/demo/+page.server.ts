@@ -2,10 +2,18 @@ import type { user } from '$lib/interfaces';
 import prisma from '$lib/prisma';
 
 let curUser: user;
+let invalid = true;
 let routes;
 
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
+
+    if(!username){
+        invalid = true;
+        return {invalid};
+    }
+
+    invalid = false;
 
     curUser = await prisma.user.findUnique({
         where: {

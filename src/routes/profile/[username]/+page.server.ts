@@ -3,9 +3,17 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { user } from '$lib/interfaces'
 
+let invalid;
+
 export const load = (async ({ params: { username }, cookies }) => {
     const profileUser = cookies.get('sessionId');
 
+    if(!profileUser){
+        invalid = true;
+        return {invalid};
+    }
+
+    invalid = false;
 
     const profile = await prisma.user.findUnique({
         where: { username: profileUser },
@@ -14,7 +22,7 @@ export const load = (async ({ params: { username }, cookies }) => {
     // Find the user
     const user = await prisma.user.findUnique({
         where: { username: username },
-    });
+    }) as user;
 
     if (!user) {
         error(404, {
@@ -105,11 +113,6 @@ export const load = (async ({ params: { username }, cookies }) => {
             memberCount // Add a new property to store the member count
         };
     });
-    console.log("########################################");
-    console.log(profile);
-    console.log(user);
-    console.log("########################################");
-
     
     return { user, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest, profile };
 
