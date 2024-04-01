@@ -130,6 +130,8 @@ export const load = (async ({ params: { username }, cookies }) => {
         };
     });
 
+    console.log(friends);
+
     const resolvedRoutes = await Promise.all(userRoutesData);
    
     return { user, userRoutes, resolvedRoutes, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest, profile };
