@@ -28,8 +28,7 @@
         if (user.email) formData.append('email', user.email);
         if (user.password) formData.append('password', user.password);
         if (user.membership_type) formData.append('membership_type', user.membership_type.toString());
-        if (user.next_payment) formData.append('next_payment', user.next_payment.toString());
-        if (user.last_payment) formData.append('last_payment', user.last_payment.toString());
+        if (user.subscription_start_date) formData.append('subscription_start_date', user.subscription_start_date.toString());
         formData.append('paid', user.paid.toString());
         if (user.default_publicity) formData.append('default_publicity', user.default_publicity.toString());
         formData.append('admin_status', user.admin_status.toString());
@@ -135,8 +134,7 @@
                     <TableBodyCell>{user.email}</TableBodyCell>
                     <TableBodyCell>{user.password}</TableBodyCell>
                     <TableBodyCell>{user.membership_type}</TableBodyCell>
-                    <TableBodyCell>{user.next_payment}</TableBodyCell>
-                    <TableBodyCell>{user.last_payment}</TableBodyCell>
+                    <TableBodyCell>{user.subscription_start_date}</TableBodyCell>
                     <TableBodyCell>{user.paid}</TableBodyCell>
                     <TableBodyCell>{user.default_publicity}</TableBodyCell>
                     <TableBodyCell>{user.admin_status}</TableBodyCell>
@@ -153,8 +151,7 @@
                     <TableBodyCell><Input type="text" bind:value={user.email} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={user.password} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={user.membership_type} /></TableBodyCell>
-                    <TableBodyCell><Input type="text" bind:value={user.next_payment} /></TableBodyCell>
-                    <TableBodyCell><Input type="text" bind:value={user.last_payment} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={user.subscription_start_date} /></TableBodyCell>
                     <TableBodyCell>
                         <Select bind:value={user.paid}>
                             <option value={true}>true</option>
