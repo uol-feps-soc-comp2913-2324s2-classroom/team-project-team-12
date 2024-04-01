@@ -1,5 +1,6 @@
 <script>
     import { goto } from '$app/navigation';
+    import { Input, Button } from 'flowbite-svelte';
     let registerMessage = ""
 
     let user = '';
@@ -50,38 +51,37 @@
 <div class="form-section">
     <form name="register" method="post" on:submit|preventDefault={handleRegister}>
         <div class="register-box">
-            <input type="hidden" name="type" value="register">
-            <input type="text"
+            <Input type="hidden" name="type" value="register"/>
+            <Input type="text"
                 bind:value={fname}
                 class="name ele"
                 placeholder="First name"
-                name="firstname">
-            <input type="text"
+                name="firstname"/>
+            <Input type="text"
                 bind:value={lname}
                 class="name ele"
                 placeholder="Last name"
-                name="lastname">
-            <input type="text"
+                name="lastname"/>
+            <Input type="text"
                 bind:value={user}
                 class="name ele"
                 placeholder="Username"
-                name="username">
-            <input type="email"
+                name="username"/>
+            <Input type="email"
                 bind:value={email}
                 class="email ele"
                 placeholder="youremail@email.com"
-                name="email">
-            <input type="password"
+                name="email"/>
+            <Input type="password"
                 bind:value={password}
                 class="password ele"
                 placeholder="Password"
-                name="password">
-            <input type="password"
+                name="password"/>
+            <Input type="password"
                 bind:value={confirmPassword}
                 class="password ele"
-                placeholder="Confirm password">
-            <input type="submit"
-                class="clkbtn">
+                placeholder="Confirm password"/>
+            <Button color="green" type="submit">Submit</Button>
             <!-- if confirm password and password field don't match on submit -->
             {#if registerMessage}
                 <p>{registerMessage}</p>
@@ -94,17 +94,17 @@
 <style>
     .register-box {
         height: 100%;
-        width: 500px;
+        width: 200%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 30px;
+        gap: 20px;
     }
 
     .form-section {
-        height: 500px;
-        width: 500px;
+        height: 100%;
+        width: 100%;
         padding: 20px 0;
         display: flex;
         position: relative;

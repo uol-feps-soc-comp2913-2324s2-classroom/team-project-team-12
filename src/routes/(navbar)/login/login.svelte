@@ -2,6 +2,7 @@
     let username = '';
     let password = '';
     import { goto } from '$app/navigation';
+    import { Button, Input } from 'flowbite-svelte';
 
     let loginMessage = '';
 
@@ -21,7 +22,7 @@
 
             if (result.status === 200) {
                 console.log(result.message || 'Login successful');
-                goto('/demo');
+                goto('/map');
             } else {
                 console.error(result.message || 'Login failed');
             }
@@ -34,27 +35,24 @@
 </script>
 
 <div class="form-section">
-    <form name="login" method="post" on:submit|preventDefault={handleLogin}>
-        <input type="hidden" name="type" value="login">
+    <form class="flex flex-col space-y-6" name="login" method="post" on:submit|preventDefault={handleLogin}>
+        <Input type="hidden" name="type" value="login"/>
         <div class="login-box">
-            <input  
+            <Input  
                 bind:value={username}
                 type = "text"
-                class = "email ele"
                 name = "username"
                 placeholder = "Enter username"
-            >
-            <input
+                required
+            />
+            <Input
                 bind:value={password}
                 type="password"
-                class = "password ele"
                 name = "password"
                 placeholder = "Enter password"
-            >
-            <input
-                type = "submit"
-                class = "clkbtn"
-            >
+                required
+            />
+            <Button color="green" class="mt-4" type="submit">Submit</Button>
         </div>
     </form>
 </div>
@@ -62,8 +60,8 @@
 <style>
  
     .form-section {
-        height: 500px;
-        width: 500px;
+        height: 100%;
+        width: 100%;
         padding: 20px 0;
         display: flex;
         position: relative;
@@ -73,7 +71,7 @@
     
     .login-box {
         height: 100%;
-        width: 500px;
+        width: 200%;
         display: flex;
         flex-direction: column;
         align-items: center;
