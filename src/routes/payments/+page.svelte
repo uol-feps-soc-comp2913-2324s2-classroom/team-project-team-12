@@ -17,6 +17,8 @@
         plan = 'monthly';
     } else if (membership_type === 2) {
         plan = 'annual';
+    } else {
+        plan = 'unselected';
     }
 
 </script>

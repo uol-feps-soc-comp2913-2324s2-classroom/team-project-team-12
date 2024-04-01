@@ -1,4 +1,15 @@
 import { Decimal } from 'decimal.js';
+import type { LatLngTuple } from 'leaflet';
+
+export type Path = LatLngTuple[];
+
+export interface RouteEntry {
+    name: string;
+    creator: string;
+    createdOn: Date;
+    completionTime: number;
+    path: Path;
+}
 
 export interface user {
     id: number;
@@ -9,11 +20,12 @@ export interface user {
     password: string;
     membership_type: number | null;
     next_payment: Date | null;
-    last_payment: Date | null;
+    last_payment: Date;
     paid: boolean;
     default_publicity: number | null;
     admin_status: boolean;
     stripe_token: string | null;
+    subscription_id: string | null;
     owner: boolean;
 }
 
@@ -47,9 +59,9 @@ export interface group_membership {
     id: number;
     group_id: number;
     user_id: number;
-    admin: boolean;
     request: boolean;
     member: boolean;
+    admin: boolean;
 }
 
 export interface group_route {
