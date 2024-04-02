@@ -60,10 +60,18 @@ export const load = async ({ cookies }) => {
 
 
   const friendRequests = await prisma.relationship.findMany({
+    // List of people requesting to friend current user
       where: {
             user_id2: user?.id, friend_request: true, is_friend: false
       },
   });
+
+  const requested = await prisma.relationship.findMany({
+    // List of people current user has requested to friend
+    where: {
+          user_id1: user?.id, friend_request: true, is_friend: false
+    },
+});
 
   const blockedPeople = await prisma.user.findMany({
       where: {
@@ -108,6 +116,7 @@ export const load = async ({ cookies }) => {
                   { id: { in: currentUserFriends.map(friend => friend.id) } },
                   {id: { in: friendRequests.map(request => request.user_id1) } },
                   {id: { in: blockedPeople.map(blocked => blocked.id) } },
+                  {id: { in: requested.map(request => request.user_id2) } },
                   { id: user?.id }
               ]
           }
@@ -121,6 +130,7 @@ export const load = async ({ cookies }) => {
           ...currentUserFriends.map(person => person.id),
           ...currentUserFriends.map(person => person.id),
           ...friendRequests.map(rel => rel.user_id1),
+          ...requested.map(rel => rel.user_id2),
           ...unaddedPeople.map(person => person.id),
           ...unaddedPeople.map(person => person.id)
       ])
@@ -156,6 +166,17 @@ export const load = async ({ cookies }) => {
       };
     });
 
+    const transformedRequested = requested.map(rel => {
+      const requestedUserId = rel.user_id1 === user?.id ? rel.user_id2 : rel.user_id1;
+      const requestedUser = users.find(u => u.id === requestedUserId);
+      return {
+          id: rel.id,
+          name: requestedUser ? requestedUser.username : '',
+          first_name: requestedUser ? requestedUser.first_name : '',
+          last_name: requestedUser ? requestedUser.last_name : ''
+      };
+    });
+
     const transformedUnaddedPeople = unaddedPeople.map(person => ({
       id: person.id,
       name: person.username,
@@ -178,13 +199,15 @@ export const load = async ({ cookies }) => {
         });
     }
 
+
     return {
         user,
         users,
         relationships,
         currentUserFriends: transformedCurrentUserFriends,
         friendRequests: transformedFriendRequests,
-        unaddedPeople: transformedUnaddedPeople
+        unaddedPeople: transformedUnaddedPeople,
+        requested: transformedRequested
     };
 }
 
@@ -197,6 +220,8 @@ export const actions = {
         const data = await request.formData();
         const type = data.get("type");
         const id = Number(data.get("id"));
+
+
 
         try {
 
@@ -247,7 +272,7 @@ export const actions = {
                         };
                     } else {
                         // If the relationship doesn't exist, create a new one
-                        await prisma.relationship.create({
+                        const test = await prisma.relationship.create({
                             data: {
                                 user_id1: user?.id,
                                 user_id2: id,
@@ -265,6 +290,7 @@ export const actions = {
             }
             
             
+
 
             if (type === "acceptFriend") {
                 
@@ -302,23 +328,40 @@ export const actions = {
                     },
               });
 
+              const firstRelationshipId = relationship ? relationship.id : undefined;
 
-              //create copy of relationship
-              const updatedRelationship = Object.assign({}, relationship);
-              //updates relationship with new values
-              updatedRelationship.friend_request = false;
-              //update relationship in database
-              await prisma.relationship.update({
-                  where: {
-                      id: id,
-                  },
-                  data: updatedRelationship,
-              });
+              await prisma.relationship.delete({
+                where: {
+                    id: firstRelationshipId
+                }
+            });
               return {
               status: 200,
               body: relationship
               };
           }
+
+          if (type === "cancelRequest") {
+                
+            //lookup relationship by id
+            const relationship = await prisma.relationship.findUnique({
+                where: {
+                    id: id
+                  },
+            });
+
+            const firstRelationshipId = relationship ? relationship.id : undefined;
+
+            await prisma.relationship.delete({
+              where: {
+                  id: firstRelationshipId
+              }
+          });
+            return {
+            status: 200,
+            body: relationship
+            };
+        }
 
             else {
                 throw new Error("Invalid action type.");
