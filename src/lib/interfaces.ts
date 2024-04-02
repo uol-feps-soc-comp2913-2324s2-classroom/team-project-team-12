@@ -11,6 +11,16 @@ export interface RouteEntry {
     path: Path;
 }
 
+export interface GroupedRouteEntry {
+    name: string;
+    creator: string;
+    createdOn: Date;
+    completionTime: number;
+    path: Path;
+    group: string | null;
+}
+
+
 export interface user {
     id: number;
     username: string;

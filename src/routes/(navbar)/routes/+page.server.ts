@@ -275,7 +275,7 @@ export const load = async ({ cookies }) => {
         publicRouteEntries.push(RouteEntryObj);
     }
     //console.log(publicRoutes);
-    console.log(groupnameDict);
+    //console.log(groupnameDict);
     return {
         props: {
             user: user,
@@ -294,4 +294,16 @@ export const load = async ({ cookies }) => {
     };
 }
 
-
+export const actions = {
+    default: async ({ request }) => {
+        const data = await request.formData();
+        const type = data.get("type");
+        const userID = data.get("userID");
+        if (data.get("group") == null) return { status: 400, body: { error: "No group specified" } };
+        const group_name = data.get("group");
+        const groupID = Array.from(groupnameDict.entries()).find(([key, value]) => value === group_name)?.[0];
+        console.log(groupID);
+        if (groupID == undefined) return { status: 400, body: { error: "Invalid group name" } };
+        return { status: 200, body: { type: type, userID: userID, groupID: groupID } };
+    }
+}
