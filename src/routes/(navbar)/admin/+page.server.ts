@@ -60,7 +60,7 @@ export async function load() {
     for (let i = 0; i < groupList.length; i++) {
         groups.push({
             id: groupList[i].id,
-            group_name: groupList[i].name,
+            name: groupList[i].name,
             creator: groupList[i].creator,
             publicity: groupList[i].publicity,
             users: []
@@ -409,8 +409,8 @@ export const actions = {
             //create copy of group
             const updatedGroup = Object.assign({}, group);
             //updates group with new values
-            if (data.get("group_name") != null) {
-                const groupName = data.get("group_name");
+            if (data.get("name") != null) {
+                const groupName = data.get("name");
                 if (groupName != null)
                 updatedGroup.name = groupName.toString();
             }
