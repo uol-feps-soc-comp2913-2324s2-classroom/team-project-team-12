@@ -69,7 +69,7 @@
 
 <Listgroup active class="w-full md:w-80">
   <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-white">People</h3>
-  <input type="text" bind:value={searchTermPeople} placeholder="Search friends..." class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
+  <input type="text" bind:value={searchTermPeople} placeholder="Search..." class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
   {#each filteredPeople as person}
     <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
         <a rel="external" href="../profile/{person.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
@@ -86,7 +86,7 @@
 {#if requested.length > 0}
 <Listgroup active class="w-full md:w-80 mt-4">
   <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-white">Requested</h3>
-  <input type="text" bind:value={searchTermRequested} placeholder="Search friends..." class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
+  <input type="text" bind:value={searchTermRequested} placeholder="Search..." class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
   {#each filteredRequested as person}
     <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
         <a rel="external" href="../profile/{person.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
