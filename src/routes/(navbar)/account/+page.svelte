@@ -4,6 +4,7 @@
     import type { user } from '$lib/interfaces'
     import { onMount } from "svelte";
     import Data from './data.svelte';
+    import { Card } from 'flowbite-svelte';
     
     export let user: user;
     export let data;
@@ -47,10 +48,10 @@
 
 </script>
 
-<div class="account-info">
+<Card class="green" style="margin: 0 auto; margin-top:20px;">
     <div class="header">
         <div class="name">
-            <h1>@{user?.username}</h1>
+            <h1 class="font-semibold text-gray-900 dark:text-white">@{user?.username}</h1>
         </div>
         <div class="picture">
             <img src={userPictureUrl} alt="" />
@@ -59,19 +60,9 @@
     <div class="data">
         <Data {user} />
     </div>
-</div>
+</Card>
 
 <style>
-    .account-info {
-        height: 650px;
-        width: 500px;
-        margin: auto auto;
-        background-color: white;
-        box-shadow: 8px 8px 20px #a8b6ae;
-        border-radius: 50px;
-        position: relative;
-        overflow: hidden;
-    }
 
     .header {
         margin: 30px;
@@ -83,10 +74,14 @@
         position: relative;
     }
 
+    .name {
+        margin-top: 20px;
+    }
+
     .picture {
         display: inline-block; 
-        width: 8vh; 
-        height: 8vh; 
+        width: 5em; 
+        height: 5em; 
         overflow: hidden; 
         border-radius: 50%; 
         margin-bottom: 20px;
@@ -99,7 +94,7 @@
     }
 
     .data {
-        margin: 30px;
+        margin: 20px;
     }
 
 </style>

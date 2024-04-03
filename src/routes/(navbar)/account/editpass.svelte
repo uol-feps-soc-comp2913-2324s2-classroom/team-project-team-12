@@ -1,9 +1,13 @@
 <script>
+    // @ts-nocheck
+    import { Button, Modal, Input, Label } from 'flowbite-svelte';
+    let popup=false;
     let password = '';
     let oldPassword = '';
     let error='';
 
-    const passwordChange = async () => {
+    const passwordChange = async (event) => {
+        event.preventDefault();
         const formData = new FormData();
         formData.append('oldpass', oldPassword);
         formData.append('newpass', password);
@@ -50,18 +54,27 @@
     }
 </script>
 
-<p>Change Password </p>
-{#if error}
-    <p style="color: red;">{error}</p>
-{/if}
-<form on:submit|preventDefault={passwordChange}>
-    <input type="hidden" name="type" value="login" />
-    <label for="oldpass">Enter current password: </label>
-    <br>
-    <input type="password" name="oldpass" bind:value={oldPassword} />
-    <br>
-    <label for="newpass">Enter new password: </label>
-    <br>
-    <input type="password" name="newpass" bind:value={password} />
-    <input type="submit" />
-</form>
+<Button on:click={() => (popup = true)}>Edit</Button>
+
+<Modal title="Change Password" bind:open={popup} autoclose={false}>
+    <form method="post" on:submit={passwordChange}>
+        <Label>Enter current password</Label>
+        <Input  
+            bind:value={oldPassword}
+            type = "password"
+            name = "oldpass"
+            required
+        />
+        <Label>Enter new password</Label>
+        <Input  
+            bind:value={password}
+            type = "password"
+            name = "newpass"
+            required
+        />
+        {#if error}
+            <p>{error}</p>
+        {/if}
+        <Button class="mt-4" type="submit">Submit</Button>
+    </form>
+</Modal>

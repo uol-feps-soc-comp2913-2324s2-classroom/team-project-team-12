@@ -1,5 +1,5 @@
 <script>
-    import { Modal, Content, Trigger}  from "sv-popup";
+    import { Button } from 'flowbite-svelte';
     import EditUsername from './edituser.svelte';
     import EditPassword from './editpass.svelte';
     import EditPrivacy from './editprivacy.svelte';
@@ -20,50 +20,39 @@
     function switchPayment(){
         goto('/payments');
     }
+
+    let plan = 'None';
+    if(membershiptype === 1){
+        plan = "Weekly";
+    }else if(membershiptype === 2){
+        plan = "Monthly";
+    }else if(membershiptype === 3){
+        plan = "Annually";
+    }
+
 </script>
 
 <table>
     <tr>
-        <td>USERNAME<br>{username}</td>
+        <td class="text-gray-900 dark:text-white">USERNAME<br>{username}</td>
         <td>
-            <Modal basic>
-                <Content>
-                    <EditUsername />
-                </Content>
-                <Trigger>
-                    <button>Edit</button>
-                </Trigger>
-            </Modal>
+            <EditUsername />
         </td>
     </tr>
     <tr>
         <td>PASSWORD<br>••••••••••</td>
         <td>
-            <Modal basic>
-                <Content>
-                    <EditPassword />
-                </Content>
-                <Trigger>
-                    <button>Edit</button>
-                </Trigger>
-            </Modal>
+            <EditPassword />
         </td>
     </tr>
     <tr>
-        <td>PAYMENT<br>$5.99/month</td>
-        <td><button on:click={switchPayment}>Switch</button></td>
+        <td>PAYMENT<br>{plan}</td>
+        <td><Button on:click={switchPayment}>Switch</Button></td>
     </tr>
     <tr>
         <td>PRIVACY<br>{privacy}</td>
         <td>
-            <Modal basic>
-                <Content>
-                    <EditPrivacy />
-                </Content>
-                <Trigger>
-                    <button>Edit</button>
-                </Trigger>
-            </Modal>
+            <EditPrivacy />
         </td>
     </tr>
 </table>
@@ -74,6 +63,7 @@
     }
 
     td{
-        padding-right: 225px;
+        padding-bottom: 25px;;
+        padding-right: 125px;
     }
 </style>
