@@ -276,6 +276,44 @@ export const load = async ({ cookies }) => {
     }
     //console.log(publicRoutes);
     //console.log(groupnameDict);
+    //sort userRoutes by date (descending)
+    userRoutes.sort((a, b) => (a.created_on as Date).getTime() - (b.created_on as Date).getTime());
+    userRoutes.reverse();
+    //sort friendsRoutes by date (descending)
+    friendsRoutes.sort((a, b) => (a.created_on as Date).getTime() - (b.created_on as Date).getTime());
+    friendsRoutes.reverse();
+    //sort groupRoutes by date (descending)
+    groupRoutes.sort((a, b) => (a.created_on as Date).getTime() - (b.created_on as Date).getTime());
+    groupRoutes.reverse();
+    //sort publicRoutes by date (descending)
+    publicRoutes.sort((a, b) => (a.created_on as Date).getTime() - (b.created_on as Date).getTime());
+    publicRoutes.reverse();
+
+    //remove duplicates from userRoutes
+    userRoutes = userRoutes.filter((route, index, self) =>
+        index === self.findIndex((t) => (
+            t.route_name === route.route_name && t.creator === route.creator
+        ))
+    );
+    //remove duplicates from friendsRoutes
+    friendsRoutes = friendsRoutes.filter((route, index, self) =>
+        index === self.findIndex((t) => (
+            t.route_name === route.route_name && t.creator === route.creator
+        ))
+    );
+    //remove duplicates from groupRoutes
+    groupRoutes = groupRoutes.filter((route, index, self) =>
+        index === self.findIndex((t) => (
+            t.route_name === route.route_name && t.creator === route.creator
+        ))
+    );
+    //remove duplicates from publicRoutes
+    publicRoutes = publicRoutes.filter((route, index, self) =>
+        index === self.findIndex((t) => (
+            t.route_name === route.route_name && t.creator === route.creator
+        ))
+    );
+
     return {
         props: {
             user: user,
@@ -296,14 +334,51 @@ export const load = async ({ cookies }) => {
 
 export const actions = {
     default: async ({ request }) => {
+        //console.log("request recieved");
         const data = await request.formData();
         const type = data.get("type");
         const userID = data.get("userID");
-        if (data.get("group") == null) return { status: 400, body: { error: "No group specified" } };
-        const group_name = data.get("group");
+        if (type == null) return { status: 400, body: { error: "No type specified" } };
+        if (userID == null) return { status: 400, body: { error: "No user specified" } };
+        if (type == "user") {
+            const username = usernameDict.get(Number(userID));
+            if (username == undefined) return { status: 400, body: { error: "Invalid request" } };
+            return { status: 200, body: { type: type, userID: userID } };
+        }
+        if (data.get("groupName") == null) return { status: 400, body: { error: "No group specified" } };
+        const group_name = data.get("groupName");
         const groupID = Array.from(groupnameDict.entries()).find(([key, value]) => value === group_name)?.[0];
-        console.log(groupID);
         if (groupID == undefined) return { status: 400, body: { error: "Invalid group name" } };
-        return { status: 200, body: { type: type, userID: userID, groupID: groupID } };
+        let routeName = data.get("routeName")?.toString();
+        if (routeName == null) return { status: 400, body: { error: "No route name specified" } };
+        let routesToAdd = await prisma.routes.findMany({
+            where: {
+                creator: Number(userID),
+                route_name: routeName
+            }
+        });
+        for (const route of routesToAdd) {
+            const routeCheck = await prisma.group_routes.findMany({
+                where: {
+                    route_id: route.id,
+                    group_id: groupID
+                }
+            });
+            if (routeCheck.length > 0) {
+                return { status: 400, body: { error: "Route already exists in group" } };
+            } else {
+                await prisma.group_routes.create({
+                    data: {
+                        group_id: groupID,
+                        route_id: route.id,
+                        priority: 0
+                    }
+                });
+                //console.log("Added route to group");
+            }
+        }
+      
+
+        return { status: 200, body:  "Successfully added route"  };
     }
 }

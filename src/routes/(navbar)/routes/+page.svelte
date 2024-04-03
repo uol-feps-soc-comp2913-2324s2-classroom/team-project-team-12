@@ -1,14 +1,18 @@
+
 <script lang="ts">
 import { onMount } from 'svelte';
 import  SingleRoute from "$lib/components/SingleRoute.svelte"
-import { Button, Input, Select } from 'flowbite-svelte';
+import { Button, Input, Select,Heading, P, A, Mark, Secondary } from 'flowbite-svelte';
 export let data;
 import type { GroupedRouteEntry, RouteEntry } from '$lib/interfaces';
-let userCurrentPage = 1;
-let itemsPerPage = 6;
-
+import RouteHorizontalScroll from './RouteHorizontalScroll.svelte';
+import RouteGridPage from './RouteGridPage.svelte';
 
 let userRouteEntries = data.props.userRouteEntries;
+let friendsRouteEntries = data.props.friendsRouteEntries;
+let groupsRouteEntries = data.props.groupRouteEntries;
+let publicRouteEntries = data.props.publicRouteEntries;
+
 let adminGroups = data.props.adminGroups;
 let adminGroupNames = adminGroups.map(group => group.name);
 let userData = data.props.user;
@@ -34,6 +38,48 @@ userRouteEntries.forEach(route => {
     groupedUserRouteEntries.push(groupedRoute);
 });
 
+//convert friendsRouteEntries to GroupedRouteEntry
+let groupedFriendsRouteEntries: GroupedRouteEntry[] = [];
+friendsRouteEntries.forEach(route => {
+    let groupedRoute = {
+        name: route.name,
+        creator: route.creator,
+        createdOn: route.createdOn,
+        completionTime: route.completionTime,
+        path: route.path,
+        group: null
+    }
+    groupedFriendsRouteEntries.push(groupedRoute);
+});
+
+//convert groupsRouteEntries to GroupedRouteEntry
+let groupedGroupsRouteEntries: GroupedRouteEntry[] = [];
+groupsRouteEntries.forEach(route => {
+    let groupedRoute = {
+        name: route.name,
+        creator: route.creator,
+        createdOn: route.createdOn,
+        completionTime: route.completionTime,
+        path: route.path,
+        group: null
+    }
+    groupedGroupsRouteEntries.push(groupedRoute);
+});
+
+//convert publicRouteEntries to GroupedRouteEntry
+let groupedPublicRouteEntries: GroupedRouteEntry[] = [];
+publicRouteEntries.forEach(route => {
+    let groupedRoute = {
+        name: route.name,
+        creator: route.creator,
+        createdOn: route.createdOn,
+        completionTime: route.completionTime,
+        path: route.path,
+        group: null
+    }
+    groupedPublicRouteEntries.push(groupedRoute);
+});
+
 
 
 const addRouteToGroup = (route: GroupedRouteEntry) => {
@@ -45,69 +91,39 @@ const addRouteToGroup = (route: GroupedRouteEntry) => {
     formData.append('username', userData.username);
     formData.append('userID', userData.id.toString());
     if (route.group) formData.append('groupName', route.group);
-    fetch('/admin', {
+    fetch('/routes', {
         method: 'POST',
         body: formData
     }).then(response => response.json())
         .then(data => {
-            console.log(data);
+            console.log('Success:', data);
         })
-        .catch(error => {
+        .catch((error) => {
             console.error('Error:', error);
         });
 }
 
-let searchTerm = '';
+
+    
+    let searchTerm:string = "";
+    let currentPage = 0;
+    const updateCurrentPage = (value: number) => {
+        console.log('updating current page to ', value);
+        currentPage = value;
+    };
+
 </script>
-<svelte:head>
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""
-    />
-</svelte:head>
 
-<div class="container">
-    <h1>Your Routes</h1>
-    <Input type="text" bind:value={searchTerm} placeholder="Search routes..." />
-    <div class="grid">
-        {#each groupedUserRouteEntries.slice((userCurrentPage - 1) * itemsPerPage, userCurrentPage * itemsPerPage) as route}
-            {#if (route.name.toUpperCase().includes(searchTerm.toUpperCase()) || route.creator.toUpperCase().includes(searchTerm.toUpperCase())) }
-                <div class="grid-item">
-                    {route.name} <br>
-                    {route.completionTime} <br>
-                    Uploaded by {route.creator} <br>
-                    on {route.createdOn.toLocaleDateString()} at {route.createdOn.toLocaleTimeString()} <br>
-                    <SingleRoute {route} />
-                    <div style="display: flex;">
-                        <Select bind:value={route.group}>
-                              {#each adminGroupNames as group}
-                                <option value={group}>{group}</option>
-                            {/each}
-                        </Select>
-                        <Button on:click={() => addRouteToGroup(route)}>Add to group</Button>
-                    </div>
-            </div>
-            {/if}
-        {/each}
-    </div>
+{#if currentPage == 0}
+<Input type="text" bind:value={searchTerm} placeholder="Search routes..." />
+<RouteHorizontalScroll nameOfList="Your Routes" routeEntries={groupedUserRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} {updateCurrentPage}/>
+<RouteHorizontalScroll nameOfList="Friends Routes" routeEntries={groupedFriendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} {updateCurrentPage} />
+<RouteHorizontalScroll nameOfList="Groups Routes" routeEntries={groupedGroupsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} {updateCurrentPage}/>
+<RouteHorizontalScroll nameOfList="Public Routes" routeEntries={groupedPublicRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} {updateCurrentPage}/>
+{/if}
 
-    <Button  on:click={() => userCurrentPage > 1 && userCurrentPage--} disabled={userCurrentPage===1}>Previous</Button>
-    <Button on:click={() =>  userCurrentPage++} disabled={(userCurrentPage + 1) * itemsPerPage >= userRouteEntries.length}>Next</Button>
-
-</div>
+{#if currentPage == 1}
+    <RouteGridPage nameOfList="Your Routes" routeEntries={groupedUserRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} />
+{/if}
 
 
-<style>
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        gap: 10px;
-    }
-    .grid-item {
-        border: 1px solid #ccc;
-        padding: 10px;
-    }
-</style>
