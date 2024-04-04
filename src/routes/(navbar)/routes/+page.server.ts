@@ -1,6 +1,6 @@
 import prisma from '$lib/prisma.js';
 import { redirect } from '@sveltejs/kit';
-import type { route, user, group, group_membership, group_route, Path, RouteEntry }  from '$lib/interfaces';
+import type { route, user, group, group_membership, group_route, Path, RouteEntry,groupRouteEntry }  from '$lib/interfaces';
 
 let user: user;
 let usernameDict: Map<number, string> = new Map();
@@ -17,7 +17,7 @@ let friendsRouteEntries: RouteEntry[] = [];
 let userFriendIDs: Number[] = [];
 
 let groupRoutes: route[] = [];
-let groupRouteEntries: RouteEntry[] = [];
+let groupRouteEntries: groupRouteEntry[] = [];
 
 
 let publicRoutes: route[] = [];
@@ -29,13 +29,14 @@ export const load = async ({ cookies }) => {
     adminGroups = [];
     userRoutes = [];
     groupRoutes = [];
+    userFriendIDs = [];
     friendsRoutes = [];
     publicRoutes = [];
     userRouteEntries = [];
     friendsRouteEntries = [];
     groupRouteEntries = [];
     publicRouteEntries = [];
-
+    
     // Get the user's login session
     const username = cookies.get('sessionId');
 
@@ -89,11 +90,14 @@ export const load = async ({ cookies }) => {
                 routePath.push([Number(coord.latitude), Number(coord.longitude)]);
             }
             let RouteEntryObj: RouteEntry = {
+            id: route.id,
             name: route.route_name?.toString(),
             creator: user.username,
             createdOn: route.created_on,
             completionTime: route.approximate_completion_time,
-            path: routePath
+            path: routePath,
+            group: null,
+            publicity: route.publicity as number
         };
         userRouteEntries.push(RouteEntryObj);
     }
@@ -118,13 +122,12 @@ export const load = async ({ cookies }) => {
             ]
         }
     });
-
+    userFriendIDs = [];
     userFriendRelations.forEach((relation) => {
         if (relation.user_id1 == user.id) userFriendIDs.push(relation.user_id2);
         else userFriendIDs.push(relation.user_id1);
     });
 
-    //console.log(userFriendIDs);
     for (const friendID of userFriendIDs) {
         const friendRoutes = await prisma.routes.findMany({
             where: {
@@ -159,11 +162,14 @@ export const load = async ({ cookies }) => {
             routePath.push([Number(coord.latitude), Number(coord.longitude)]);
         }
         let RouteEntryObj: RouteEntry = {
+            id: route.id,
             name: route.route_name?.toString(),
             creator: usernameDict.get(route.creator as number) || "Unknown",
             createdOn: route.created_on,
             completionTime: route.approximate_completion_time,
-            path: routePath
+            path: routePath,
+            group: null,
+            publicity: route.publicity as number
         };
         friendsRouteEntries.push(RouteEntryObj);
     }
@@ -183,7 +189,8 @@ export const load = async ({ cookies }) => {
         });
         if (group != null) userGroups.push(group);
     }
-    
+
+    //Find user's admin groups
     const adminGroupsRelations = await prisma.group_membership.findMany({
         where: {
             user_id: user.id,
@@ -198,47 +205,56 @@ export const load = async ({ cookies }) => {
         });
         if (group != null) adminGroups.push(group);
     }
-    //get group routes
+
+    //Lookup group routes
     for (const group of userGroups) {
         const groupRoutesRelations = await prisma.group_routes.findMany({
             where: {
                 group_id: group.id
             }
         });
-        for (const relation of groupRoutesRelations) {
+        let groupRouteEntriesList: RouteEntry[] = [];
+        for (const routeRelation of groupRoutesRelations) {
             const route = await prisma.routes.findUnique({
                 where: {
-                    id: relation.route_id
+                    id: routeRelation.route_id
                 }
             });
             if (route != null) groupRoutes.push(route);
-        }
-    }
-    //Create group route entries
-    for (const route of groupRoutes) {
-        if (route.route_name == null) route.route_name = "Unnamed Route";
-        if (route.created_on == null) route.created_on = new Date();
-        if (route.approximate_completion_time == null) route.approximate_completion_time = 0;
-        if (route.creator == null) route.creator = 0;
-        let routeCoords = await prisma.route_coordinates.findMany({
-            where: {
-                route_id: route.id
+            if (route != null) {
+                if (route.route_name == null) route.route_name = "Unnamed Route";
+                if (route.created_on == null) route.created_on = new Date();
+                if (route.approximate_completion_time == null) route.approximate_completion_time = 0;
+                let routeCoords = await prisma.route_coordinates.findMany({
+                    where: {
+                        route_id: route.id
+                    }
+                });
+                //convert route coordinates to path
+                let routePath: Path = [];
+                for (const coord of routeCoords) {
+                    routePath.push([Number(coord.latitude), Number(coord.longitude)]);
+                }
+                let RouteEntryObj: RouteEntry = {
+                    id: route.id,
+                    name: route.route_name?.toString(),
+                    creator: usernameDict.get(route.creator as number) || "Unknown",
+                    createdOn: route.created_on,
+                    completionTime: route.approximate_completion_time,
+                    path: routePath,
+                    group: group.name,
+                    publicity: route.publicity as number
+                };
+                groupRouteEntriesList.push(RouteEntryObj);
             }
-        });
-        //convert route coordinates to path
-        let routePath: Path = [];
-        for (const coord of routeCoords) {
-            routePath.push([Number(coord.latitude), Number(coord.longitude)]);
         }
-        let RouteEntryObj: RouteEntry = {
-            name: route.route_name?.toString(),
-            creator: usernameDict.get(route.creator as number) || "Unknown",
-            createdOn: route.created_on,
-            completionTime: route.approximate_completion_time,
-            path: routePath
+        let groupRouteEntryObj: groupRouteEntry = {
+            group_name: group.name,
+            routes: groupRouteEntriesList
         };
-        groupRouteEntries.push(RouteEntryObj);
+        groupRouteEntries.push(groupRouteEntryObj);
     }
+    
 
     //get public routes
     const publicRoutesRelations = await prisma.routes.findMany({
@@ -266,11 +282,14 @@ export const load = async ({ cookies }) => {
             routePath.push([Number(coord.latitude), Number(coord.longitude)]);
         }
         let RouteEntryObj: RouteEntry = {
+            id: route.id,
             name: route.route_name?.toString(),
             creator: usernameDict.get(route.creator as number) || "Unknown",
             createdOn: route.created_on,
             completionTime: route.approximate_completion_time,
-            path: routePath
+            path: routePath,
+            group: null,
+            publicity: route.publicity as number
         };
         publicRouteEntries.push(RouteEntryObj);
     }
@@ -301,18 +320,15 @@ export const load = async ({ cookies }) => {
             t.route_name === route.route_name && t.creator === route.creator
         ))
     );
-    //remove duplicates from groupRoutes
-    groupRoutes = groupRoutes.filter((route, index, self) =>
-        index === self.findIndex((t) => (
-            t.route_name === route.route_name && t.creator === route.creator
-        ))
-    );
+
     //remove duplicates from publicRoutes
     publicRoutes = publicRoutes.filter((route, index, self) =>
         index === self.findIndex((t) => (
             t.route_name === route.route_name && t.creator === route.creator
         ))
     );
+
+    console.log(friendsRouteEntries.length);
 
     return {
         props: {
@@ -324,7 +340,6 @@ export const load = async ({ cookies }) => {
             groupnameDict: groupnameDict,
             friendsRoutes: friendsRoutes,
             friendsRouteEntries: friendsRouteEntries,
-            groupRoutes: groupRoutes,
             groupRouteEntries: groupRouteEntries,
             publicRoutes: publicRoutes,
             publicRouteEntries: publicRouteEntries
@@ -334,51 +349,49 @@ export const load = async ({ cookies }) => {
 
 export const actions = {
     default: async ({ request }) => {
-        //console.log("request recieved");
+        console.log("request recieved");
         const data = await request.formData();
         const type = data.get("type");
         const userID = data.get("userID");
-        if (type == null) return { status: 400, body: { error: "No type specified" } };
-        if (userID == null) return { status: 400, body: { error: "No user specified" } };
-        if (type == "user") {
-            const username = usernameDict.get(Number(userID));
-            if (username == undefined) return { status: 400, body: { error: "Invalid request" } };
-            return { status: 200, body: { type: type, userID: userID } };
-        }
-        if (data.get("groupName") == null) return { status: 400, body: { error: "No group specified" } };
         const group_name = data.get("groupName");
         const groupID = Array.from(groupnameDict.entries()).find(([key, value]) => value === group_name)?.[0];
+        const routeName = data.get("routeName")?.toString();
+        const routeID = data.get("routeID");
+        //Data and type validation
+        if (type == null) return { status: 400, body: { error: "No type specified" } };
+        if (userID == null) return { status: 400, body: { error: "No user specified" } };
+        if (group_name == null) return { status: 400, body: { error: "No group specified" } };
         if (groupID == undefined) return { status: 400, body: { error: "Invalid group name" } };
-        let routeName = data.get("routeName")?.toString();
         if (routeName == null) return { status: 400, body: { error: "No route name specified" } };
-        let routesToAdd = await prisma.routes.findMany({
-            where: {
-                creator: Number(userID),
-                route_name: routeName
-            }
-        });
-        for (const route of routesToAdd) {
-            const routeCheck = await prisma.group_routes.findMany({
+        if (routeID == null) return { status: 400, body: { error: "No route specified" } };
+        //convert routeID to number
+        if (type == "addRouteToGroup") {
+            const routeIDNum = Number(routeID);
+            let routeToAdd = await prisma.routes.findUnique({
                 where: {
-                    route_id: route.id,
-                    group_id: groupID
+                    id: Number(routeIDNum)
                 }
             });
-            if (routeCheck.length > 0) {
-                return { status: 400, body: { error: "Route already exists in group" } };
-            } else {
-                await prisma.group_routes.create({
-                    data: {
-                        group_id: groupID,
-                        route_id: route.id,
-                        priority: 0
+            if (routeToAdd != undefined && routeToAdd != null) {
+                const routeCheck = await prisma.group_routes.findFirst({
+                    where: {
+                        route_id: Number(routeIDNum),
+                        group_id: Number(groupID)
                     }
                 });
-                //console.log("Added route to group");
+                if (routeCheck != null  && routeCheck != undefined) {
+                    return { status: 400, body: { error: "Route already exists in group" } };
+                } else {
+                    await prisma.group_routes.create({
+                        data: {
+                            group_id: groupID,
+                            route_id: routeIDNum,
+                            priority: 0
+                        }
+                    });
+                    console.log("Added route to group");
+                }
             }
+            return { status: 200, body:  "Successfully added route"  };
         }
-      
-
-        return { status: 200, body:  "Successfully added route"  };
-    }
-}
+}};

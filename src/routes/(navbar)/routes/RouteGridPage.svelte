@@ -9,25 +9,31 @@
 
 
 <script lang="ts">
-    import type { GroupedRouteEntry} from '$lib/interfaces';
+    import type { RouteEntry} from '$lib/interfaces';
     import { Button, Input, Select,Heading, P, A, Mark, Secondary } from 'flowbite-svelte';
+    import { ArrowLeftOutline } from 'flowbite-svelte-icons';
     import SingleRoute from "$lib/components/SingleRoute.svelte";
-    export let addRouteToGroup: (route:GroupedRouteEntry) => void;
-    export let routeEntries:GroupedRouteEntry[] = [];
+    import { includes } from 'ramda';
+    export let addRouteToGroup: (route:RouteEntry) => void;
+    export let routeEntries:RouteEntry[] = [];
     export let nameOfList:string = "";
     export let adminGroupNames:string[] = [];
+    export let updateCurrentPage: (value: string) => void;
     let searchTerm = "";
 
     let maxPerPage = 24;
     let currentPage = 0;
 
 </script>
-<Heading> {nameOfList} </Heading>
-<div class="container">
-    <Input type="text" bind:value={searchTerm} placeholder="Search routes..." />
+<Input type="text" bind:value={searchTerm} placeholder="Search routes..." />
+<button style="display: flex" on:click={() => updateCurrentPage("Main")} role="button">
+    <ArrowLeftOutline class="w-12 h-12 text-primary-700"  />
     <Heading> {nameOfList} </Heading>
+    <Secondary>{routeEntries.length} routes </Secondary>
+</button>
+<div class="container">
     <div class="grid">
-        {#each routeEntries.slice(currentPage * maxPerPage, (currentPage + 1) * maxPerPage) as route}
+        {#each routeEntries.filter(route => (route.name.toLowerCase().includes(searchTerm.toLowerCase()) || route.creator.toLowerCase().includes(searchTerm.toLowerCase()))).slice(currentPage * maxPerPage, (currentPage + 1) * maxPerPage) as route}
             <div class="grid-item">
                 <P>{route.name}</P>
                 <P>{route.completionTime}</P>
@@ -54,6 +60,7 @@
         gap: 10px;
     }
     .grid-item {
+        flex: 0 0 auto;
         border: 1px solid #ccc;
         padding: 10px;
     }

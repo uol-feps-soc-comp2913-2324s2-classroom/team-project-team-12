@@ -9,20 +9,23 @@
 
 
 <script lang="ts">
-    import type { GroupedRouteEntry} from '$lib/interfaces';
+    import type {RouteEntry} from '$lib/interfaces';
     import { Button, Input, Select,Heading, P, A, Mark, Secondary } from 'flowbite-svelte';
     import SingleRoute from "$lib/components/SingleRoute.svelte";
     import { on } from 'ramda';
-    export let addRouteToGroup: (route:GroupedRouteEntry) => void;
-    export let routeEntries:GroupedRouteEntry[] = [];
+    export let addRouteToGroup: (route:RouteEntry) => void;
+    export let routeEntries:RouteEntry[] = [];
     export let nameOfList:string = "";
     export let adminGroupNames:string[] = [];
     export let searchTerm = "";
-    export let updateCurrentPage: (page: number) => void;
+    export let updateCurrentPage: (value: string) => void;
 </script>
 
 <div class="container">
-    <div on:click={() => updateCurrentPage(1)}> <Heading>{nameOfList} </Heading> </div>
+    <button style="display: inline-block;" on:click={() => updateCurrentPage(nameOfList)} role="button">
+        <Heading>{nameOfList} </Heading>
+        <Secondary>{routeEntries.length} routes </Secondary>
+    </button>
     <div class="scrollable-grid">
         {#each routeEntries.slice(0, 12) as route, index}
             {#if (route.name.toUpperCase().includes(searchTerm.toUpperCase()) || route.creator.toUpperCase().includes(searchTerm.toUpperCase())) }
