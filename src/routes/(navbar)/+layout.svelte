@@ -15,10 +15,12 @@
         </span>
     </NavBrand>
     <NavUl>
+        {#if data.user != undefined}
         <NavLi href="/map">Home</NavLi>
         <NavLi href="/friends">Friends</NavLi>
         <NavLi href="/routes">Routes</NavLi>
         <NavLi href="/payments">Pricing</NavLi>
+        {/if}
     </NavUl>
 
     <div class="flex items-center">
@@ -31,7 +33,7 @@
                 href="/profile/{data.user}"
                 class="hidden font-semibold xl:inline-block"
                 size="lg"
-                rel="noreferrer"
+                rel="external"
             >
                 {data.user}
             </ToolbarButton>
