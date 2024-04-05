@@ -35,7 +35,7 @@
     }
 </script>
 
-<Button on:click={() => (popup = true)}>Edit</Button>
+<Button color="light" on:click={() => (popup = true)}>Edit</Button>
 
 <Modal title="Choose Account Visibility" bind:open={popup} autoclose={false}>
     <form method="post" on:submit={editPrivacy}>

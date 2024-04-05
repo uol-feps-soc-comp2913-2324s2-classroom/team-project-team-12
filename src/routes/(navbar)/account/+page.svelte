@@ -4,7 +4,7 @@
     import type { user } from '$lib/interfaces'
     import { onMount } from "svelte";
     import Data from './data.svelte';
-    import { Card } from 'flowbite-svelte';
+    import { Card, Avatar } from 'flowbite-svelte';
     
     export let user: user;
     export let data;
@@ -48,13 +48,12 @@
 
 </script>
 
-<Card class="green" style="margin: 0 auto; margin-top:20px;">
+<Card style="margin: 0 auto; margin-top:20px;">
     <div class="header">
-        <div class="name">
-            <h1 class="font-semibold text-gray-900 dark:text-white">@{user?.username}</h1>
-        </div>
-        <div class="picture">
-            <img src={userPictureUrl} alt="" />
+        <div class="flex flex-col items-center pb-4">
+            <Avatar size="lg">{getInitials(user.first_name,user.last_name)}</Avatar>
+            <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{user.first_name} {user.last_name}</h5>
+            <span class="text-sm text-gray-500 dark:text-gray-400">@{user.username}</span>
         </div>
     </div>
     <div class="data">
@@ -64,37 +63,8 @@
 
 <style>
 
-    .header {
-        margin: 30px;
-        justify-content: space-between;
-        display: flex;
-    }
-
-    .name, .picture {
-        position: relative;
-    }
-
-    .name {
-        margin-top: 20px;
-    }
-
-    .picture {
-        display: inline-block; 
-        width: 5em; 
-        height: 5em; 
-        overflow: hidden; 
-        border-radius: 50%; 
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-    }
-
-    .picture img { 
-        width: auto; 
-        height: 100%; 
-    }
-
     .data {
-        margin: 20px;
+        margin: 5px;
     }
 
 </style>
