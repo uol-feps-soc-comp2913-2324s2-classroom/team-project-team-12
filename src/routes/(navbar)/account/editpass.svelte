@@ -5,6 +5,7 @@
     let password = '';
     let oldPassword = '';
     let error='';
+    let incorrectError = '';
 
     const passwordChange = async (event) => {
         event.preventDefault();
@@ -44,7 +45,7 @@
                 }
             } else {
                 // Handle incorrect password
-                error = 'Incorrect password.';
+                incorrectError = 'Incorrect password.';
             }
         } catch (error) {
             // Handle internal server error
@@ -65,6 +66,9 @@
             name = "oldpass"
             required
         />
+        {#if incorrectError}
+            <p>{incorrectError}</p>
+        {/if}
         <Label>Enter new password</Label>
         <Input  
             bind:value={password}
