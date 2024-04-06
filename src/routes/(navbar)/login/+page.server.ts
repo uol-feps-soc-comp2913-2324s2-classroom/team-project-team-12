@@ -66,25 +66,15 @@ export const actions = {
         for(let i=0; i<users.length; i++){
           // check if username already exists
           if(users[i].username==username){
-            valid = false;
+            return fail(401, { message: 'Username already exists.' });
           }
-        }
-  
-        if(!valid){
-          console.log('username already exists');
-          return fail(401);
         }
   
         for(let i=0; i<users.length; i++){
           // check if email already exists
           if(users[i].email==email){
-            valid = false;
+            return fail(402, { message: 'Email already exists.' });
           }
-        }
-  
-        if(!valid){
-          console.log('email already exists');
-          return fail(401);
         }
   
         // check if email is valid email
@@ -92,14 +82,11 @@ export const actions = {
         valid = emailRegex.test(email as string);
   
         if(!valid){
-          console.log('invalid email address');
-          return fail(401);
+          return fail(403, { message: 'Invalid email address'});
         }
 
         // hash password before inputting into database.
         const hashed = await bcrypt.hash(password as string, 10)
-
-        console.log(hashed);
   
         // create account
         await prisma.user.create({

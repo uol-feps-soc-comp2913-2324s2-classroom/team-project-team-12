@@ -32,6 +32,23 @@ export const actions = {
 
         if(type==="editusername"){
             const name = data.get('username');
+
+            // check new username is unique
+            let users;
+
+            try {
+                users = await prisma.user.findMany();
+            }
+            catch (error) {
+                return new Response(JSON.stringify(error), {status: 500});
+            }
+
+            for(let i=0; i<users.length; i++){
+                // check if username already exists
+                if(users[i].username==name){
+                    return fail(401, { message: 'Username already exists.' });
+                }
+            }
         
             try {
                 if(curUser){

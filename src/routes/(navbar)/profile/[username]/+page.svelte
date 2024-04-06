@@ -109,7 +109,6 @@
         overflow: hidden; /* Hide scrollbars */
     }
     
-    
     .main-container {
         height: 80vh;
         width: 100vw;
