@@ -44,7 +44,7 @@ export const load = (async ({ params: { username }, cookies }) => {
     const userRoutes = await prisma.routes.findMany({ where: { creator: user.id } });
 
     // Parse the route data as an array of `RouteEntry` objects
-    let userRoutesData = userRoutes.map(
+    const userRoutesData = userRoutes.map(
         async (r): Promise<RouteEntry> => ({
             name: r.route_name,
             creator: username,
