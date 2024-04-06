@@ -234,4 +234,27 @@
             {/if}
         </Card>
     </div>
+                            </div>
+                        </a>
+                    {/each}
+                </TabItem>
+                <TabItem class="w-full" >
+                    <span slot="title">Routes</span>
+                    {#each userRoutes as route, i}
+                        <div class="friend">
+                            <div class="map-container">
+                                <SingleRoute route={resolvedRoutes[i]}/>
+                            </div>
+                            <div class="friend-details">
+                                <div class="friend-name">{route.route_name}</div>
+                                <div class="user-name">Date Created: {route.created_on.toLocaleString()}</div>
+                                <div class="user-name">Length: {route.length}</div>
+                                <div class="user-name">Completion Time: {getRouteDuration(resolvedRoutes[i])}</div>
+                            </div>
+                        </div>
+                    {/each}
+                </TabItem>
+            </Tabs>
+        </div>
+    </div>
 </body>

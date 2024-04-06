@@ -2,6 +2,7 @@ import prisma from "$lib/prisma";
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { Path, RouteEntry } from '$lib/interfaces';
+import type { user } from '$lib/interfaces'
 
 export const load = (async ({ params: { username }, cookies }) => {
     const loggedUser = cookies.get('sessionId');
