@@ -6,7 +6,7 @@
 </script>
 
 <body>
-    <div class="container">
+    <div class="main-container">
         <Card>
             <GlobeSolid size="xl" class="self-center whitespace-nowrap text-red-500" />
             <br>
@@ -25,7 +25,7 @@
 </body>
 
 <style>
-    .container {
+    .main-container {
         width: 100%;
         height: 90vh;
         display: flex;
