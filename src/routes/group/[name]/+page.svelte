@@ -225,7 +225,6 @@
 <body>
   <div class="container">
     <div class="profile-picture"> <img src={groupUrl} alt="" /></div>
-    <div class="name">{group.name}<button class="add-button">Join</button></div>
     <div class="profile-container">
         <div class="tabs">
             {#each tabs as tab}
@@ -255,6 +254,5 @@
             {/if}        
         </div>  
     </div>
-  </div>
 </body>
 {/if}
