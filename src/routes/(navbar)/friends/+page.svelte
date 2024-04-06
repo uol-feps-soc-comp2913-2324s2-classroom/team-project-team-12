@@ -12,6 +12,7 @@
   let currentUserFriends;
   let friendRequests;
   let unaddedPeople;
+  let requested;
 
   onMount(() => {
         // Check if data is invalid and redirect if necessary
@@ -25,6 +26,7 @@
     currentUserFriends = data.currentUserFriends || [];
     friendRequests = data.friendRequests || [];
     unaddedPeople = data.unaddedPeople || [];
+    requested = data.requested || [];
   }
 
 </script>
@@ -39,7 +41,7 @@
   </div>
 
 <div class="unadded-people-container">
-    <UnaddedList people={unaddedPeople} />
+    <UnaddedList people={unaddedPeople} requested={requested}/>
   </div>
 </div>
 

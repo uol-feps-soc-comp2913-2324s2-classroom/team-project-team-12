@@ -1,5 +1,4 @@
 export function getDefaultProfilePictureUrl(user) {
-    console.log("User object:", user);
     // Define the hash function
     function hashUserId(userId) {
         return (userId * 2654435761) % Math.pow(2, 32);

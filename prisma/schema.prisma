@@ -7,6 +7,26 @@ datasource db {
   url      = "file:./database.db"
 }
 
+model groups_to_show {
+  id       Int    @id @unique(map: "sqlite_autoindex_groups_to_show_1") @default(autoincrement())
+  user_id  Int
+  group_id Int
+  user     user   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  groups   groups @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, group_id])
+}
+
+model routes_to_show {
+  id       Int    @id @unique(map: "sqlite_autoindex_routesToShow_1") @default(autoincrement())
+  user_id  Int
+  route_id Int
+  user     user   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  routes   routes @relation(fields: [route_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, route_id])
+}
+
 model group_membership {
   id       Int     @id @default(autoincrement())
   group_id Int
@@ -35,6 +55,7 @@ model groups {
   group_routes     group_routes[]
   user             user?              @relation(fields: [creator], references: [id], onDelete: Cascade, onUpdate: NoAction)
   group_membership group_membership[]
+  groups_to_show   groups_to_show[]
 }
 
 model journey_coordinates {
@@ -92,6 +113,8 @@ model routes {
   journeys                    journeys[]
   route_coordinates           route_coordinates[]
   user                        user?               @relation(fields: [creator], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  routes_to_show routes_to_show[]
 }
 
 model user {
@@ -102,8 +125,7 @@ model user {
   email                                    String             @unique(map: "sqlite_autoindex_user_3")
   password                                 String
   membership_type                          Int                @default(4)
-  next_payment                             DateTime           @default("2024-01-01T00:00:00.000Z")
-  last_payment                             DateTime           @default("2024-01-01T00:00:00.000Z")
+  subscription_start_date                  DateTime           @default("2024-01-01T00:00:00.000Z")
   paid                                     Boolean            @default(false)
   default_publicity                        Int                @default(2)
   admin_status                             Boolean            @default(false)
@@ -116,4 +138,6 @@ model user {
   relationship_relationship_user_id1Touser relationship[]     @relation("relationship_user_id1Touser")
   routes                                   routes[]
   group_membership                         group_membership[]
+  groups_to_show                           groups_to_show[]
+  routes_to_show                           routes_to_show[]
 }

@@ -17,7 +17,7 @@
     export const groupCount = data.groupCount;
     export const isFriend = data.isFriend;
     export const friendRequest = data.friendRequest;
-    export const profile = data.profile;
+    export const profile = data.logged;
     export const userRoutes = data.userRoutes;
     export const resolvedRoutes = data.resolvedRoutes;
     import type { RouteEntry } from '$lib/interfaces';
@@ -136,7 +136,7 @@
                 <span class="text-sm text-gray-500 dark:text-gray-400">@{user.username}</span>
                 <div class="flex mt-4 space-x-3 rtl:space-x-reverse lg:mt-6">
                     {#if user.username == profile.username}
-                    <Button color="green" href="../../account">My Account</Button>
+                        <Button color="green" href="../../account">My Account</Button>
                     {:else if !isFriend && friendRequest == null}
                         <Button color="blue" on:click={() => addFriend(user)} >Request</Button>
                     {:else if friendRequest?.friend_request }
@@ -146,79 +146,114 @@
                     {/if}
                 </div>
             </div>
-            <Tabs style="full" tabStype="full" defaultClass="flex rounded-lg divide-x rtl:divide-x-reverse divide-gray-200 shadow dark:divide-gray-700">
-                <TabItem class="w-full" open>
-                    <span slot="title">Friends</span>
-                    {#if userFriends.length == 0}
-                        <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no friends.</div>
-                    {:else}
-                        <Listgroup items={userFriends} let:item class="border-0 dark:!bg-transparent">
-                            <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                                <Avatar>{getInitials(item.first_name + " " + item.last_name)}</Avatar>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {item.first_name} {item.last_name}
-                                    </p>
-                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        @{item.username}
-                                    </p>
+            {#if user.default_publicity == 2 || (user.default_publicity == 1 && isFriend) || user.username == profile.username}
+                <Tabs style="full" tabStype="full" defaultClass="flex rounded-lg divide-x rtl:divide-x-reverse divide-gray-200 shadow dark:divide-gray-700">
+                    <TabItem class="w-full" open>
+                        <span slot="title">Friends</span>
+                        {#if userFriends.length == 0}
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no friends.</div>
+                        {:else}
+                            <Listgroup items={userFriends} let:item class="border-0 dark:!bg-transparent">
+                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <Avatar>{getInitials(item.first_name + " " + item.last_name)}</Avatar>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {item.first_name} {item.last_name}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            @{item.username}
+                                        </p>
+                                    </div>
+                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <Button color="light" rel="external" href="../profile/{item.username}">View Profile</Button>
+                                    </div>
+                                </div>   
+                            </Listgroup>
+                        {/if}
+                    </TabItem>
+                    <TabItem class="w-full" >
+                        <span slot="title">Groups</span>
+                        {#if userGroups.length == 0}
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no groups.</div>
+                        {:else}
+                            <Listgroup items={userGroups} let:item class="border-0 dark:!bg-transparent">
+                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <Avatar>{getInitials(item.name)}</Avatar>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {item.name}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            Members: {item.memberCount}
+                                        </p>
+                                    </div>
+                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <Button color="light" href="../../group/{item.name}">View Group</Button>
+                                    </div>
                                 </div>
-                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                    <Button color="light" rel="external" href="../profile/{item.username}">View Profile</Button>
+                            </Listgroup>
+                        {/if}
+                    </TabItem>
+                    <TabItem class="w-full" >
+                        <span slot="title">Routes</span>
+                        {#if resolvedRoutes.length == 0}
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no Routes.</div>
+                        {:else}
+                            <Listgroup items={resolvedRoutes} let:item class="border-0 dark:!bg-transparent">
+                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <div class="map-container">
+                                        <SingleRoute route={item}/>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {item.name}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            Date Created: {item.createdOn.toLocaleString()}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            Route Duration: {getRouteDuration(item)}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>   
-                        </Listgroup>
-                    {/if}
-                </TabItem>
-                <TabItem class="w-full" >
-                    <span slot="title">Groups</span>
-                    {#if userGroups.length == 0}
-                        <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no groups.</div>
-                    {:else}
-                        <Listgroup items={userGroups} let:item class="border-0 dark:!bg-transparent">
-                            <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                                <Avatar>{getInitials(item.name)}</Avatar>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {item.name}
-                                    </p>
-                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        Members: {item.memberCount}
-                                    </p>
-                                </div>
-                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                    <Button color="light" href="../../group/{item.name}">View Group</Button>
-                                </div>
+                            </Listgroup>
+                        {/if}
+                    </TabItem>    
+                </Tabs>
+            {:else if user.default_publicity == 0}
+                <div class="flex flex-col items-center pb-4">
+                    <br>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">This users profile is set to private.</span>
+                </div>
+            {:else}
+                <div class="flex flex-col items-center pb-4">
+                    <br>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">This users profile is set to private, friend this user to view more.</span>
+                </div>
+            {/if}
+        </Card>
+    </div>
                             </div>
-                        </Listgroup>
-                    {/if}
+                        </a>
+                    {/each}
                 </TabItem>
                 <TabItem class="w-full" >
                     <span slot="title">Routes</span>
-                    {#if resolvedRoutes.length == 0}
-                        <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no Routes.</div>
-                    {:else}
-                        <Listgroup items={resolvedRoutes} let:item class="border-0 dark:!bg-transparent">
-                            <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                                <div class="map-container">
-                                    <SingleRoute route={item}/>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {item.name}
-                                    </p>
-                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        Date Created: {item.createdOn.toLocaleString()}
-                                    </p>
-                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        Route Duration: {getRouteDuration(item)}
-                                    </p>
-                                </div>
+                    {#each userRoutes as route, i}
+                        <div class="friend">
+                            <div class="map-container">
+                                <SingleRoute route={resolvedRoutes[i]}/>
                             </div>
-                        </Listgroup>
-                    {/if}
-                </TabItem>    
+                            <div class="friend-details">
+                                <div class="friend-name">{route.route_name}</div>
+                                <div class="user-name">Date Created: {route.created_on.toLocaleString()}</div>
+                                <div class="user-name">Length: {route.length}</div>
+                                <div class="user-name">Completion Time: {getRouteDuration(resolvedRoutes[i])}</div>
+                            </div>
+                        </div>
+                    {/each}
+                </TabItem>
             </Tabs>
-        </Card>
+        </div>
     </div>
 </body>

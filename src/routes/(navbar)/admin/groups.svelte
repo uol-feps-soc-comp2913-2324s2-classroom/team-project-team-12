@@ -23,7 +23,7 @@
         const formData = new FormData();
         formData.append('type', 'updateGroup');
         formData.append('id', group.id.toString());
-        if (group.group_name) formData.append('group_name', group.group_name.toString());
+        if (group.name) formData.append('name', group.name.toString());
         if (group.creator) formData.append('creator', group.creator.toString());
         if (group.publicity) formData.append('publicity', group.publicity.toString());
 
@@ -98,16 +98,16 @@
 <Table>
     <TableHead>
             <TableHeadCell>id</TableHeadCell>
-            <TableHeadCell>group_name</TableHeadCell>
+            <TableHeadCell>name</TableHeadCell>
             <TableHeadCell>creator</TableHeadCell>
             <TableHeadCell>publicity</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#each groups.filter((g) => (g.id.toString().includes(searchTerm) || g.group_name.includes(searchTerm) || g.creator.toString().includes(searchTerm))).slice(currentPage * groupsPerPage, (currentPage + 1) * groupsPerPage) as group}
+        {#each groups.filter((g) => (g.id.toString().includes(searchTerm) || g.name.includes(searchTerm) || g.creator.toString().includes(searchTerm))).slice(currentPage * groupsPerPage, (currentPage + 1) * groupsPerPage) as group}
             {#if lockedFields == 1}
                 <TableBodyRow>
                     <TableBodyCell>{group.id}</TableBodyCell>
-                    <TableBodyCell>{group.group_name}</TableBodyCell>
+                    <TableBodyCell>{group.name}</TableBodyCell>
                     <TableBodyCell>{group.creator}</TableBodyCell>
                     <TableBodyCell>{group.publicity}</TableBodyCell>
                 </TableBodyRow>
@@ -115,7 +115,7 @@
             {#if lockedFields == 0}
                 <TableBodyRow>
                     <TableBodyCell>{group.id}</TableBodyCell>
-                    <TableBodyCell><Input type="text" bind:value={group.group_name} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group.name} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={group.creator} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={group.publicity} /></TableBodyCell>
                     <Button on:click={() => handleUpdate(group)}>Submit</Button>

@@ -5,17 +5,17 @@ import type { Path, RouteEntry } from '$lib/interfaces';
 import type { user } from '$lib/interfaces'
 
 export const load = (async ({ params: { username }, cookies }) => {
-    const profileUser = cookies.get('sessionId');
+    const loggedUser = cookies.get('sessionId');
 
 
-    const profile = await prisma.user.findUnique({
-        where: { username: profileUser },
-    }) as user;
+    const logged = await prisma.user.findUnique({
+        where: { username: loggedUser },
+    });
 
     // Find the user
     const user = await prisma.user.findUnique({
         where: { username: username },
-    }) as user;
+    });
 
     if (!user) {
         error(404, {
@@ -23,7 +23,7 @@ export const load = (async ({ params: { username }, cookies }) => {
         });
     }
 
-    if (!profile) {
+    if (!logged) {
         error(404, {
             message: 'User not found'
         });
@@ -55,10 +55,10 @@ export const load = (async ({ params: { username }, cookies }) => {
         }),
     );
 
-    // Check if the logged-in user has requested to follow the user whose profile is being visited
+    // Check if the logged-in user has requested to follow the user whose logged is being visited
     const friendRequest = await prisma.relationship.findFirst({
         where: {
-            user_id1: profile.id,
+            user_id1: logged.id,
             user_id2: user.id,
             friend_request: true,
             is_friend: false,
@@ -77,7 +77,7 @@ export const load = (async ({ params: { username }, cookies }) => {
     });
 
     const isFriend = relationships.some(relationship => {
-        return relationship.user_id1 === profile.id || relationship.user_id2 === profile.id;
+        return relationship.user_id1 === logged.id || relationship.user_id2 === logged.id;
     });
 
     // Extract all user IDs from the friends array
@@ -130,11 +130,9 @@ export const load = (async ({ params: { username }, cookies }) => {
         };
     });
 
-    console.log(friends);
-
     const resolvedRoutes = await Promise.all(userRoutesData);
    
-    return { user, userRoutes, resolvedRoutes, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest, profile };
+    return { user, userRoutes, resolvedRoutes, friends, groupsWithMembersCount, friendCount, groupCount, isFriend, friendRequest, logged };
 
 }) satisfies PageServerLoad;
 
@@ -146,9 +144,9 @@ export const actions = {
         const id = Number(data.get("id"));
 
         try {
-            const profileUser = cookies.get('sessionId');
+            const loggedUser = cookies.get('sessionId');
 
-            if (!profileUser) {
+            if (!loggedUser) {
                 return {
                     status: 401,
                     body: { error: "Unauthorized" },
@@ -156,7 +154,7 @@ export const actions = {
             }
 
             const user = await prisma.user.findUnique({
-                where: { username: profileUser },
+                where: { username: loggedUser },
             });
 
             if (!user) {
