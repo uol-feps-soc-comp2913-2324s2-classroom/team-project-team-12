@@ -2,7 +2,6 @@ import prisma from "$lib/prisma";
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { Path, RouteEntry } from '$lib/interfaces';
-import type { user } from '$lib/interfaces'
 
 export const load = (async ({ params: { username }, cookies }) => {
     const loggedUser = cookies.get('sessionId');
@@ -32,7 +31,7 @@ export const load = (async ({ params: { username }, cookies }) => {
     // Retrieve a route's path
     const getRoutePath = async (id: number): Promise<Path> => {
         // Retrieve the path from the database
-        let path = await prisma.route_coordinates.findMany({
+        const path = await prisma.route_coordinates.findMany({
             where: { route_id: id },
             orderBy: { order_position: 'asc' },
         });
@@ -42,7 +41,7 @@ export const load = (async ({ params: { username }, cookies }) => {
     };
 
     // Get each route for the user
-    let userRoutes = await prisma.routes.findMany({ where: { creator: user.id } });
+    const userRoutes = await prisma.routes.findMany({ where: { creator: user.id } });
 
     // Parse the route data as an array of `RouteEntry` objects
     let userRoutesData = userRoutes.map(
