@@ -47,6 +47,8 @@ export const load = (async ({ params: { username }, cookies }) => {
     // Parse the route data as an array of `RouteEntry` objects
     const userRoutesData = userRoutes.map(
         async (r): Promise<RouteEntry> => ({
+            id: r.id,
+            publicity: r.publicity,
             name: r.route_name,
             creator: username,
             createdOn: r.created_on,

@@ -1,4 +1,22 @@
 -- CreateTable
+CREATE TABLE "groups_to_show" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "user_id" INTEGER NOT NULL,
+    "group_id" INTEGER NOT NULL,
+    CONSTRAINT "groups_to_show_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT "groups_to_show_group_id_fkey" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+-- CreateTable
+CREATE TABLE "routes_to_show" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "user_id" INTEGER NOT NULL,
+    "route_id" INTEGER NOT NULL,
+    CONSTRAINT "routes_to_show_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT "routes_to_show_route_id_fkey" FOREIGN KEY ("route_id") REFERENCES "routes" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+-- CreateTable
 CREATE TABLE "group_membership" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "group_id" INTEGER NOT NULL,
@@ -96,8 +114,7 @@ CREATE TABLE "user" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "membership_type" INTEGER NOT NULL DEFAULT 4,
-    "next_payment" DATETIME NOT NULL DEFAULT '2024-01-01 00:00:00 +00:00',
-    "last_payment" DATETIME NOT NULL DEFAULT '2024-01-01 00:00:00 +00:00',
+    "subscription_start_date" DATETIME NOT NULL DEFAULT '2024-01-01 00:00:00 +00:00',
     "paid" BOOLEAN NOT NULL DEFAULT false,
     "default_publicity" INTEGER NOT NULL DEFAULT 2,
     "admin_status" BOOLEAN NOT NULL DEFAULT false,
@@ -105,6 +122,22 @@ CREATE TABLE "user" (
     "subscription_id" TEXT NOT NULL DEFAULT 'undefined',
     "owner" BOOLEAN NOT NULL DEFAULT false
 );
+
+-- CreateIndex
+Pragma writable_schema=1;
+CREATE UNIQUE INDEX "sqlite_autoindex_groups_to_show_1" ON "groups_to_show"("id");
+Pragma writable_schema=0;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "groups_to_show_user_id_group_id_key" ON "groups_to_show"("user_id", "group_id");
+
+-- CreateIndex
+Pragma writable_schema=1;
+CREATE UNIQUE INDEX "sqlite_autoindex_routesToShow_1" ON "routes_to_show"("id");
+Pragma writable_schema=0;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "routes_to_show_user_id_route_id_key" ON "routes_to_show"("user_id", "route_id");
 
 -- CreateIndex
 Pragma writable_schema=1;
