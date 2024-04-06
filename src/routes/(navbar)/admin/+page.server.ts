@@ -3,7 +3,6 @@
 import prisma from '$lib/prisma';
 import { Decimal } from 'decimal.js';
 import bcrypt from 'bcrypt';
-
 //---------------------------------------------------------------Loads Data From Database--------------------------------------------
 export async function load() {
     const users = [];
@@ -17,8 +16,7 @@ export async function load() {
             email: userList[i].email,
             password: userList[i].password,
             membership_type: userList[i].membership_type,
-            next_payment: userList[i].next_payment,
-            last_payment: userList[i].last_payment,
+            subscription_start_date: userList[i].subscription_start_date,
             paid: userList[i].paid,
             default_publicity: userList[i].default_publicity,
             admin_status: userList[i].admin_status,
@@ -62,7 +60,7 @@ export async function load() {
     for (let i = 0; i < groupList.length; i++) {
         groups.push({
             id: groupList[i].id,
-            group_name: groupList[i].name,
+            name: groupList[i].name,
             creator: groupList[i].creator,
             publicity: groupList[i].publicity,
             users: []
@@ -219,15 +217,10 @@ export const actions = {
             if (membershipType != null)
             updatedUser.membership_type = membershipType;
         }
-        if (data.get("next_payment") != null) {
-            const nextPayment = data.get("next_payment");
-            if (nextPayment != null)
-            updatedUser.next_payment = new Date(nextPayment.toString());
-        }
-        if (data.get("last_payment") != null) {
-            const lastPayment = data.get("last_payment");
+        if (data.get("subscription_start_date") != null) {
+            const lastPayment = data.get("subscription_start_date");
             if (lastPayment != null)
-            updatedUser.last_payment = new Date(lastPayment.toString());
+            updatedUser.subscription_start_date = new Date(lastPayment.toString());
         }
         if ((data.get("paid") != null)) {
             const paid = (data.get("paid") === "true");
@@ -416,8 +409,8 @@ export const actions = {
             //create copy of group
             const updatedGroup = Object.assign({}, group);
             //updates group with new values
-            if (data.get("group_name") != null) {
-                const groupName = data.get("group_name");
+            if (data.get("name") != null) {
+                const groupName = data.get("name");
                 if (groupName != null)
                 updatedGroup.name = groupName.toString();
             }

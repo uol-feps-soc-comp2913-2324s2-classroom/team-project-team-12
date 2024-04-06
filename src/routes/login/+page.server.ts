@@ -26,26 +26,26 @@ export const actions = {
       }
 
       if (user && userPassword) {
-        console.log('success');
         try {
-          cookies.set('sessionId', user.username, {
-            httpOnly: true,
-            sameSite: 'strict',
-            secure: false,
-            path: '/',
-            maxAge: 60 * 60 * 24 * 7
-          });
+            cookies.set('sessionId', user.username, {
+                httpOnly: true,
+                sameSite: 'strict',
+                secure: false,
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7
+            });
         } catch (verificationError) {
-          return fail(400);
+            return fail(400);
         }
         return {
-          status: 200,
-          body: user.username,
+            type: 'success',
+            status: 200,
+            body: user.username,
         };
-      }else {
+    } else {
         console.log('fail');
         return fail(401);
-      }
+    }
       
     }else if(type==="register"){
       try {
@@ -126,16 +126,17 @@ export const actions = {
   
         return {
           status: 200,
-          body: { user:userData, message: 'Account created.' },
+          user: userData,
+          message: 'Account created.'
         };
   
       } catch (error) {
         console.error('Error during authentication:', error);
         return {
           status: 500,
-          body: { message: 'Internal Server Error.' },
-        };
+          message:'Error during authentication.'
       }
     }
   }
-};
+}
+}

@@ -1,9 +1,25 @@
 <script lang="ts">
     // @ts-nocheck
+    import { goto } from "$app/navigation";
+    import type { user } from '$lib/interfaces'
+    import { onMount } from "svelte";
     import Data from './data.svelte';
-
+    
+    export let user: user;
     export let data;
-    export const user = data.curUser;
+    let userPictureUrl: string;
+
+    onMount(() => {
+        // Check if data is invalid and redirect if necessary
+        if (data.invalid) {
+            goto('/');
+        }
+    });
+
+    if(data.curUser){
+        user = data.curUser;
+        userPictureUrl = getDefaultProfilePictureUrl(user);
+    }
 
     function hashUserId(userId) {
         return (userId * 2654435761) % Math.pow(2, 32); 
@@ -28,8 +44,6 @@
         const imageUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&size=${imageSize}`;
         return imageUrl;
     }
-
-    const userPictureUrl = getDefaultProfilePictureUrl(user);
 
 </script>
 

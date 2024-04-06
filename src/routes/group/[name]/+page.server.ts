@@ -1,8 +1,26 @@
 import prisma from "$lib/prisma";
 import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { user } from '$lib/interfaces';
 
-export const load = (async ({ params: { name } }) => {
+let invalid = true;
+let curUser: user;
+
+export const load = (async ({ params: { name }, cookies }) => {
+    const username = cookies.get('sessionId');
+
+    if(!username){
+        invalid = true;
+        return {invalid};
+    }
+
+    invalid = false;
+
+    curUser = await prisma.user.findUnique({
+        where: {
+            username: username as string,
+        },
+    }) as user;
+    
     // Decode the encoded group name
     const decodedName = decodeURIComponent(name);
     
@@ -42,5 +60,5 @@ export const load = (async ({ params: { name } }) => {
     })
     
 
-    return { group, members, creator, memberCount };
-}) as PageServerLoad;
+    return { group, members, creator, memberCount, curUser };
+});

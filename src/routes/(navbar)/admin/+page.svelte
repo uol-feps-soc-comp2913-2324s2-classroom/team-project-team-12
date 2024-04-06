@@ -7,6 +7,8 @@
     import GroupRoutes from './group_routes.svelte';
     import RouteCoordinates from './route_coordinates.svelte';
     import Tabs from './Tabs.svelte';
+    import Revenue from './revenue.svelte';
+    import {Button, Input} from 'flowbite-svelte';
 
     export let data;
     let access = false;
@@ -72,11 +74,12 @@
     if (group_routes) valueCount++;
     if (route_coordinates) itemTuples.push({ label: 'Route Coordinates',value: valueCount, component: RouteCoordinates, prop: route_coordinates});
     if (route_coordinates) valueCount++;
+    itemTuples.push({ label: 'Revenue',value: valueCount, component: Revenue, prop: null});
 </script>
 {#if !access}
-    <input type="text" bind:value={username} placeholder="username" />
-    <input type="password" bind:value={password} placeholder="password" />
-    <button on:click={() => login()}>Login</button>
+    <Input  bind:value={username} placeholder="username" />
+    <Input  bind:value={password} placeholder="password" />
+    <Button on:click={() => login()}>Login</Button>
     <p>{errorMessage}</p>
 {/if}  
 {#if access}
