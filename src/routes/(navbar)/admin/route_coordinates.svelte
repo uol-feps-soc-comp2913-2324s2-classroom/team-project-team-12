@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { route_coordinate } from '$lib/interfaces';
+    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     import Decimal from 'decimal.js';
     export let prop: route_coordinate[];
     let route_coordinates = prop;
@@ -83,6 +84,7 @@
 
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                route_coordinates = route_coordinates.filter((rc) => rc.id !== route_coordinate.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }
@@ -93,54 +95,52 @@
 
     var lockedFields = 1;
 </script>
-<input type="text" bind:value={searchTerm} placeholder="Search..." />
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Route ID</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
-            <th>Order Position</th>
-        </tr>
-    </thead>
-    <tbody>
+<Input type="text" bind:value={searchTerm} placeholder="Search..." />
+<Table>
+    <TableHead>
+            <TableHeadCell>ID</TableHeadCell>
+            <TableHeadCell>Route ID</TableHeadCell>
+            <TableHeadCell>Latitude</TableHeadCell>
+            <TableHeadCell>Longitude</TableHeadCell>
+            <TableHeadCell>Order Position</TableHeadCell>
+    </TableHead>
+    <TableBody>
         {#each route_coordinates.filter((rc) => (rc.route_id != null && rc.route_id.toString().includes(searchTerm))).slice(currentPage * route_coordinatesPerPage, (currentPage + 1) * route_coordinatesPerPage) as route_coordinate}
             {#if lockedFields == 1}
-                <tr>
-                    <td>{route_coordinate.id}</td>
-                    <td>{route_coordinate.route_id}</td>
-                    <td>{route_coordinate.latitude}</td>
-                    <td>{route_coordinate.longitude}</td>
-                    <td>{route_coordinate.order_position}</td>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{route_coordinate.id}</TableBodyCell>
+                    <TableBodyCell>{route_coordinate.route_id}</TableBodyCell>
+                    <TableBodyCell>{route_coordinate.latitude}</TableBodyCell>
+                    <TableBodyCell>{route_coordinate.longitude}</TableBodyCell>
+                    <TableBodyCell>{route_coordinate.order_position}</TableBodyCell>
+                </TableBodyRow>
             {/if}
             {#if lockedFields == 0}
-                <tr>
-                    <td>{route_coordinate.id}</td>
-                    <td><input type="text" bind:value={route_coordinate.route_id} /></td>
-                    <td><input type="text" bind:value={route_coordinate.latitude} /></td>
-                    <td><input type="text" bind:value={route_coordinate.longitude} /></td>
-                    <td><input type="text" bind:value={route_coordinate.order_position} /></td>
-                    <button on:click={() => handleUpdate(route_coordinate)}>Submit</button>
-                    <button on:click={() => deleteRouteCoordinate(route_coordinate)}>Delete</button>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{route_coordinate.id}</TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route_coordinate.route_id} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route_coordinate.latitude} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route_coordinate.longitude} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={route_coordinate.order_position} /></TableBodyCell>
+                    <Button on:click={() => handleUpdate(route_coordinate)}>Submit</Button>
+                    <Button on:click={() => deleteRouteCoordinate(route_coordinate)}>Delete</Button>
+                </TableBodyRow>
             {/if}
         {/each}
-    </tbody>
-</table>
-<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+    </TableBody>
+</Table>
+<Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if lockedFields == 0}
-    <button on:click={handleUpdateAll}>Update All</button>
+    <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
-<button on:click={nextPage} disabled={(currentPage + 1) * route_coordinatesPerPage >= route_coordinates.length}>Next</button>
+<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button on:click={nextPage} disabled={(currentPage + 1) * route_coordinatesPerPage >= route_coordinates.length}>Next</Button>
 <div>
     Results Per Page
-    <select bind:value={route_coordinatesPerPage} on:change={() => currentPage = 0} >
+    <Select bind:value={route_coordinatesPerPage} on:change={() => currentPage = 0} >
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>
         <option value={100}>100</option>
-    </select>
+    </Select>
 </div>

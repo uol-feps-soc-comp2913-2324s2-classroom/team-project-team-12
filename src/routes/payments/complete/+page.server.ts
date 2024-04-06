@@ -21,7 +21,7 @@ export async function load({ cookies, url }) {
                     },
                     data: {
                         membership_type: Number(type),
-                        last_payment: currentDate.toISOString(),
+                        subscription_start_date: currentDate.toISOString(),
                         subscription_id: subscriptionId,
                     },
                 })

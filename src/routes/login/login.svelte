@@ -17,8 +17,6 @@
                 body: formData,
             });
 
-            console.log("Status: " + response.status);
-
             const result = await response.json();
 
             if (result.status === 200) {

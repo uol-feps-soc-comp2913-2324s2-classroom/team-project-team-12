@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { group } from '$lib/interfaces';
+    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
 
     export let prop: group[];
     let groups = prop;
@@ -22,7 +23,7 @@
         const formData = new FormData();
         formData.append('type', 'updateGroup');
         formData.append('id', group.id.toString());
-        if (group.group_name) formData.append('group_name', group.group_name.toString());
+        if (group.name) formData.append('name', group.name.toString());
         if (group.creator) formData.append('creator', group.creator.toString());
         if (group.publicity) formData.append('publicity', group.publicity.toString());
 
@@ -81,6 +82,7 @@
 
             if (response.ok) {
                 console.log(result.message || 'Delete successful');
+                groups = groups.filter((g) => g.id !== group.id);
             } else {
                 console.error(result.message || 'Delete failed');
             }
@@ -92,51 +94,49 @@
     var lockedFields = 1;
 </script>
 
-<input type="text" bind:value={searchTerm} placeholder="Search" />
-<table>
-    <thead>
-        <tr>
-            <th>id</th>
-            <th>group_name</th>
-            <th>creator</th>
-            <th>publicity</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each groups.filter((g) => (g.id.toString().includes(searchTerm) || g.group_name.includes(searchTerm) || g.creator.toString().includes(searchTerm))).slice(currentPage * groupsPerPage, (currentPage + 1) * groupsPerPage) as group}
+<Input type="text" bind:value={searchTerm} placeholder="Search" />
+<Table>
+    <TableHead>
+            <TableHeadCell>id</TableHeadCell>
+            <TableHeadCell>name</TableHeadCell>
+            <TableHeadCell>creator</TableHeadCell>
+            <TableHeadCell>publicity</TableHeadCell>
+    </TableHead>
+    <TableBody>
+        {#each groups.filter((g) => (g.id.toString().includes(searchTerm) || g.name.includes(searchTerm) || g.creator.toString().includes(searchTerm))).slice(currentPage * groupsPerPage, (currentPage + 1) * groupsPerPage) as group}
             {#if lockedFields == 1}
-                <tr>
-                    <td>{group.id}</td>
-                    <td>{group.group_name}</td>
-                    <td>{group.creator}</td>
-                    <td>{group.publicity}</td>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{group.id}</TableBodyCell>
+                    <TableBodyCell>{group.name}</TableBodyCell>
+                    <TableBodyCell>{group.creator}</TableBodyCell>
+                    <TableBodyCell>{group.publicity}</TableBodyCell>
+                </TableBodyRow>
             {/if}
             {#if lockedFields == 0}
-                <tr>
-                    <td>{group.id}</td>
-                    <td><input type="text" bind:value={group.group_name} /></td>
-                    <td><input type="text" bind:value={group.creator} /></td>
-                    <td><input type="text" bind:value={group.publicity} /></td>
-                    <button on:click={() => handleUpdate(group)}>Submit</button>
-                    <button on:click={() => deleteGroup(group)}>Delete</button>
-                </tr>
+                <TableBodyRow>
+                    <TableBodyCell>{group.id}</TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group.name} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group.creator} /></TableBodyCell>
+                    <TableBodyCell><Input type="text" bind:value={group.publicity} /></TableBodyCell>
+                    <Button on:click={() => handleUpdate(group)}>Submit</Button>
+                    <Button on:click={() => deleteGroup(group)}>Delete</Button>
+                </TableBodyRow>
             {/if}
         {/each}
-    </tbody>
-</table>
-<button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</button>
+    </TableBody>
+</Table>
+<Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if !lockedFields}
-    <button on:click={handleUpdateAll}>Update All</button>
+    <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<button on:click={prevPage} disabled={currentPage === 0}>Previous</button>
-<button on:click={nextPage} disabled={(currentPage + 1) * groupsPerPage >= groups.length}>Next</button>
+<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button on:click={nextPage} disabled={(currentPage + 1) * groupsPerPage >= groups.length}>Next</Button>
 <div>
     Results Per Page
-    <select bind:value={groupsPerPage} on:change={() => currentPage = 0}>
+    <Select bind:value={groupsPerPage} on:change={() => currentPage = 0}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>
         <option value={100}>100</option>
-    </select>
+    </Select>
 </div>

@@ -1,14 +1,33 @@
 <title>Journeys</title>
 <script>
+  // @ts-nocheck
+  import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   export let data;
-  export const friends = data.currentUserFriends || [];
+  export let friends;
   import FriendList from './friendlist.svelte';
   import UnaddedList from './unaddedlist.svelte';
   import RequestsList from './requests.svelte';
 
-  const currentUserFriends = data.currentUserFriends || [];
-  const friendRequests = data.friendRequests || [];
-  const unaddedPeople = data.unaddedPeople || [];
+  let currentUserFriends;
+  let friendRequests;
+  let unaddedPeople;
+  let requested;
+
+  onMount(() => {
+        // Check if data is invalid and redirect if necessary
+        if (data.invalid) {
+            goto('/');
+        }
+  });
+
+  if(data.user){
+    friends = data.currentUserFriends || []
+    currentUserFriends = data.currentUserFriends || [];
+    friendRequests = data.friendRequests || [];
+    unaddedPeople = data.unaddedPeople || [];
+    requested = data.requested || [];
+  }
 
 </script>
 
@@ -22,7 +41,7 @@
   </div>
 
 <div class="unadded-people-container">
-    <UnaddedList people={unaddedPeople} />
+    <UnaddedList people={unaddedPeople} requested={requested}/>
   </div>
 </div>
 
