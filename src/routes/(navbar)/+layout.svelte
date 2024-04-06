@@ -33,7 +33,7 @@
                 href="/profile/{data.user}"
                 class="hidden font-semibold xl:inline-block"
                 size="lg"
-                rel="noreferrer"
+                rel="external"
             >
                 {data.user}
             </ToolbarButton>

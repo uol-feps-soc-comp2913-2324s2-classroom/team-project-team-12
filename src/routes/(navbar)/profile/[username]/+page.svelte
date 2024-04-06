@@ -17,60 +17,29 @@
     export const groupCount = data.groupCount;
     export const isFriend = data.isFriend;
     export const friendRequest = data.friendRequest;
-    export const profile = data.profile;
+    export const profile = data.logged;
     export const userRoutes = data.userRoutes;
     export const resolvedRoutes = data.resolvedRoutes;
     import type { RouteEntry } from '$lib/interfaces';
-    import { Button } from 'flowbite-svelte';
-    import { Tabs, TabItem } from 'flowbite-svelte';
+    import { Button, Card, Tabs, TabItem, Listgroup, Avatar } from 'flowbite-svelte';
 
     import { SingleRoute } from '$lib';
 
-    let activeTab = 'Friends: ' + friendCount;
-    let tabs = ['Friends: ' + friendCount, 'Groups: ' + groupCount, 'Routes'];
-    let privacy = 1;
+    function getInitials(fullName) {
+        // Split the full name into an array of words
+        const nameArray = fullName.split(" ");
+        
+        // Initialize an empty string to store initials
+        let initials = "";
 
-    function setActiveTab(tab) {
-        activeTab = tab;
+        // Loop through each word in the name array
+        nameArray.forEach(word => {
+            // Add the first character of each word to the initials string
+            initials += word.charAt(0).toUpperCase();
+        });
+
+        return initials;
     }
-
-    function hashUserId(userId) {
-        return (userId * 2654435761) % Math.pow(2, 32); 
-    }
-
-    function getRandomColor(userId) {
-        const hashedUserId = hashUserId(userId);
-        const color = hashedUserId.toString(16).slice(-6); 
-        return color;
-    }
-
-    function getInitials(firstName, lastName) {
-        const firstInitial = firstName.charAt(0).toUpperCase();
-        const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
-        return firstInitial + lastInitial;
-    }
-
-    function getDefaultProfilePictureUrl(user) {
-        const initials = getInitials(user.first_name, user.last_name);
-        const color = getRandomColor(user.id);
-        const imageSize = 200; 
-        const imageUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&size=${imageSize}`;
-        return imageUrl;
-    }
-
-    function getDefaultGroup(group) {
-        const color = getRandomColor(group.id);
-        const imageSize = 200; 
-        const imageUrl = `https://ui-avatars.com/api/?name=${group.name}&background=${color}&size=${imageSize}`;
-        return imageUrl;
-    }
-
-    const userPictureUrl = getDefaultProfilePictureUrl(user);
-
-    const profilePictureUrls = userFriends.map(user => getDefaultProfilePictureUrl(user))
-
-    
-    const groupPictureUrls = userGroups.map(group => getDefaultGroup(group));
 
     export let people: { id: number, name: string, first_name: string, last_name: string }[] = [];
 
@@ -134,8 +103,6 @@
     };
 
 </script>
-
-<link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
  
 <style>
     body {
@@ -144,211 +111,12 @@
     
     
     .main-container {
-        height: 100vh;
+        height: 80vh;
         width: 100vw;
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
-    }
-
-    .profile-picture { 
-        display: inline-block; 
-        position: relative; 
-        width: 100px; 
-        height: 100px; 
-        overflow: hidden; 
-        border-radius: 50%; 
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-    } 
-        
-    .profile-picture img { 
-        width: auto; 
-        height: 100%; 
-    }
-  
-    .profile-container {
-        display: flex;
-        flex-direction: column;
-        width: 40%;
-        height: 50%;
-    }
-  
-    .tabs {
-        display: flex;
-        justify-content: space-between;
-        border-radius: 5px 5px 0 0;
-    }
-  
-    .tab {
-        padding: 10px 15px;
-        border: 1px solid #ccc;
-        background-color: #f9f9f9;
-        border-radius: 5px 5px 0 0;
-        width: 33.3333%;
-        text-align: center;
-        font-family: "Poppins";
-    }
-  
-    .tab:hover {
-        background-color: #ddd;
-    }
-  
-    .tab.active {
-        background-color: white;
-        border-bottom: 1px solid white;
-    }
-  
-    .tab-content {
-        border: 1px solid #ccc;
-        border-radius: 0 0 5px 5px;
-        border-top: none;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-    }
-
-    .tab-content-priv {
-        border: 1px solid #ccc;
-        border-radius: 0 0 5px 5px;
-        border-top: none;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        display: flex;  
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-    }
-    
-
-    .name{
-        font-size: 20px;
-        font-family: "Poppins";
-    }
-
-    .username{
-        font-size: 10px;
-        font-family: "Poppins";
-        color: #1c1c1c;
-        margin-bottom: 10px;
-    }
-
-    .friends-list {
-        width: 30vw;
-        height: 40vh;
-    }
-
-    .friend {
-        display: flex;
-        align-items: center;
-        margin: 20px;
-        border: 1px solid #ccc;
-        padding: 20px;
-        border-radius: 5px;
-    }
-
-    .friend-profile-picture {
-        width: 100px;
-        height: 100px;
-        overflow: hidden;
-        border-radius: 50%;
-        margin-right: 15px;
-    }
-
-    .friend-profile-picture img {
-        width: 100%;
-        height: 100%;
-    }
-
-    .friend-details {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .friend-name {
-        font-size: 16px;
-        font-family: "Poppins";
-        color: #1c1c1c;
-    }
-
-    .user-name {
-        font-size: 13px;
-        font-family: "Poppins";
-        color: #1c1c1c;
-    }
-
-    .add-button {
-        padding: 5px 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: "Poppins";
-        font-size: 10px;
-        margin-left: 5px;
-    }
-
-    .request-button {
-        padding: 5px 10px;
-        background-color: #c4c4c4;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: "Poppins";
-        font-size: 10px;
-        margin-left: 5px;
-    }
-
-    .remove-button {
-        padding: 5px 10px;
-        background-color: #ff504a;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: "Poppins";
-        font-size: 10px;
-        margin-left: 5px;
-    }
-
-    .account-button {
-        padding: 5px 10px;
-        background-color: #696969;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: "Poppins";
-        font-size: 10px;
-        margin-left: 5px;
-    }
-
-    .add-button:hover {
-        background-color: #0056b3;
-    }
-
-    .private-message {
-        text-align: center;
-        font-size: 18px;
-        color: #1c1c1c;
-        margin-bottom: 15px;
-    }
-
-    .request-button:hover {
-        opacity: 0.75;
-    }
-
-    a {
-        text-decoration: none;
-    }
-
-    .add-button {
-        margin-left: 20px;
-        font-size: 10px;
     }
 
     .map-container {
@@ -362,49 +130,110 @@
 
 <body>
     <div class="main-container">
-        <div class="profile-picture"> <img src={userPictureUrl} alt="" /></div>
-        <div class="name">{user.first_name} {user.last_name}</div>
-        <div class="username">{user.username}</div>
-            {#if user.username == profile.username}
-                <Button color="green" href="../../account">My Account</Button>
-            {:else if !isFriend && friendRequest == null}
-                <Button color="blue" on:click={() => addFriend(user)} >Request</Button>
-            {:else if friendRequest?.friend_request }
-                <Button color="light" on:click={() => deleteFriend(user)} >Requested</Button>
+        <Card padding="lg" size="lg">
+            <div class="flex flex-col items-center pb-4">
+                <Avatar size="lg">{getInitials(user.first_name + " " + user.last_name)}</Avatar>
+                <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{user.first_name} {user.last_name}</h5>
+                <span class="text-sm text-gray-500 dark:text-gray-400">@{user.username}</span>
+                <div class="flex mt-4 space-x-3 rtl:space-x-reverse lg:mt-6">
+                    {#if user.username == profile.username}
+                        <Button color="green" href="../../account">My Account</Button>
+                    {:else if !isFriend && friendRequest == null}
+                        <Button color="blue" on:click={() => addFriend(user)} >Request</Button>
+                    {:else if friendRequest?.friend_request }
+                        <Button color="light" on:click={() => deleteFriend(user)} >Requested</Button>
+                    {:else}
+                        <Button color="red" on:click={() => deleteFriend(user)} >Remove</Button>
+                    {/if}
+                </div>
+            </div>
+            {#if user.default_publicity == 2 || (user.default_publicity == 1 && isFriend) || user.username == profile.username}
+                <Tabs style="full" tabStype="full" defaultClass="flex rounded-lg divide-x rtl:divide-x-reverse divide-gray-200 shadow dark:divide-gray-700">
+                    <TabItem class="w-full" open>
+                        <span slot="title">Friends</span>
+                        {#if userFriends.length == 0}
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no friends.</div>
+                        {:else}
+                            <Listgroup items={userFriends} let:item class="border-0 dark:!bg-transparent">
+                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <Avatar>{getInitials(item.first_name + " " + item.last_name)}</Avatar>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {item.first_name} {item.last_name}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            @{item.username}
+                                        </p>
+                                    </div>
+                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <Button color="light" rel="external" href="../profile/{item.username}">View Profile</Button>
+                                    </div>
+                                </div>   
+                            </Listgroup>
+                        {/if}
+                    </TabItem>
+                    <TabItem class="w-full" >
+                        <span slot="title">Groups</span>
+                        {#if userGroups.length == 0}
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no groups.</div>
+                        {:else}
+                            <Listgroup items={userGroups} let:item class="border-0 dark:!bg-transparent">
+                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <Avatar>{getInitials(item.name)}</Avatar>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {item.name}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            Members: {item.memberCount}
+                                        </p>
+                                    </div>
+                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        <Button color="light" href="../../group/{item.name}">View Group</Button>
+                                    </div>
+                                </div>
+                            </Listgroup>
+                        {/if}
+                    </TabItem>
+                    <TabItem class="w-full" >
+                        <span slot="title">Routes</span>
+                        {#if resolvedRoutes.length == 0}
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no Routes.</div>
+                        {:else}
+                            <Listgroup items={resolvedRoutes} let:item class="border-0 dark:!bg-transparent">
+                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <div class="map-container">
+                                        <SingleRoute route={item}/>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {item.name}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            Date Created: {item.createdOn.toLocaleString()}
+                                        </p>
+                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            Route Duration: {getRouteDuration(item)}
+                                        </p>
+                                    </div>
+                                </div>
+                            </Listgroup>
+                        {/if}
+                    </TabItem>    
+                </Tabs>
+            {:else if user.default_publicity == 0}
+                <div class="flex flex-col items-center pb-4">
+                    <br>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">This users profile is set to private.</span>
+                </div>
             {:else}
-                <Button color="red" on:click={() => deleteFriend(user)} >Remove</Button>
+                <div class="flex flex-col items-center pb-4">
+                    <br>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">This users profile is set to private, friend this user to view more.</span>
+                </div>
             {/if}
-            <br>
-        <div class="friends-list">
-            <Tabs style="full" tabStype="full" defaultClass="flex rounded-lg divide-x rtl:divide-x-reverse divide-gray-200 shadow dark:divide-gray-700">
-                <TabItem class="w-full" open>
-                    <span slot="title">Friends</span>
-                    {#each userFriends as friend, i}
-                    <a rel="external" href="../profile/{friend.username}">
-                        <div class="friend">
-                            <div class="friend-profile-picture">
-                                <img src={profilePictureUrls[i]} alt="" />
-                            </div>
-                            <div class="friend-details">
-                                <div class="friend-name">{friend.first_name} {friend.last_name}</div>
-                                <div class="user-name">@{friend.username}</div>
-                            </div>
-                        </div>
-                    </a>
-                    {/each}
-                </TabItem>
-                <TabItem class="w-full" >
-                    <span slot="title">Groups</span>
-                    {#each userGroups as group, i}
-                        <a rel="external" href="../group/{group.name}">
-                            <div class="friend">
-                                <div class="friend-profile-picture">
-                                    <img src={groupPictureUrls[i]} alt="" />
-                                </div>
-                                <div class="friend-details">
-                                    <div class="friend-name">{group.name}</div>
-                                    <div class="user-name">Members: {group.memberCount}</div>
-                                </div>
+        </Card>
+    </div>
                             </div>
                         </a>
                     {/each}
