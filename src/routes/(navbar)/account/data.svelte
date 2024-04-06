@@ -37,7 +37,7 @@
     <table>
         <tr>
             <td style="display:flex;">
-                <UserOutline color="orange" style="margin-right: 10px;"></UserOutline>
+                <UserOutline size="lg" color="orange" style="margin-right: 10px;"></UserOutline>
                 <div>
                     <span>USERNAME</span><br>
                     <span>@{username}</span>
@@ -49,7 +49,7 @@
         </tr>
         <tr>
             <td style="display:flex;">
-                <LockOutline color="orange" style="margin-right: 10px;"></LockOutline>
+                <LockOutline size="lg" color="orange" style="margin-right: 10px;"></LockOutline>
                 PASSWORD<br>•••••••</td>
             <td style="padding-right: 10px;">
                 <EditPassword />
@@ -57,13 +57,13 @@
         </tr>
         <tr>
             <td style="display:flex;">
-                <DollarOutline color="orange" style="margin-right:10px;"></DollarOutline>
+                <DollarOutline size="lg" color="orange" style="margin-right:10px;"></DollarOutline>
                 PAYMENT PLAN <br>{plan}</td>
             <td style="padding-right: 10px;"><Button color="light" on:click={switchPayment}>Edit</Button></td>
         </tr>
         <tr>
             <td style="display:flex;">
-                <VideoCameraOutline color="orange" style="margin-right: 10px;"></VideoCameraOutline>
+                <VideoCameraOutline size="lg" color="orange" style="margin-right: 10px;"></VideoCameraOutline>
                 PRIVACY<br>{privacy}</td>
             <td style="padding-right: 10px;">
                 <EditPrivacy />

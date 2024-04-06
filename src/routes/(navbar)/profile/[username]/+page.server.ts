@@ -10,12 +10,12 @@ export const load = (async ({ params: { username }, cookies }) => {
 
     const profile = await prisma.user.findUnique({
         where: { username: profileUser },
-    });
+    }) as user;
 
     // Find the user
     const user = await prisma.user.findUnique({
         where: { username: username },
-    });
+    }) as user;
 
     if (!user) {
         error(404, {
@@ -32,7 +32,7 @@ export const load = (async ({ params: { username }, cookies }) => {
     // Retrieve a route's path
     const getRoutePath = async (id: number): Promise<Path> => {
         // Retrieve the path from the database
-        let path = await prisma.route_coordinates.findMany({
+        const path = await prisma.route_coordinates.findMany({
             where: { route_id: id },
             orderBy: { order_position: 'asc' },
         });
@@ -42,10 +42,10 @@ export const load = (async ({ params: { username }, cookies }) => {
     };
 
     // Get each route for the user
-    let userRoutes = await prisma.routes.findMany({ where: { creator: user.id } });
+    const userRoutes = await prisma.routes.findMany({ where: { creator: user.id } });
 
     // Parse the route data as an array of `RouteEntry` objects
-    let userRoutesData = userRoutes.map(
+    const userRoutesData = userRoutes.map(
         async (r): Promise<RouteEntry> => ({
             name: r.route_name,
             creator: username,

@@ -8,7 +8,6 @@
     
     export let user: user;
     export let data;
-    let userPictureUrl: string;
 
     onMount(() => {
         // Check if data is invalid and redirect if necessary
@@ -19,17 +18,6 @@
 
     if(data.curUser){
         user = data.curUser;
-        userPictureUrl = getDefaultProfilePictureUrl(user);
-    }
-
-    function hashUserId(userId) {
-        return (userId * 2654435761) % Math.pow(2, 32); 
-    }
-
-    function getRandomColor(userId) {
-        const hashedUserId = hashUserId(userId);
-        const color = hashedUserId.toString(16).slice(-6); // Convert to hexadecimal and take the last 6 characters
-        return color;
     }
 
     function getInitials(firstName, lastName) {
@@ -38,17 +26,9 @@
         return firstInitial + lastInitial;
     }
 
-    function getDefaultProfilePictureUrl(user) {
-        const initials = getInitials(user.first_name, user.last_name);
-        const color = getRandomColor(user.id);
-        const imageSize = 200; // Adjust this size according to your requirement
-        const imageUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&size=${imageSize}`;
-        return imageUrl;
-    }
-
 </script>
 
-<Card style="margin: 0 auto; margin-top:20px;">
+<Card class="bg-gray-100 dark:bg-gray-700" style="margin: 0 auto; margin-top:20px;">
     <div class="header">
         <div class="flex flex-col items-center pb-4">
             <Avatar size="lg">{getInitials(user.first_name,user.last_name)}</Avatar>

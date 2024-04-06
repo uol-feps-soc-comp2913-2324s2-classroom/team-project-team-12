@@ -40,7 +40,6 @@
                     location.reload();
                 } else {
                     // Handle error updating password
-                    console.error('Error updating password');
                     error = 'Error updating password.';
                 }
             } else {
