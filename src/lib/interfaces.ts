@@ -12,11 +12,13 @@ export interface RouteEntry {
     path: Path;
     group: string | null;
     publicity: number;
+    showOnMap: boolean;
 }
 
 export interface groupRouteEntry {
     group_name: string;
     routes: RouteEntry[];
+    showOnMap: boolean;
 }
 
 export interface user {

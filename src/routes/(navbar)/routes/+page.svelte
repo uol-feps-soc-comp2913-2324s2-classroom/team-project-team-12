@@ -30,6 +30,8 @@ let userData = data.props.user;
 console.log('admin groups', adminGroupNames);
 
 
+
+
 const addRouteToGroup = (route: RouteEntry) => {
     console.log('adding ', route.name, 'to group ', route.group);
     const formData = new FormData();
@@ -82,7 +84,7 @@ const addRouteToGroup = (route: RouteEntry) => {
     });
     const updateCurrentPage = (value: string) => {
         currentPage = pageDict[value as keyof typeof pageDict];
-        console.log('updating current page to ', value);
+        //console.log('updating current page to ', value);
     };
 
     let alertStatus = 0;
@@ -91,54 +93,60 @@ const addRouteToGroup = (route: RouteEntry) => {
      alertStatus = 0;
     };
 </script>
-{#if alertStatus == 1}
-    <Alert type="success" dismissable on:close={closeAlert}>
-        <P>Route added to group successfully!</P>
-    </Alert>
-{/if}
-{#if alertStatus == 2}
-    <Alert type="danger" dismissable on:close={closeAlert}>
-        <P>Failed to add route to group!</P>
-    </Alert>
-{/if}
-{#if currentPage == 0}
-<Input type="text" bind:value={searchTerm} placeholder="Search routes..." />
-<RouteHorizontalScroll nameOfList="Your Routes" routeEntries={userRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} {updateCurrentPage}/>
-<RouteHorizontalScroll nameOfList="Friends Routes" routeEntries={friendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} {updateCurrentPage} />
-<RouteHorizontalScroll nameOfList="Public Routes" routeEntries={publicRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} {updateCurrentPage}/>
-{#each groupRouteEntries as groupRouteEntry (groupRouteEntry)}
-        {#if groupRouteEntry.routes && groupRouteEntry.routes.length > 0}
-            <RouteHorizontalScroll 
+{#if userData}
+    
+    {#if alertStatus == 1}
+        <Alert type="success" dismissable on:close={closeAlert}>
+            <P>Route added to group successfully!</P>
+        </Alert>
+    {/if}
+    {#if alertStatus == 2}
+        <Alert type="danger" dismissable on:close={closeAlert}>
+            <P>Failed to add route to group!</P>
+        </Alert>
+    {/if}
+    {#if currentPage == 0}
+    <Input type="text" bind:value={searchTerm} placeholder="Search routes..." />
+    <RouteHorizontalScroll user_id={userData.id} nameOfList="Your Routes" routeEntries={userRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} showGroupOnMap={false} {updateCurrentPage}/>
+    <RouteHorizontalScroll user_id={userData.id} nameOfList="Friends Routes" routeEntries={friendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} showGroupOnMap={false} {updateCurrentPage} />
+    <RouteHorizontalScroll user_id={userData.id} nameOfList="Public Routes" routeEntries={publicRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} showGroupOnMap={false} {updateCurrentPage}/>
+    {#each groupRouteEntries as groupRouteEntry (groupRouteEntry)}
+            {#if groupRouteEntry.routes && groupRouteEntry.routes.length > 0}
+                <RouteHorizontalScroll 
+                    user_id={userData.id}
+                    nameOfList={groupRouteEntry.group_name} 
+                    routeEntries={groupRouteEntry.routes} 
+                    adminGroupNames={adminGroupNames} 
+                    addRouteToGroup={addRouteToGroup} 
+                    searchTerm={searchTerm}
+                    showGroupOnMap={groupRouteEntry.showOnMap}
+                    {updateCurrentPage} 
+                />
+            {/if}
+        {/each}
+    {/if}
+    {#if currentPage == 1}
+        <RouteGridPage nameOfList="Your Routes" routeEntries={userRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
+    {/if}
+    {#if currentPage == 2}
+        <RouteGridPage nameOfList="Friends Routes" routeEntries={friendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
+    {/if}
+    {#if currentPage == 3}
+        <RouteGridPage nameOfList="Public Routes" routeEntries={publicRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
+    {/if}
+    {#each groupRouteEntries as groupRouteEntry (groupRouteEntry)}
+        {#if currentPage == 4 + groupRouteEntries.indexOf(groupRouteEntry)}
+            <RouteGridPage 
                 nameOfList={groupRouteEntry.group_name} 
                 routeEntries={groupRouteEntry.routes} 
                 adminGroupNames={adminGroupNames} 
                 addRouteToGroup={addRouteToGroup} 
-                searchTerm={searchTerm} 
                 {updateCurrentPage} 
             />
         {/if}
     {/each}
+
 {/if}
-{#if currentPage == 1}
-    <RouteGridPage nameOfList="Your Routes" routeEntries={userRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
-{/if}
-{#if currentPage == 2}
-    <RouteGridPage nameOfList="Friends Routes" routeEntries={friendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
-{/if}
-{#if currentPage == 3}
-    <RouteGridPage nameOfList="Public Routes" routeEntries={publicRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
-{/if}
-{#each groupRouteEntries as groupRouteEntry (groupRouteEntry)}
-    {#if currentPage == 4 + groupRouteEntries.indexOf(groupRouteEntry)}
-        <RouteGridPage 
-            nameOfList={groupRouteEntry.group_name} 
-            routeEntries={groupRouteEntry.routes} 
-            adminGroupNames={adminGroupNames} 
-            addRouteToGroup={addRouteToGroup} 
-            {updateCurrentPage} 
-        />
-    {/if}
-{/each}
 
 
 

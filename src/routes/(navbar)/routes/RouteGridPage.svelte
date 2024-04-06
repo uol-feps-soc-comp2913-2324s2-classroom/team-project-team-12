@@ -11,9 +11,8 @@
 <script lang="ts">
     import type { RouteEntry} from '$lib/interfaces';
     import { Button, Input, Select,Heading, P, A, Mark, Secondary } from 'flowbite-svelte';
-    import { ArrowLeftOutline } from 'flowbite-svelte-icons';
+    import { ArrowLeftOutline, EyeSlashOutline, EyeOutline } from 'flowbite-svelte-icons';
     import SingleRoute from "$lib/components/SingleRoute.svelte";
-    import { includes } from 'ramda';
     export let addRouteToGroup: (route:RouteEntry) => void;
     export let routeEntries:RouteEntry[] = [];
     export let nameOfList:string = "";
@@ -37,6 +36,7 @@
             <div class="grid-item">
                 <P>{route.name}</P>
                 <P>{route.completionTime}</P>
+                <P>Publicity: {route.publicity}</P>
                 <P>Uploaded by {route.creator} </P>
                 <P>on {route.createdOn.toLocaleDateString()} at {route.createdOn.toLocaleTimeString()} </P>
                 <SingleRoute {route} />

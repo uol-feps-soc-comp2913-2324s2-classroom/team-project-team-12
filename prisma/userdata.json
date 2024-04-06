@@ -1,6 +1,15 @@
 [
     {
         "user": {
+            "username": "Journeys",
+            "first_name": "Journeys",
+            "last_name": "Admin",
+            "email": "ed19h2c@leeds.ac.uk",
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+        }
+    },
+    {
+        "user": {
             "username": "john_doe",
             "first_name": "John",
             "last_name": "Doe",
@@ -43,5 +52,33 @@
             "email": "paulwhite@example.com",
             "password": "$2b$10$Kf/w/equ0.DAK.DJ5e5dP.atLDAlkvAlPzzKNAWZ68CFqAsyH2WNW"
         }
+    },
+    {
+        "user": {
+            "username": "lisa_green",
+            "first_name": "Lisa",
+            "last_name": "Green",
+            "email": "lisagreen@example.com",
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+        }
+    },
+    {
+        "user": {
+            "username": "david_black",
+            "first_name": "David",
+            "last_name": "Black",
+            "email": "davidblack@example.com",
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+        }
+    },
+    {
+        "user": {
+            "username": "emily_brown",
+            "first_name": "Emily",
+            "last_name": "Brown",
+            "email": "emilybrown@example.com",
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+        }
     }
+
 ]

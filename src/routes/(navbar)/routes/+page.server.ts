@@ -97,7 +97,8 @@ export const load = async ({ cookies }) => {
             completionTime: route.approximate_completion_time,
             path: routePath,
             group: null,
-            publicity: route.publicity as number
+            publicity: route.publicity as number,
+            showOnMap: false
         };
         userRouteEntries.push(RouteEntryObj);
     }
@@ -169,7 +170,8 @@ export const load = async ({ cookies }) => {
             completionTime: route.approximate_completion_time,
             path: routePath,
             group: null,
-            publicity: route.publicity as number
+            publicity: route.publicity as number,
+            showOnMap: false
         };
         friendsRouteEntries.push(RouteEntryObj);
     }
@@ -243,14 +245,16 @@ export const load = async ({ cookies }) => {
                     completionTime: route.approximate_completion_time,
                     path: routePath,
                     group: group.name,
-                    publicity: route.publicity as number
+                    publicity: route.publicity as number,
+                    showOnMap: false
                 };
                 groupRouteEntriesList.push(RouteEntryObj);
             }
         }
         let groupRouteEntryObj: groupRouteEntry = {
             group_name: group.name,
-            routes: groupRouteEntriesList
+            routes: groupRouteEntriesList,
+            showOnMap: false
         };
         groupRouteEntries.push(groupRouteEntryObj);
     }
@@ -289,7 +293,8 @@ export const load = async ({ cookies }) => {
             completionTime: route.approximate_completion_time,
             path: routePath,
             group: null,
-            publicity: route.publicity as number
+            publicity: route.publicity as number,
+            showOnMap: false
         };
         publicRouteEntries.push(RouteEntryObj);
     }
@@ -328,7 +333,47 @@ export const load = async ({ cookies }) => {
         ))
     );
 
-    console.log(friendsRouteEntries.length);
+    //console.log(friendsRouteEntries.length);
+    //for route in routeslist check if route is in routes to show for user
+    const routesToShow = await prisma.routes_to_show.findMany({
+        where: {
+            user_id: user.id
+        }
+    });
+    for (const route of routesToShow) {
+        for (const entry of userRouteEntries) {
+            if (entry.id == route.route_id) {
+                entry.showOnMap = true;
+            }
+        }
+        for (const entry of publicRouteEntries) {
+            if (entry.id == route.route_id) {
+                entry.showOnMap = true;
+            }
+        }
+        for (const entry of friendsRouteEntries) {
+            if (entry.id == route.route_id) {
+                entry.showOnMap = true;
+            }
+        }
+    }
+
+    //for group in groupslist check if group is in groups to show for user
+    const groupsToShow = await prisma.groups_to_show.findMany({
+        where: {
+            user_id: user.id
+        }
+    });
+    for (const group of groupsToShow) {
+        for (const entry of groupRouteEntries) {
+            if (entry.group_name == groupnameDict.get(group.group_id)) {
+                entry.showOnMap = true;
+            } else {
+                entry.showOnMap = false;
+            }
+        }
+    }
+
 
     return {
         props: {
@@ -349,7 +394,7 @@ export const load = async ({ cookies }) => {
 
 export const actions = {
     default: async ({ request }) => {
-        console.log("request recieved");
+        //console.log("request recieved");
         const data = await request.formData();
         const type = data.get("type");
         const userID = data.get("userID");
@@ -360,12 +405,14 @@ export const actions = {
         //Data and type validation
         if (type == null) return { status: 400, body: { error: "No type specified" } };
         if (userID == null) return { status: 400, body: { error: "No user specified" } };
-        if (group_name == null) return { status: 400, body: { error: "No group specified" } };
-        if (groupID == undefined) return { status: 400, body: { error: "Invalid group name" } };
-        if (routeName == null) return { status: 400, body: { error: "No route name specified" } };
-        if (routeID == null) return { status: 400, body: { error: "No route specified" } };
-        //convert routeID to number
+
         if (type == "addRouteToGroup") {
+            if (routeID == null) return { status: 400, body: { error: "No route specified" } };
+            if (group_name == null) return { status: 400, body: { error: "No group specified" } };
+            if (groupID == undefined) return { status: 400, body: { error: "Invalid group name" } };
+            if (routeName == null) return { status: 400, body: { error: "No route name specified" } };
+
+            //convert routeID to number
             const routeIDNum = Number(routeID);
             let routeToAdd = await prisma.routes.findUnique({
                 where: {
@@ -389,9 +436,111 @@ export const actions = {
                             priority: 0
                         }
                     });
-                    console.log("Added route to group");
+                    //console.log("Added route to group");
                 }
             }
             return { status: 200, body:  "Successfully added route"  };
         }
+        if (type == "toggleShowRouteOnMap") {
+            if (routeID == null) return { status: 400, body: { error: "No route specified" } };
+            let show_value = data.get("showOnMap");
+            if (show_value == null) return { status: 400, body: { error: "No show value specified" } };
+            let showOnMap: boolean = false;
+            if (show_value == "1") showOnMap = true;
+            if (show_value == "0") showOnMap = false;
+            let check_if_exists = await prisma.routes_to_show.findMany({
+                where: {
+                    user_id: Number(userID),
+                    route_id: Number(routeID)
+                }
+            });
+            if (check_if_exists.length == 0) {
+                await prisma.routes_to_show.create({
+                    data: {
+                        user_id: Number(userID),
+                        route_id: Number(routeID),
+                    }
+                });
+                //console.log("Added route to show list");
+            }
+            if (check_if_exists.length > 0) {
+                await prisma.routes_to_show.deleteMany({
+                    where: {
+                        user_id: Number(userID),
+                        route_id: Number(routeID)
+                    }
+                });
+                //console.log("Deleted route from show list");
+            }
+            return { status: 200, body: "Successfully toggled show on map" };
+
+        }
+        if (type == "hideAllRoutes") {
+            let check_if_exists = await prisma.routes_to_show.findMany({
+                where: {
+                    user_id: Number(userID)
+                }
+            });
+            if (check_if_exists.length > 0) {
+                await prisma.routes_to_show.deleteMany({
+                    where: {
+                        user_id: Number(userID)
+                    }
+                });
+                //console.log("Deleted all routes from show list");
+            }
+            let check_if_exists2 = await prisma.groups_to_show.findMany({
+                where: {
+                    user_id: Number(userID)
+                }
+            });
+            if (check_if_exists2.length > 0) {
+                await prisma.groups_to_show.deleteMany({
+                    where: {
+                        user_id: Number(userID)
+                    }
+                });
+                //console.log("Deleted all groups from show list");
+            }
+            return { status: 200, body: "Successfully hid all routes" };
+        }
+
+        if (type=="toggleShowGroupOnMap") {
+            let show_value = data.get("showOnMap");
+            if (show_value == null) return { status: 400, body: { error: "No show value specified" } };
+            let showOnMap: boolean = false;
+            if (show_value == "1") showOnMap = true;
+            if (show_value == "0") showOnMap = false;
+            //lookup group id from name
+            if (group_name == null) return { status: 400, body: { error: "No group name specified" } };
+            if (groupID == undefined) return { status: 400, body: { error: "Invalid group name" } };
+
+            let check_if_exists = await prisma.groups_to_show.findMany({
+                where: {
+                    user_id: Number(userID),
+                    group_id: Number(groupID)
+                }
+            });
+            if (check_if_exists.length == 0) {
+                await prisma.groups_to_show.create({
+                    data: {
+                        user_id: Number(userID),
+                        group_id: Number(groupID),
+                    }
+                });
+                //console.log("Added group to show list");
+            }
+            if (check_if_exists.length > 0) {
+                await prisma.groups_to_show.deleteMany({
+                    where: {
+                        user_id: Number(userID),
+                        group_id: Number(groupID)
+                    }
+                });
+                //console.log("Deleted group from show list");
+            }
+            return { status: 200, body: "Successfully toggled show on map" };
+        }
+
+    return { status: 400, body: { error: "Invalid type" } };
 }};
