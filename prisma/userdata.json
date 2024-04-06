@@ -14,7 +14,8 @@
             "first_name": "John",
             "last_name": "Doe",
             "email": "johndoe@example.com",
-            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG",
+            "default_publicity": 0    
         }
     },
     {
@@ -23,7 +24,8 @@
             "first_name": "Jane",
             "last_name": "Smith",
             "email": "janesmith@example.com",
-            "password": "$2b$10$dB9T6kGGOI4SECcA/0hPeOYXopM9rvTLoEE8I3jtlODToHcJhtuaC"
+            "password": "$2b$10$dB9T6kGGOI4SECcA/0hPeOYXopM9rvTLoEE8I3jtlODToHcJhtuaC",
+            "default_publicity": 1   
         }
     },
     {
@@ -32,7 +34,8 @@
             "first_name": "Mike",
             "last_name": "Jones",
             "email": "mikejones@example.com",
-            "password": "$2b$10$cYyEPqOnOoulrF6JX77bi.aSyepYCA57KnzZhAs4wF2ZlSCanzTz6"
+            "password": "$2b$10$cYyEPqOnOoulrF6JX77bi.aSyepYCA57KnzZhAs4wF2ZlSCanzTz6",
+            "default_publicity": 1    
         }
     },
     {
@@ -41,7 +44,8 @@
             "first_name": "Sarah",
             "last_name": "Brown",
             "email": "sarahbrown@example.com",
-            "password": "$2b$10$Oi9.1/el8QBiYpriSiCzRuy1eZlodz82Ik/UXFLXbE/z4J8GxGhIm"
+            "password": "$2b$10$Oi9.1/el8QBiYpriSiCzRuy1eZlodz82Ik/UXFLXbE/z4J8GxGhIm",
+            "default_publicity": 2    
         }
     },
     {
@@ -50,7 +54,8 @@
             "first_name": "Paul",
             "last_name": "White",
             "email": "paulwhite@example.com",
-            "password": "$2b$10$Kf/w/equ0.DAK.DJ5e5dP.atLDAlkvAlPzzKNAWZ68CFqAsyH2WNW"
+            "password": "$2b$10$Kf/w/equ0.DAK.DJ5e5dP.atLDAlkvAlPzzKNAWZ68CFqAsyH2WNW",
+            "default_publicity": 0    
         }
     },
     {
