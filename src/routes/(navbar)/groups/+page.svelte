@@ -4,11 +4,13 @@
   import Grouplist from './grouplist.svelte';
   import Discoverlist from './discoverlist.svelte';
   import Requestlist from './requestlist.svelte';
+  import AddGroups from './addGroup.svelte';
   
 
   const memberOfGroups = data.currentUserGroups;
   const notMemberOfGroups = data.notMemberOfGroups;
   const groupRequests = data.groupRequests;
+  const requested = data.requested;
 
 
 
@@ -24,7 +26,11 @@
   </div>
 
 <div class="discover-groups-container">
-    <Discoverlist {notMemberOfGroups}/>
+    <Discoverlist notMemberOfGroups={notMemberOfGroups} requested={requested}/>
+  </div>
+
+  <div class="add-groups-container">
+    <AddGroups/>
   </div>
 </div>
 
@@ -42,5 +48,10 @@
     margin: 20px;
     padding: 10px;
     border-radius: 5px;
+  }
+  .add-groups-container {
+    position: relative;
+    margin: 20px;
+    padding: 10px;
   }
 </style>

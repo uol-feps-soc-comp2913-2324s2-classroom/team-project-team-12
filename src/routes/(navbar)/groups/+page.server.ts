@@ -61,8 +61,17 @@ export const load = async ({ cookies }) => {
             request: true,
             member: false  // Requests for groups created by the user
         },
+        include: {
+            groups: {
+                select: {
+                    name: true,
+                    id: true
+                }
+            },
+        }
     })
 
+    
     const notMemberOfGroups = await prisma.groups.findMany({
         where: {
             NOT: {
@@ -74,18 +83,13 @@ export const load = async ({ cookies }) => {
         }
     });
     
-    const Groups = await prisma.group_membership.findMany({})
 
-    console.log("Current",currentUserGroups)
-    /*console.log("Requests",groupRequests)
-    console.log("Not",notMemberOfGroups)*/
-
-    console.log("Current",Groups)
 
     return {
         currentUserGroups,
         groupRequests,
         notMemberOfGroups,
+        requested,
     };
 }
 
@@ -95,6 +99,7 @@ export const actions = {
         const data = await request.formData();
         const type = data.get("type");
         const id = Number(data.get("id"));
+        const groupName = String(data.get("groupName"))
 
         try {
 
@@ -188,29 +193,94 @@ export const actions = {
             if (type === "declineRequest") {
                 
               //lookup membership by id
-              const membership = await prisma.group_membership.findUnique({
-                  where: {
-                      id: id
-                    },
-              });
-
-
-              //create copy of membership
-              const updatedMembership = Object.assign({}, membership);
-              //updates membership with new values
-              updatedMembership.request = false;
-              //update membership in database
-              await prisma.group_membership.update({
-                  where: {
-                      id: id,
+            const membership = await prisma.group_membership.findUnique({
+                where: {
+                    id: id
                   },
-                  data: updatedMembership,
+            });
+
+            const firstMembershipId = membership ? membership.id : undefined;
+
+              //delete membership in database
+              await prisma.group_membership.delete({
+                  where: {
+                      id: firstMembershipId,
+                  },
               });
               return {
               status: 200,
               body: membership
               };
           }
+
+          if (type === "cancelRequest") {
+                
+            //lookup membership by id
+          const membership = await prisma.group_membership.findUnique({
+              where: {
+                  id: id
+                },
+          });
+
+          const firstMembershipId = membership ? membership.id : undefined;
+
+            //delete membership in database
+            await prisma.group_membership.delete({
+                where: {
+                    id: firstMembershipId,
+                },
+            });
+            return {
+            status: 200,
+            body: membership
+            };
+        }
+
+        if (type === "createGroup" && user?.id !== undefined) {
+            try {
+                const existingGroup = await prisma.groups.findFirst({
+                    where: {
+                        name: groupName,
+                    }
+                });
+                if (existingGroup) {
+                    return {
+                        status: 400,
+                        body: { error: "This group name is already in use" },
+                    };
+                } else {
+                    // If the group doesn't exist, create a new one
+                    const createdGroup = await prisma.groups.create({
+                        data: {
+                            name: groupName,
+                            creator: user?.id,
+                        },
+                    });
+        
+                    if (!createdGroup) {
+                        throw new Error("Failed to create group");
+                    }
+        
+                    const groupID = createdGroup.id;
+        
+                    await prisma.group_membership.create({
+                        data: {
+                            group_id: groupID,
+                            user_id: user?.id,
+                            request: true,
+                            member: true,
+                            admin: true,
+                        },
+                    });
+                    console.log('Group Created:');
+                }
+            } catch (error) {
+                console.error('Error creating group:', error);
+            } finally {
+                await prisma.$disconnect();
+            }
+        }
+        
 
             else {
                 throw new Error("Invalid action type.");
