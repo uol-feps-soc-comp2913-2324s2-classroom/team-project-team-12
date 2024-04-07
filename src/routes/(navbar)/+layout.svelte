@@ -17,8 +17,10 @@
     <NavUl>
         <NavLi href="/map">Home</NavLi>
         <NavLi href="/friends">Friends</NavLi>
+        <NavLi href="/groups">Groups</NavLi>
         <NavLi href="/routes">Routes</NavLi>
         <NavLi href="/payments">Pricing</NavLi>
+
     </NavUl>
 
     <div class="flex items-center">
