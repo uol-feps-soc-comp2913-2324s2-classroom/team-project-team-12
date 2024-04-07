@@ -1,9 +1,27 @@
 <script>
     import './app.css';
     import { Navbar, NavBrand, NavUl, NavLi, ToolbarButton, DarkMode, NavHamburger } from 'flowbite-svelte';
-    import { GlobeSolid } from 'flowbite-svelte-icons';
+    import { GlobeSolid, ArrowRightToBracketOutline } from 'flowbite-svelte-icons';
+    import { goto } from '$app/navigation';
 
     export let data;
+
+    const logoutUser = async () => {
+        const formData = new FormData();
+        formData.append('type', 'logout');
+
+        const response = await fetch('/logout', {
+                method: 'POST',
+                body: formData,
+        });
+
+        const result = await response.json();
+        
+        // if logged out, go to landing page.
+        if(result.status === 200) {
+            goto('/');
+        }
+    }
 </script>
 
 <Navbar class="drop-shadow">
@@ -15,11 +33,13 @@
         </span>
     </NavBrand>
     <NavUl>
+        {#if data.user != undefined}
         <NavLi href="/map">Home</NavLi>
         <NavLi href="/friends">Friends</NavLi>
         <NavLi href="/groups">Groups</NavLi>
         <NavLi href="/routes">Routes</NavLi>
         <NavLi href="/payments">Pricing</NavLi>
+        {/if}
 
     </NavUl>
 
@@ -33,12 +53,18 @@
                 href="/profile/{data.user}"
                 class="hidden font-semibold xl:inline-block"
                 size="lg"
-                rel="noreferrer"
+                rel="external"
             >
                 {data.user}
             </ToolbarButton>
         {/if}
         <DarkMode />
+        {#if data.user}
+            <ToolbarButton size="lg" on:click={logoutUser}>
+                <ArrowRightToBracketOutline></ArrowRightToBracketOutline>
+            </ToolbarButton>
+        {/if}
+        
     </div>
 </Navbar>
 

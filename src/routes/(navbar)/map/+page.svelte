@@ -12,6 +12,7 @@
         SidebarWrapper,
     } from 'flowbite-svelte';
     import { UploadSolid } from 'flowbite-svelte-icons';
+    import { DownloadSolid } from 'flowbite-svelte-icons';
     import { onMount } from 'svelte';
 
     export let data;
@@ -174,6 +175,11 @@
 <Button class="m-4 absolute bottom-0 right-0" color="red" size="xl" on:click={() => goto('/upload')}>
     <UploadSolid class="me-2" />
     Upload GPS Data</Button
+>
+
+<Button class="m-4 absolute bottom-0 left-0" color="red" size="xl" on:click={() => goto('/download')}>
+    <DownloadSolid class="me-2" />
+    Download GPS Data</Button
 >
 
 <style lang="sass">

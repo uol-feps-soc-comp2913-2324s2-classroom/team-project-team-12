@@ -1,7 +1,5 @@
 <script>
-    import { Modal, Content, Trigger}  from "sv-popup";
     import { GoogleMap, LeafletMap } from '$lib';
-    import Download from './downloadData.svelte';
     import Settings from './settings.svelte';
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
@@ -37,16 +35,6 @@
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <GoogleMap />
         <LeafletMap />
-        <div class="download">
-            <Modal basic>
-                <Content>
-                    <Download />
-                </Content>
-                <Trigger>
-                    <button>Download</button>
-                </Trigger>
-            </Modal>
-        </div>
     </div>
 
     <Settings />

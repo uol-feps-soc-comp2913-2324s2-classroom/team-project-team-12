@@ -6,6 +6,6 @@
     export let route: RouteEntry;
 </script>
 
-<div class="container w-full h-40 mt-2 mb-5 pointer-events-none">
+<div class="container w-full h-full pointer-events-none">
     <LeafletMap style="CartoDB.VoyagerNoLabels" userRoutes={[route]} selectedRoute={route} />
 </div>

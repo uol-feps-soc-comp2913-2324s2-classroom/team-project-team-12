@@ -4,11 +4,21 @@ import type { LatLngTuple } from 'leaflet';
 export type Path = LatLngTuple[];
 
 export interface RouteEntry {
+    id: number;
     name: string;
     creator: string;
     createdOn: Date;
     completionTime: number;
     path: Path;
+    group: string | null;
+    publicity: number;
+    showOnMap: boolean;
+}
+
+export interface groupRouteEntry {
+    group_name: string;
+    routes: RouteEntry[];
+    showOnMap: boolean;
 }
 
 export interface user {

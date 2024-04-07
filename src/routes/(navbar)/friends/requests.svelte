@@ -71,7 +71,7 @@
           <Avatar src={getDefaultProfilePictureUrl(request)} size="xs" />
           <span>{request.name}</span>
         </a>
-        <button on:click={() => acceptFriend(request)} class="flex items-center p-1 text-sm font-medium text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-500 hover:underline rounded-b-lg">
+        <button on:click={() => acceptFriend(request)} class="flex items-center p-1 text-sm font-medium text-green-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-green-500 hover:underline rounded-b-lg">
           Accept
         </button>
         <button on:click={() => declineFriend(request)} class="flex items-center p-1 text-sm font-medium text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-500 hover:underline rounded-b-lg">

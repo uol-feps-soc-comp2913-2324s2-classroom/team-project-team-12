@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { group_membership } from '$lib/interfaces';
-    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+    import {Alert, Button, Input,Select,P, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     export let prop: group_membership[];
     let group_memberships = prop;
 
@@ -19,6 +19,8 @@
         }
     };
 
+    let currentErrors: string[] = [];
+
     const handleUpdate = async (group_membership: group_membership) => {
         const formData = new FormData();
         formData.append('type', 'updateGroupMembership');
@@ -31,48 +33,52 @@
         console.log(group_membership.admin);
         try {
             if (!formData.has('id')) {
-                console.error('No ID provided');
+                currentErrors.push('No ID provided');
                 return;
             }
             if (!formData.has('type')) {
-                console.error('No type provided');
+                currentErrors.push('Unknown Request');
+                return;
+            }
+            if (!formData.has('group_id')) {
+                currentErrors.push('No group_id provided');
+            }
+            if (!formData.has('user_id')) {
+                currentErrors.push('No user_id provided');
+            }
+            if (!formData.has('group_id') || !formData.has('user_id')) {
                 return;
             }
             const response = await fetch('/admin', {
                 method: 'POST',
                 body: formData,
             });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                console.log(result.message || 'Update successful');
-            } else {
-                console.error(result.message || 'Update failed');
-            }
         } catch (error) {
-            console.error('Error during update:', error);
+            currentErrors.push('Error during update');
         }
+        console.log(currentErrors);
     };
 
     const handleUpdateAll = async () => {
+        currentErrors = [];
         for (const group_membership of group_memberships) {
             await handleUpdate(group_membership);
         }
     };
 
     const deleteGroupMembership = async (group_membership: group_membership) => {
+        currentErrors = [];
         const formData = new FormData();
         formData.append('type', 'deleteGroupMembership');
         formData.append('id', group_membership.id.toString());
 
         try {
             if (!formData.has('id')) {
-                console.error('No ID provided');
+                currentErrors.push('No ID provided');
                 return;
             }
             if (!formData.has('type')) {
-                console.error('No type provided');
+                currentErrors.push('No type provided');
                 return;
             }
             const response = await fetch('/admin', {
@@ -139,7 +145,7 @@
                             <option value={false}>false</option>
                         </Select>
                     </TableBodyCell>
-                    <Button on:click={() => handleUpdate(group_membership)}>Submit</Button>
+                    <Button on:click={() => { currentErrors=[]; handleUpdate(group_membership); }}>Submit</Button>
                     <Button on:click={() => deleteGroupMembership(group_membership)}>Delete</Button>
                 </TableBodyRow>
             {/if}
@@ -160,4 +166,9 @@
         <option value={50}>50</option>
         <option value={100}>100</option>
     </Select>
+</div>
+<div>
+    {#each currentErrors as error}
+        <Alert><P>{error}</P></Alert>
+    {/each}
 </div>
