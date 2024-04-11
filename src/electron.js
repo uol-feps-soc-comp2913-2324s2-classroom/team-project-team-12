@@ -10,6 +10,8 @@ const initWindow = () => {
         title: 'Journeys',
         icon: join(__dirname, '/lib/globe.ico'),
         autoHideMenuBar: true,
+        minHeight: 540,
+        minWidth: 1080,
     });
 
     win.loadURL('http://localhost:3000');
