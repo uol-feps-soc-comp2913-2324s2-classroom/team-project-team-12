@@ -33,7 +33,7 @@ export const load = (async ({ cookies }) => {
     priceId = 'price_1OtcKHDlKfh3GBPNWR74idCD';
   }
   
-  if(subscriptionId === "undefined"){
+  if(subscriptionId === "undefined" || subscriptionId === ""){
     const subscription = await stripe.subscriptions.create({
       customer: customerId!,
       items: [

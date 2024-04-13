@@ -68,8 +68,14 @@ export const actions = {
             },
         });
         const subscriptionId = user?.subscription_id;
+        const customerId = user?.stripe_token;
+        const subscriptions = await stripe.subscriptions.list({
+            limit: 3,
+            customer: customerId,
+        });
+        console.log(subscriptions.data[0].id);
         const subscription = await stripe.subscriptions.update(
-            subscriptionId!,
+            subscriptions.data[0].id,
             {
                 cancel_at_period_end: true,
             }
@@ -92,6 +98,7 @@ export const actions = {
                 body: { message: 'Internal Server Error.' },
             };
         }
+        location.reload;
 
     }
 
