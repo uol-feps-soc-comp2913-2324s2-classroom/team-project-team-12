@@ -8,6 +8,21 @@
     export let data: PageData;
     const typedData = data as { membership_type?: number };
     const membership_type = typedData ? typedData.membership_type : null;
+    let registerMessage = ""
+
+    const handleCancel = async () => {
+        try {
+            const response = await fetch('?/cancel', {
+                method: 'POST',
+                body: 'cancel',
+            });
+
+        } catch (error) {
+            console.error('Error during update:', error);
+            registerMessage = 'Internal Server Error';
+        }
+
+    }
 
     let plan = '';
 
@@ -33,6 +48,9 @@
         <Monthly bind:plan/>
         <Annual bind:plan/>
     </div>
+    <button on:click={handleCancel}>
+        Cancel Subscription
+    </button>
 </body>
 
 
