@@ -67,7 +67,6 @@ export const actions = {
             username: username as string,
             },
         });
-        const subscriptionId = user?.subscription_id;
         const customerId = user?.stripe_token;
         const subscriptions = await stripe.subscriptions.list({
             limit: 3,

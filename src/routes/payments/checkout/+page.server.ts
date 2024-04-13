@@ -26,11 +26,11 @@ export const load = (async ({ cookies }) => {
   let priceId = '';
 
   if (type === 0) {
-    priceId = 'price_1OtcJiDlKfh3GBPNwY2Ikbx9';
+    priceId = 'price_1P4x2wDlKfh3GBPNev10wUkg';
   } else if (type === 1) {
-    priceId = 'price_1OtcJxDlKfh3GBPNu3P94nC5';
+    priceId = 'price_1P4x2eDlKfh3GBPNvclygPTV';
   } else if (type === 2) {
-    priceId = 'price_1OtcKHDlKfh3GBPNWR74idCD';
+    priceId = 'price_1P4x2wDlKfh3GBPNev10wUkg';
   }
   
   if(subscriptionId === "undefined" || subscriptionId === ""){
