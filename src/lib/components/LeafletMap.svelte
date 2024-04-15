@@ -20,7 +20,7 @@
             .flat(1),
     ];
 
-    let map: Map;
+    export let map: Map;
     let polylines: any = {};
 
     let polylineStyle = {
@@ -90,11 +90,13 @@
         // Append each route to the map
         routes.forEach(createRoute);
 
-        // Find the most recent route
-        let recentRoute = userRoutes.reduce((a, b) => (new Date(a.createdOn) > new Date(b.createdOn) ? a : b));
+        if (userRoutes.length > 0) {
+            // Find the most recent route
+            let recentRoute = userRoutes.reduce((a, b) => (new Date(a.createdOn) > new Date(b.createdOn) ? a : b));
 
-        // Display the most recent route on the user's screen
-        if (routes) map.fitBounds(polylines[recentRoute.name].getBounds().pad(0.1));
+            // Display the most recent route on the user's screen
+            if (routes) map.fitBounds(polylines[recentRoute.name].getBounds().pad(0.1));
+        }
     };
 </script>
 
