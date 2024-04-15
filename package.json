@@ -57,6 +57,7 @@
 	"dependencies": {
 		"@googlemaps/js-api-loader": "^1.16.6",
 		"@prisma/client": "^5.10.2",
+		"bad-words": "^3.0.4",
 		"bcrypt": "^5.1.1",
 		"bcryptjs": "^2.4.3",
 		"cookie": "^0.6.0",
