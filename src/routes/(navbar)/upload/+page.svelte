@@ -5,9 +5,9 @@
     import { Button, Label, Fileupload, Select } from 'flowbite-svelte';
 
     let privacySettings = [
-        { value: 1, name: 'Public' },
-        { value: 2, name: 'Private' },
-        { value: 3, name: 'Friends Only' },
+        { value: 2, name: 'Public' },
+        { value: 0, name: 'Private' },
+        { value: 1, name: 'Friends Only' },
     ];
 
     onMount(() => {
