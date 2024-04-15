@@ -1,19 +1,21 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { LeafletMap, SingleRoute } from '$lib';
+    import { LeafletMap } from '$lib';
     import type { RouteEntry } from '$lib/interfaces.js';
     import {
         Button,
+        ButtonGroup,
         Card,
         Sidebar,
         SidebarDropdownItem,
         SidebarDropdownWrapper,
         SidebarGroup,
         SidebarWrapper,
+        Popover,
     } from 'flowbite-svelte';
-    import { UploadSolid } from 'flowbite-svelte-icons';
-    import { DownloadSolid } from 'flowbite-svelte-icons';
+    import { CirclePlusSolid, DownloadSolid, UploadSolid } from 'flowbite-svelte-icons';
     import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
 
     export let data;
 
@@ -59,7 +61,7 @@
 <!-- User routes -->
 {#await data.userRoutes then userRoutes}
     {#if userRoutes.length > 0}
-        <Sidebar class="m-4 max-h-[40vh] overflow-y-auto drop-shadow opacity-95">
+        <Sidebar class="m-4 h max-h-[40vh] overflow-y-auto drop-shadow opacity-95">
             <SidebarWrapper>
                 <SidebarGroup>
                     <SidebarDropdownWrapper
@@ -106,57 +108,59 @@
 
 <!-- Selected Route Card -->
 {#if selectedRoute}
-    <Card class="m-4 absolute right-0 md:top-[4.5em] top-[3.75em] opacity-95">
-        <!-- Route Name -->
-        <div>
-            <h5 class="mb-4 font-bold tracking-tight text-gray-900 dark:text-white inline-block">
-                {selectedRoute.name}
-            </h5>
-            <span class="float-right">
-                {selectedRoute.createdOn.toLocaleDateString('en-GB')}
-            </span>
-        </div>
+    <div transition:fade={{ duration: 150 }}>
+        <Card class="m-4 absolute right-0 md:top-[4.5em] top-[3.75em] opacity-95">
+            <!-- Route Name -->
+            <div>
+                <h5 class="mb-4 font-bold tracking-tight text-gray-900 dark:text-white inline-block">
+                    {selectedRoute.name}
+                </h5>
+                <span class="float-right">
+                    {selectedRoute.createdOn.toLocaleDateString('en-GB')}
+                </span>
+            </div>
 
-        <!-- Optional Route Preview -->
-        <!-- {#key selectedRoute}
+            <!-- Optional Route Preview -->
+            <!-- {#key selectedRoute}
             <SingleRoute route={selectedRoute} />
         {/key} -->
 
-        <!-- Created By -->
-        {#if data.user != selectedRoute.creator}
+            <!-- Created By -->
+            {#if data.user != selectedRoute.creator}
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
+                    Created By:
+                    <span class="float-right">
+                        {selectedRoute.creator}
+                    </span>
+                </p>
+            {/if}
+
+            <!-- Elapsed Time -->
             <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-                Created By:
+                Elapsed Time:
                 <span class="float-right">
-                    {selectedRoute.creator}
+                    {getRouteDuration(selectedRoute)}
                 </span>
             </p>
-        {/if}
 
-        <!-- Elapsed Time -->
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Elapsed Time:
-            <span class="float-right">
-                {getRouteDuration(selectedRoute)}
-            </span>
-        </p>
+            <!-- Total Distance -->
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
+                Total Distance:
+                <span class="float-right">
+                    {km.toFixed(2)} km ⟷ {miles.toFixed(2)} miles
+                </span>
+            </p>
 
-        <!-- Total Distance -->
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Total Distance:
-            <span class="float-right">
-                {km.toFixed(2)} km ⟷ {miles.toFixed(2)} miles
-            </span>
-        </p>
-
-        <!-- Average Speed -->
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
-            Average Speed:
-            <span class="float-right">
-                {(km / (selectedRoute.completionTime / 3600)).toFixed(2)} km/h ⟷
-                {(miles / (selectedRoute.completionTime / 3600)).toFixed(2)} miles/h
-            </span>
-        </p>
-    </Card>
+            <!-- Average Speed -->
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">
+                Average Speed:
+                <span class="float-right">
+                    {(km / (selectedRoute.completionTime / 3600)).toFixed(2)} km/h ⟷
+                    {(miles / (selectedRoute.completionTime / 3600)).toFixed(2)} miles/h
+                </span>
+            </p>
+        </Card>
+    </div>
 {/if}
 
 <!-- Journeys Map -->
@@ -172,20 +176,34 @@
     </div>
 {/await}
 
-<Button class="m-4 absolute bottom-0 right-0" color="red" size="xl" on:click={() => goto('/upload')}>
-    <UploadSolid class="me-2" />
-    Upload GPS Data</Button
->
+<ButtonGroup class="space-x-px m-4 absolute bottom-0 right-0 opacity-95">
+    <Button id="recordButton" class="px-4" size="xl" on:click={() => goto('/record')}>
+        <CirclePlusSolid />
+    </Button>
+    <Popover class="w-64 opacity-95 text-sm font-light" title="Record New Route" triggeredBy="#recordButton">
+        Record a new route live by walking around.
+    </Popover>
 
-<Button class="m-4 absolute bottom-0 left-0" color="red" size="xl" on:click={() => goto('/download')}>
-    <DownloadSolid class="me-2" />
-    Download GPS Data</Button
->
+    <Button id="uploadButton" class="px-4" size="xl" on:click={() => goto('/upload')}>
+        <UploadSolid />
+    </Button>
+    <Popover class="w-64 opacity-95 text-sm font-light" title="Upload Routes" triggeredBy="#uploadButton">
+        Upload routes to your account. Uses the GPX file format.
+    </Popover>
+
+    <Button id="downloadButton" size="xl" class="px-4" on:click={() => goto('/download')}>
+        <DownloadSolid />
+    </Button>
+    <Popover class="w-64 opacity-95 text-sm font-light" title="Download Routes" triggeredBy="#downloadButton">
+        Download your account's routes to a GPX file for later upload or use with third-party software.
+    </Popover>
+</ButtonGroup>
 
 <style lang="sass">
     // Disable pointer events for body to enable draggable map
     :global(body)
         pointer-events: none
+        overflow: hidden
 
     // Re-enable pointer events for child elements
     :global(body > *)
