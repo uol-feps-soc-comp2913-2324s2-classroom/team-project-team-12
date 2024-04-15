@@ -3,6 +3,7 @@
     import type { LatLngTuple, Map } from 'leaflet';
 
     // Default values used to instantiate the map
+    export let map: Map = undefined;
     export let center: LatLngTuple = [53.807099641020486, -1.5549898846545835]; // Leeds Uni
     export let zoom: number = 17;
     export let zoomControl: boolean = false;
@@ -20,7 +21,6 @@
             .flat(1),
     ];
 
-    export let map: Map;
     let polylines: any = {};
 
     let polylineStyle = {

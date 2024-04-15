@@ -1,5 +1,5 @@
-import { redirect } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
+import { redirect } from '@sveltejs/kit';
 
 export const load = ({ cookies }) => {
     // Get the user's login session
@@ -8,18 +8,18 @@ export const load = ({ cookies }) => {
     // Make the user log in before showing routes
     if (username == undefined) throw redirect(302, '/login');
 
-    return {
-        username,
-    };
+    return { username };
 };
 
 export const actions = {
     default: async ({ request }) => {
         const route = await request.json();
 
-        const user = await prisma.user.findUnique({ where: { username: route.creator } });
-        const userId = user?.id;
+        // Retrieve user information
+        let user = await prisma.user.findUnique({ where: { username: route.creator } });
+        let userId = user?.id;
 
+        // Append route to user's profile
         let newRoute = await prisma.routes.create({
             data: {
                 route_name: route.name,
@@ -31,6 +31,7 @@ export const actions = {
             },
         });
 
+        // Append path to new route
         await route.path.forEach(async (coord, i) => {
             await prisma.route_coordinates.create({
                 data: {

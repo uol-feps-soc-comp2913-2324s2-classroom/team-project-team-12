@@ -25,21 +25,20 @@
 
     $: if (recording) polyline.setLatLngs(path);
 
-    $: console.log(path);
-
     let recording = false;
     let elapsedTime = 0;
     let path: LatLngTuple[] = [];
 
-    const coordsToLatLngTuple = (position: GeolocationPosition) => {
-        return [position.coords.latitude, position.coords.longitude] as LatLngTuple;
-    };
+    // Convert GeolocationPosition to LatLngTuple
+    const coordsToLatLngTuple = (position: GeolocationPosition) =>
+        [position.coords.latitude, position.coords.longitude] as LatLngTuple;
 
+    // Update the marker to the provided location
     const moveMarkerToPoint = (point: LatLngTuple) => {
         if (map) {
             map.panTo(point);
-            if (marker) map.removeLayer(marker);
 
+            if (marker) map.removeLayer(marker);
             marker = L.marker(point);
             map.addLayer(marker);
         }
@@ -47,43 +46,45 @@
         return point;
     };
 
+    // Append a new location to `path`
     const appendPointToPath = (point: LatLngTuple) => {
         if (recording) path = [...path, point];
         lastPos = point;
     };
 
+    // Create location update handlers
     const handleLocationUpdate = pipe(coordsToLatLngTuple, moveMarkerToPoint, appendPointToPath);
     const handleLocationError = (e: GeolocationPositionError) => (error = e.message);
 
+    // Initialize and start recording a new route
     const startRecording = () => {
+        // Reinitialize all values
         recording = true;
         elapsedTime = 0;
         path = [lastPos];
-
-        polyline.setStyle({ color: 'red' });
 
         // Start recording the duration of the walk
         timerInterval = setInterval(() => {
             elapsedTime++;
         }, 1000);
 
+        // Show the polyline on the map
+        polyline.setStyle({ color: 'red' });
         map.removeLayer(polyline);
         map.addLayer(polyline);
     };
 
+    // Handle the end of a route recording
     const stopRecording = () => {
         recording = false;
 
-        polyline.setStyle({ color: 'blue' });
-
-        // Unset the timer
+        // Uninitialize all values
         clearInterval(timerInterval);
-
         routeNamePrompt = true;
-
-        // goto('/routes');
+        polyline.setStyle({ color: 'blue' });
     };
 
+    // Initialize the program on page load
     let L: any;
     onMount(async () => {
         L = await import('leaflet');
@@ -98,6 +99,7 @@
         });
     });
 
+    // Calculate the total distance between points in a path
     const getRouteDistance = (path: LatLngTuple[]) => {
         let totalDistance = 0;
 
@@ -112,17 +114,19 @@
         return [km, miles];
     };
 
+    // Converts an elapsedTime into an ISOString time
     const getRouteDuration = (elapsedTime: number) => {
         let date = new Date(0);
         date.setSeconds(elapsedTime);
         return date.toISOString().substring(11, 19);
     };
 
+    // Submits the new route to DB
     const submitRoute = () => {
+        //@ts-ignore
         let route: RouteEntry = {
             name: routeName,
             creator: data.username,
-            createdOn: new Date(),
             completionTime: elapsedTime,
             path,
         };
@@ -146,6 +150,7 @@
     />
 </svelte:head>
 
+<!-- Handle errors -->
 {#if error}
     <div class="mapContainer flex justify-center">
         <div class="self-center whitespace-nowrap text-2xl my-5 font-semibold text-gray-900 dark:text-white">
@@ -196,6 +201,7 @@
         <LeafletMap bind:map userRoutes={[]} groupRoutes={{}} />
     </div>
 
+    <!-- Stop and start recording button -->
     {#if recording}
         <Button class="m-4 absolute bottom-0 right-0" color="red" size="xl" on:click={stopRecording}>
             <CloseCircleSolid class="me-2" />
@@ -209,6 +215,7 @@
     {/if}
 {/if}
 
+<!-- New route name prompt -->
 <Modal bind:open={routeNamePrompt} size="xs" dismissable={false} class="w-full">
     <form class="flex flex-col space-y-6" action="#">
         <Label class="block text-md">New Route Name</Label>
