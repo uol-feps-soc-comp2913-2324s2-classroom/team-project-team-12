@@ -1,3 +1,5 @@
+<svelte:options accessors />
+
 <script lang="ts">
     import type { RouteEntry } from '$lib/interfaces';
     import type { LatLngTuple, Map } from 'leaflet';
@@ -11,6 +13,8 @@
     export let groupRoutes: any = {};
     export let style: string = 'CartoDB.Voyager';
     export let selectedRoute: RouteEntry | undefined = undefined;
+    export let centerOnUser = false;
+    export let userPos: LatLngTuple;
 
     // TODO: Rewrite
     $: routes = [
@@ -21,6 +25,7 @@
             .flat(1),
     ];
 
+    let userMarker;
     let polylines: any = {};
 
     let polylineStyle = {
@@ -82,7 +87,7 @@
         });
 
         // Add a tile layer (styles) to the map
-        L.tileLayer.provider(style).addTo(map);
+        L.tileLayer.provider(style, { noWrap: true, minZoom: 5 }).addTo(map);
 
         // Append a new route to the map
         const createRoute = (r: RouteEntry) => {
@@ -112,6 +117,18 @@
 
             // Display the most recent route on the user's screen
             if (routes) map.fitBounds(polylines[recentRoute.id].getBounds().pad(0.1));
+        }
+
+        if (centerOnUser) {
+            navigator.geolocation.watchPosition((p) => {
+                const point = [p.coords.latitude, p.coords.longitude];
+
+                if (userMarker) map.removeLayer(userMarker);
+                userMarker = L.marker(point);
+                map.addLayer(userMarker);
+
+                userPos = point;
+            });
         }
     };
 </script>

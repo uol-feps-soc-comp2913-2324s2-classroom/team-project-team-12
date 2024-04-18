@@ -17,7 +17,7 @@ COPY . .
 RUN npx prisma generate
 RUN npx prisma migrate deploy
 RUN npx prisma db push
-RUN node prisma/seed.js
+# RUN node prisma/seed.js
 RUN npm run build
 RUN npm prune --production
 

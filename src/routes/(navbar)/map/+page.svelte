@@ -1,17 +1,11 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { LeafletMap } from '$lib';
-    import SingleRoute from '$lib/components/SingleRoute.svelte';
     import type { RouteEntry } from '$lib/interfaces.js';
     import {
         Button,
         ButtonGroup,
         Card,
-        Sidebar,
-        SidebarDropdownItem,
-        SidebarDropdownWrapper,
-        SidebarGroup,
-        SidebarWrapper,
         Popover,
         Tabs,
         TabItem,
@@ -417,6 +411,16 @@
                     {(miles / (selectedRoute.completionTime / 3600)).toFixed(2)} miles/h
                 </span>
             </p>
+
+            <!-- Distance from user -->
+            {#if map.userPos}
+                <p class="mb-3 mt-4 font-medium tracking-tighter text-gray-700 dark:text-gray-400 leading-tight">
+                    <span class="font-normal">
+                        Route recorded {(new L.latLng(map.userPos).distanceTo(selectedRoute.path[0]) / 1000).toFixed(1)}
+                        km from current location
+                    </span>
+                </p>
+            {/if}
         </Card>
     </div>
 {/if}
@@ -430,7 +434,7 @@
     </div>
 {:then routes}
     <div class="mapContainer">
-        <LeafletMap bind:this={map} bind:selectedRoute userRoutes={routes[0]} groupRoutes={routes[1]} />
+        <LeafletMap bind:this={map} bind:selectedRoute userRoutes={routes[0]} groupRoutes={routes[1]} centerOnUser />
     </div>
 {/await}
 
