@@ -33,6 +33,7 @@
         MapPinAltSolid,
         CloseOutline,
         EyeSlashOutline,
+        LayersSolid,
     } from 'flowbite-svelte-icons';
     import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
@@ -46,6 +47,7 @@
         Public: 'blue',
         Group: 'green',
     };
+    let showRoutesMenu = true;
 
     let map: LeafletMap;
     let selectedRoute: RouteEntry;
@@ -93,257 +95,274 @@
 </svelte:head>
 
 <!-- User routes -->
-<div
-    in:fade={{ duration: 600 }}
-    class="routeSelector w-72 m-4 bg-white dark:bg-gray-900 opacity-90 shadow-lg rounded-md"
->
-    <div class="windowHeader flex items-center">
-        <Button
-            pill
-            color="alternative"
-            size="sm"
-            class="m-2 p-1 border-none"
-            on:click={() => {
-                console.log('TODO');
-            }}
-        >
-            <CloseOutline />
-        </Button>
-        <h5 class="text-md font-medium text-gray-900 dark:text-white inline flex-1">Routes</h5>
-        <Badge large border color={tabColor[selectedTab]} class="mr-5">{selectedTab}</Badge>
-    </div>
-    <Tabs style="underline">
-        <!-- User routes -->
-        <TabItem open class="flex-1" on:click={() => (selectedTab = 'User')}>
-            <div slot="title">
-                <UserCircleSolid class="w-6 h-6" />
-            </div>
-            {#await data.userRoutes}
-                <Card>Loading...</Card>
-            {:then userRoutes}
-                {#if userRoutes.filter((r) => r.creator == data.user).length == 0}
-                    <Card>No user routes selected</Card>
-                {:else}
-                    {#each userRoutes as route (route.id)}
-                        {#if route.creator == data.username}
-                            <List tag="ul" list="none" class="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
-                                <Li icon class="py-2 sm:py-3">
-                                    {#if selectedRoute != undefined && route.id == selectedRoute.id}
-                                        <MapPinAltSolid class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
-                                    {:else}
-                                        <MapPinAltOutline class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
-                                    {/if}
-                                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                                    <div
-                                        class="flex flex-1 items-center space-x-4 rtl:space-x-reverse hover:cursor-pointer"
-                                        on:click|stopPropagation={() => map.selectRoute(route.id)}
-                                    >
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                {route.name}
-                                            </p>
-                                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                {route.createdOn.toLocaleDateString('en-GB')}
-                                            </p>
-                                        </div>
+{#if showRoutesMenu}
+    <div class="routeSelector w-72 m-4 bg-white dark:bg-gray-900 opacity-90 shadow-lg rounded-md">
+        <div class="windowHeader flex items-center">
+            <Button
+                pill
+                color="alternative"
+                size="sm"
+                class="m-2 p-1 border-none"
+                on:click={() => (showRoutesMenu = false)}
+            >
+                <CloseOutline />
+            </Button>
+            <h5 class="text-md font-medium text-gray-900 dark:text-white inline flex-1">Routes</h5>
+            <Badge large border color={tabColor[selectedTab]} class="mr-5">{selectedTab}</Badge>
+        </div>
+        <Tabs style="underline">
+            <!-- User routes -->
+            <TabItem open class="flex-1" on:click={() => (selectedTab = 'User')}>
+                <div slot="title">
+                    <UserCircleSolid class="w-6 h-6" />
+                </div>
+                {#await data.userRoutes}
+                    <Card>Loading...</Card>
+                {:then userRoutes}
+                    {#if userRoutes.filter((r) => r.creator == data.user).length == 0}
+                        <Card>No user routes selected</Card>
+                    {:else}
+                        {#each userRoutes as route (route.id)}
+                            {#if route.creator == data.username}
+                                <List
+                                    tag="ul"
+                                    list="none"
+                                    class="max-w-md divide-y divide-gray-200 dark:divide-gray-700"
+                                >
+                                    <Li icon class="py-2 sm:py-3">
+                                        {#if selectedRoute != undefined && route.id == selectedRoute.id}
+                                            <MapPinAltSolid class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
+                                        {:else}
+                                            <MapPinAltOutline class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
+                                        {/if}
+                                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                        <!-- svelte-ignore a11y-no-static-element-interactions -->
                                         <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                            class="flex flex-1 items-center space-x-4 rtl:space-x-reverse hover:cursor-pointer"
+                                            on:click|stopPropagation={() => map.selectRoute(route.id)}
                                         >
-                                            {#if routesShowOnMap[route.id] == undefined || routesShowOnMap[route.id]}
-                                                <Button
-                                                    pill
-                                                    color="alternative"
-                                                    class="px-2.5 border-none"
-                                                    on:click={() => {
-                                                        routesShowOnMap[route.id] = false;
-                                                        map.hideRoute(route.id);
-                                                    }}
-                                                >
-                                                    <EyeOutline />
-                                                </Button>
-                                            {:else}
-                                                <Button
-                                                    pill
-                                                    color="alternative"
-                                                    class="px-2.5 border-none"
-                                                    on:click={() => {
-                                                        routesShowOnMap[route.id] = true;
-                                                        map.showRoute(route.id);
-                                                    }}
-                                                >
-                                                    <EyeSlashOutline />
-                                                </Button>
-                                            {/if}
-                                        </div>
-                                    </div>
-                                </Li>
-                            </List>
-                        {/if}
-                    {/each}
-                {/if}
-            {/await}
-        </TabItem>
-
-        <!-- Group routes -->
-        <TabItem class="flex-1" on:click={() => (selectedTab = 'Group')}>
-            <div slot="title">
-                <UsersGroupSolid class="w-6 h-6" />
-            </div>
-            {#await data.groupRoutes}
-                <Card>Loading...</Card>
-            {:then groupRoutes}
-                {#if Object.values(groupRoutes).length == 0}
-                    <Card>No group routes selected</Card>
-                {:else}
-                    <Accordion flush>
-                        {#each Object.keys(groupRoutes) as group}
-                            <AccordionItem>
-                                <span slot="header">{group}</span>
-                                {#each groupRoutes[group] as route (route.id)}
-                                    <List
-                                        tag="ul"
-                                        list="none"
-                                        class="max-w-md divide-y divide-gray-200 dark:divide-gray-700"
-                                    >
-                                        <Li icon class="py-2 sm:py-3">
-                                            {#if selectedRoute != undefined && route.id == selectedRoute.id}
-                                                <MapPinAltSolid class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
-                                            {:else}
-                                                <MapPinAltOutline
-                                                    class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400"
-                                                />
-                                            {/if}
-                                            <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                            <!-- svelte-ignore a11y-no-static-element-interactions -->
-                                            <div
-                                                class="flex flex-1 items-center space-x-4 rtl:space-x-reverse hover:cursor-pointer"
-                                                on:click|stopPropagation={() => map.selectRoute(route.id)}
-                                            >
-                                                <div class="flex-1 min-w-0">
-                                                    <p
-                                                        class="text-sm font-medium text-gray-900 truncate dark:text-white"
-                                                    >
-                                                        {route.name}
-                                                    </p>
-                                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                        by {route.creator}
-                                                    </p>
-                                                </div>
-                                                <div
-                                                    class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
-                                                >
-                                                    {#if routesShowOnMap[route.id] == undefined || routesShowOnMap[route.id]}
-                                                        <Button
-                                                            pill
-                                                            color="alternative"
-                                                            class="px-2.5 border-none"
-                                                            on:click={() => {
-                                                                routesShowOnMap[route.id] = false;
-                                                                map.hideRoute(route.id);
-                                                            }}
-                                                        >
-                                                            <EyeOutline />
-                                                        </Button>
-                                                    {:else}
-                                                        <Button
-                                                            pill
-                                                            color="alternative"
-                                                            class="px-2.5 border-none"
-                                                            on:click={() => {
-                                                                routesShowOnMap[route.id] = true;
-                                                                map.showRoute(route.id);
-                                                            }}
-                                                        >
-                                                            <EyeSlashOutline />
-                                                        </Button>
-                                                    {/if}
-                                                </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                    {route.name}
+                                                </p>
+                                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                    {route.createdOn.toLocaleDateString('en-GB')}
+                                                </p>
                                             </div>
-                                        </Li>
-                                    </List>
-                                {/each}
-                                <!-- {#each groupRoutes[group] as route}{/each} -->
-                            </AccordionItem>
+                                            <div
+                                                class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                            >
+                                                {#if routesShowOnMap[route.id] == undefined || routesShowOnMap[route.id]}
+                                                    <Button
+                                                        pill
+                                                        color="alternative"
+                                                        class="px-2.5 border-none"
+                                                        on:click={() => {
+                                                            routesShowOnMap[route.id] = false;
+                                                            map.hideRoute(route.id);
+                                                        }}
+                                                    >
+                                                        <EyeOutline />
+                                                    </Button>
+                                                {:else}
+                                                    <Button
+                                                        pill
+                                                        color="alternative"
+                                                        class="px-2.5 border-none"
+                                                        on:click={() => {
+                                                            routesShowOnMap[route.id] = true;
+                                                            map.showRoute(route.id);
+                                                        }}
+                                                    >
+                                                        <EyeSlashOutline />
+                                                    </Button>
+                                                {/if}
+                                            </div>
+                                        </div>
+                                    </Li>
+                                </List>
+                            {/if}
                         {/each}
-                    </Accordion>
-                {/if}
-            {/await}
-        </TabItem>
+                    {/if}
+                {/await}
+            </TabItem>
 
-        <!-- Public routes -->
-        <TabItem class="flex-1" on:click={() => (selectedTab = 'Public')}>
-            <div slot="title">
-                <GlobeSolid class="w-6 h-6" />
-            </div>
-            {#await data.userRoutes}
-                <Card>Loading...</Card>
-            {:then userRoutes}
-                {#if userRoutes.filter((r) => r.creator != data.user).length == 0}
-                    <Card>No public routes selected</Card>
-                {:else}
-                    {#each userRoutes as route (route.id)}
-                        {#if route.creator != data.username}
-                            <List tag="ul" list="none" class="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
-                                <Li icon class="py-2 sm:py-3">
-                                    {#if selectedRoute != undefined && route.id == selectedRoute.id}
-                                        <MapPinAltSolid class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
-                                    {:else}
-                                        <MapPinAltOutline class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
-                                    {/if}
-                                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                                    <div
-                                        class="flex flex-1 items-center space-x-4 rtl:space-x-reverse hover:cursor-pointer"
-                                        on:click|stopPropagation={() => map.selectRoute(route.id)}
-                                    >
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                {route.name}
-                                            </p>
-                                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                by {route.creator}
-                                            </p>
-                                        </div>
-                                        <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+            <!-- Group routes -->
+            <TabItem class="flex-1" on:click={() => (selectedTab = 'Group')}>
+                <div slot="title">
+                    <UsersGroupSolid class="w-6 h-6" />
+                </div>
+                {#await data.groupRoutes}
+                    <Card>Loading...</Card>
+                {:then groupRoutes}
+                    {#if Object.values(groupRoutes).length == 0}
+                        <Card>No group routes selected</Card>
+                    {:else}
+                        <Accordion flush>
+                            {#each Object.keys(groupRoutes) as group}
+                                <AccordionItem>
+                                    <span slot="header">{group}</span>
+                                    {#each groupRoutes[group] as route (route.id)}
+                                        <List
+                                            tag="ul"
+                                            list="none"
+                                            class="max-w-md divide-y divide-gray-200 dark:divide-gray-700"
                                         >
-                                            {#if routesShowOnMap[route.id] == undefined || routesShowOnMap[route.id]}
-                                                <Button
-                                                    pill
-                                                    color="alternative"
-                                                    class="px-2.5 border-none"
-                                                    on:click={() => {
-                                                        routesShowOnMap[route.id] = false;
-                                                        map.hideRoute(route.id);
-                                                    }}
+                                            <Li icon class="py-2 sm:py-3">
+                                                {#if selectedRoute != undefined && route.id == selectedRoute.id}
+                                                    <MapPinAltSolid
+                                                        class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400"
+                                                    />
+                                                {:else}
+                                                    <MapPinAltOutline
+                                                        class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400"
+                                                    />
+                                                {/if}
+                                                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                                                <div
+                                                    class="flex flex-1 items-center space-x-4 rtl:space-x-reverse hover:cursor-pointer"
+                                                    on:click|stopPropagation={() => map.selectRoute(route.id)}
                                                 >
-                                                    <EyeOutline />
-                                                </Button>
-                                            {:else}
-                                                <Button
-                                                    pill
-                                                    color="alternative"
-                                                    class="px-2.5 border-none"
-                                                    on:click={() => {
-                                                        routesShowOnMap[route.id] = true;
-                                                        map.showRoute(route.id);
-                                                    }}
-                                                >
-                                                    <EyeSlashOutline />
-                                                </Button>
-                                            {/if}
+                                                    <div class="flex-1 min-w-0">
+                                                        <p
+                                                            class="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                                        >
+                                                            {route.name}
+                                                        </p>
+                                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                            by {route.creator}
+                                                        </p>
+                                                    </div>
+                                                    <div
+                                                        class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                                    >
+                                                        {#if routesShowOnMap[route.id] == undefined || routesShowOnMap[route.id]}
+                                                            <Button
+                                                                pill
+                                                                color="alternative"
+                                                                class="px-2.5 border-none"
+                                                                on:click={() => {
+                                                                    routesShowOnMap[route.id] = false;
+                                                                    map.hideRoute(route.id);
+                                                                }}
+                                                            >
+                                                                <EyeOutline />
+                                                            </Button>
+                                                        {:else}
+                                                            <Button
+                                                                pill
+                                                                color="alternative"
+                                                                class="px-2.5 border-none"
+                                                                on:click={() => {
+                                                                    routesShowOnMap[route.id] = true;
+                                                                    map.showRoute(route.id);
+                                                                }}
+                                                            >
+                                                                <EyeSlashOutline />
+                                                            </Button>
+                                                        {/if}
+                                                    </div>
+                                                </div>
+                                            </Li>
+                                        </List>
+                                    {/each}
+                                    <!-- {#each groupRoutes[group] as route}{/each} -->
+                                </AccordionItem>
+                            {/each}
+                        </Accordion>
+                    {/if}
+                {/await}
+            </TabItem>
+
+            <!-- Public routes -->
+            <TabItem class="flex-1" on:click={() => (selectedTab = 'Public')}>
+                <div slot="title">
+                    <GlobeSolid class="w-6 h-6" />
+                </div>
+                {#await data.userRoutes}
+                    <Card>Loading...</Card>
+                {:then userRoutes}
+                    {#if userRoutes.filter((r) => r.creator != data.user).length == 0}
+                        <Card>No public routes selected</Card>
+                    {:else}
+                        {#each userRoutes as route (route.id)}
+                            {#if route.creator != data.username}
+                                <List
+                                    tag="ul"
+                                    list="none"
+                                    class="max-w-md divide-y divide-gray-200 dark:divide-gray-700"
+                                >
+                                    <Li icon class="py-2 sm:py-3">
+                                        {#if selectedRoute != undefined && route.id == selectedRoute.id}
+                                            <MapPinAltSolid class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
+                                        {:else}
+                                            <MapPinAltOutline class="w-5 h-5 me-4 text-gray-500 dark:text-gray-400" />
+                                        {/if}
+                                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                                        <div
+                                            class="flex flex-1 items-center space-x-4 rtl:space-x-reverse hover:cursor-pointer"
+                                            on:click|stopPropagation={() => map.selectRoute(route.id)}
+                                        >
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                    {route.name}
+                                                </p>
+                                                <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                    by {route.creator}
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                            >
+                                                {#if routesShowOnMap[route.id] == undefined || routesShowOnMap[route.id]}
+                                                    <Button
+                                                        pill
+                                                        color="alternative"
+                                                        class="px-2.5 border-none"
+                                                        on:click={() => {
+                                                            routesShowOnMap[route.id] = false;
+                                                            map.hideRoute(route.id);
+                                                        }}
+                                                    >
+                                                        <EyeOutline />
+                                                    </Button>
+                                                {:else}
+                                                    <Button
+                                                        pill
+                                                        color="alternative"
+                                                        class="px-2.5 border-none"
+                                                        on:click={() => {
+                                                            routesShowOnMap[route.id] = true;
+                                                            map.showRoute(route.id);
+                                                        }}
+                                                    >
+                                                        <EyeSlashOutline />
+                                                    </Button>
+                                                {/if}
+                                            </div>
                                         </div>
-                                    </div>
-                                </Li>
-                            </List>
-                        {/if}
-                    {/each}
-                {/if}
-            {/await}
-        </TabItem>
-    </Tabs>
-</div>
+                                    </Li>
+                                </List>
+                            {/if}
+                        {/each}
+                    {/if}
+                {/await}
+            </TabItem>
+        </Tabs>
+    </div>
+{:else}
+    <ButtonGroup>
+        <Button
+            color="alternative"
+            class="p-2.5 border-none m-4 shadow-lg rounded-md"
+            on:click={() => (showRoutesMenu = true)}
+        >
+            <LayersSolid size="lg" />
+        </Button>
+    </ButtonGroup>
+{/if}
 
 <!-- Selected Route Card -->
 {#if selectedRoute}
