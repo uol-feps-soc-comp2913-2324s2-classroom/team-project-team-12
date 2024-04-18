@@ -1,13 +1,15 @@
 <script lang="ts">
     import type { route, user } from '$lib/interfaces';
-    import { Input , Button, Select } from 'flowbite-svelte';
+    import { Alert,Card, Input ,FloatingLabelInput, Button, Select,Heading } from 'flowbite-svelte';
     import { PenOutline } from 'flowbite-svelte-icons';
     import { goto } from '$app/navigation';
 
     export let data;
     let route: route = data.props.route;
     let user: user = data.props.user;
-
+    let alertMessage:string | null = null;
+    let alertType:string | null = null;
+    let alertColour:string | null = null;
     let privacySettings = [
         { value: 1, name: 'Private' },
         { value: 2, name: 'Friends Only' },
@@ -62,10 +64,15 @@
                 actualResponse = JSON.parse(actualResponse);
                 console.log(actualResponse);
                 if (actualResponse[1] == 200) {
-                    alert('Route edited successfully');
-                    goto(`../routes`);
+                    alertMessage = 'Route edited successfully';
+                    alertType = 'success';
+                    alertColour = 'green';
+                    //goto(`../routes`);
                 } else {
-                    alert('Route edit failed');
+                    //alert('Route edit failed');
+                    alertMessage = actualResponse[3];
+                    alertType = 'danger';
+                    alertColour = 'red';
                 }
             });
 }
@@ -88,7 +95,9 @@ function deleteRoute() {
                 alert('Route deleted successfully');
                 goto(`../routes`);
             } else {
-                alert('Route delete failed');
+                alertMessage = actualResponse[3];
+                alertType = 'danger';
+                alertColour = 'red';
             }
         });
     }
@@ -96,17 +105,60 @@ function deleteRoute() {
 </script>
 
 <main>
-    <div class="container">
-        <div class="grid">
-            <div class="grid-item">
-                <Input bind:value={routeName} placeholder="Route Name" />
-                <Select bind:value={publicity} items={privacySettings} />
-                <Input bind:value={length} placeholder="Length" />
-                <Input bind:value={approximateTime} placeholder="Approximate Time" />
-                <Button on:click={deleteRoute}>Delete</Button>
-                <Button on:click={submitEditRoute}>Submit</Button>
-            </div>
+    <Card>
+        <div class="card-item">
+        <Heading  class="mb-4">Edit Route</Heading>
         </div>
-    </div>
+        {#if alertMessage}
+            <div class="card-item">
+            <Alert color={alertColour}  dismissable on:close={() => { alertMessage = null; alertType = null; }}>
+                {alertMessage}
+            </Alert>
+            </div>
+        {/if}
+        <div class="card-item">
+        <FloatingLabelInput style="outlined"  bind:value={routeName} required > Route Name </FloatingLabelInput>
+        </div><div class="card-item">
+        <Select bind:value={publicity} required items={privacySettings}> Privacy </Select>
+        </div><div class="card-item">
+        <FloatingLabelInput style="outlined" bind:value={length} placeholder="Length" >Length</FloatingLabelInput>
+        </div><div class="card-item">
+        <FloatingLabelInput style="outlined" bind:value={approximateTime} placeholder="Approximate Time">Approximate Time</FloatingLabelInput>
+        </div><div class="card-item">
+        <div class="buttonBox">
+        <Button on:click={deleteRoute}>Delete</Button>
+        <Button on:click={submitEditRoute}>Submit</Button>
+        </div>
+
+    </Card>
 </main>
+
+<style>
+    Card {
+        width: 50%;
+        margin: 10px;
+        padding: 10px;
+    }
+
+    main {
+        padding: 20px;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+
+        
+
+    }
+
+    .buttonBox {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-item {
+    margin-bottom: 1vh; /* Adjust as needed */
+    }
+    
+</style>
 

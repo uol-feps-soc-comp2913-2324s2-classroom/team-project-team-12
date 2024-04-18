@@ -73,7 +73,7 @@
   {#each filteredPeople as person}
     <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
         <a rel="external" href="../profile/{person.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
-          <Avatar src={getDefaultProfilePictureUrl(person)} size="xs" />
+          <Avatar src={getDefaultProfilePictureUrl(person)} size="xs" style="margin-right: 8px;" />
           <span>{person.name}</span>
         </a>
         <button on:click={() => addFriend(person)} class="flex items-center p-1 text-sm font-medium text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-500 hover:underline rounded-b-lg">
@@ -90,7 +90,7 @@
   {#each filteredRequested as person}
     <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
         <a rel="external" href="../profile/{person.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
-          <Avatar src={getDefaultProfilePictureUrl(person)} size="xs" />
+          <Avatar src={getDefaultProfilePictureUrl(person)} size="xs" style="margin-right: 8px;" />
           <span>{person.name}</span>
         </a>
         <button on:click={() => cancelRequest(person)} class="flex items-center p-1 text-sm font-medium text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-500 hover:underline rounded-b-lg">

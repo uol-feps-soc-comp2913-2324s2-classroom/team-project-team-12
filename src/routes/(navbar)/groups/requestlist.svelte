@@ -72,7 +72,7 @@
     {#each filteredGroups as group}
       <ListgroupItem class="flex flex-col md:flex-row items-start md:items-center justify-between text-base font-semibold gap-2">
         <div>
-          <a rel="external" href="../profile/{group.users.username}" class="flex items-center font-semibold text-gray-900 dark:text-white">
+          <a rel="external" href="../group/{group.users.username}" class="flex items-center font-semibold text-gray-900 dark:text-white">
             <span>{group.users.username}</span>
           </a>
           <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Group: {group.groups.name}</p>

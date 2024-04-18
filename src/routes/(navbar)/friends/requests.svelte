@@ -68,7 +68,7 @@
     {#each filteredRequests as request}
     <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
         <a rel="external" href="../profile/{request.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
-          <Avatar src={getDefaultProfilePictureUrl(request)} size="xs" />
+          <Avatar src={getDefaultProfilePictureUrl(request)} size="xs" style="margin-right: 8px;" />
           <span>{request.name}</span>
         </a>
         <button on:click={() => acceptFriend(request)} class="flex items-center p-1 text-sm font-medium text-green-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-green-500 hover:underline rounded-b-lg">
