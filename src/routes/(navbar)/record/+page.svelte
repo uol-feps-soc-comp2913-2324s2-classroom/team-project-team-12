@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { LeafletMap } from '$lib';
     import type { RouteEntry } from '$lib/interfaces.js';
     import { Button, Card, Input, Label, Modal } from 'flowbite-svelte';
@@ -89,7 +88,7 @@
     onMount(async () => {
         L = await import('leaflet');
 
-        navigator.geolocation.watchPosition(handleLocationUpdate, handleLocationError);
+        navigator.geolocation.watchPosition(handleLocationUpdate, handleLocationError, { enableHighAccuracy: true });
 
         polyline = L.polyline([], {
             color: 'red',

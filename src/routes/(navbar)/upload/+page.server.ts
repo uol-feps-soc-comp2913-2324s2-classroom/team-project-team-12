@@ -60,7 +60,7 @@ export const actions = {
                 name: r.name,
                 creator: username,
                 createdOn: new Date(),
-                completionTime: 0,
+                completionTime: 1,
                 path: r.points.map((p) => [p.lat, p.lon]),
                 publicity: Number(privacy),
             }));
