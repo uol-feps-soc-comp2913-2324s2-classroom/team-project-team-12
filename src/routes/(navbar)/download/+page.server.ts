@@ -49,7 +49,7 @@ export const actions = {
                 result += `\t<rtept lat="${p.latitude}" lon="${p.longitude}">`;
 
                 if (i == 0) result += `<time>${r.created_on.toISOString()}</time>`;
-                if (i == filteredRoutes.length)
+                if (i == r.route_coordinates.length - 1)
                     result += `<time>${new Date(+r.created_on + r.approximate_completion_time * 1000).toISOString()}</time>`;
 
                 result += '</rtept>\n';

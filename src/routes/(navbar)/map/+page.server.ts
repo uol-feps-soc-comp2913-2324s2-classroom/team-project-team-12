@@ -28,7 +28,9 @@ export const load = async ({ cookies }) => {
             creator: (await prisma.user.findUnique({ where: { id: route?.creator } }))?.username,
             createdOn: route?.created_on,
             completionTime: route?.approximate_completion_time,
-            path: route?.route_coordinates.map((c) => [Number(c.latitude), Number(c.longitude)]),
+            path: route?.route_coordinates
+                .sort((a, b) => a.order_position - b.order_position)
+                .map((c) => [Number(c.latitude), Number(c.longitude)]),
             publicity: route?.publicity,
             group: null,
             showOnMap: true,
@@ -49,7 +51,9 @@ export const load = async ({ cookies }) => {
             });
 
             const creator = await prisma.user.findUnique({ where: { id: route.creator } });
-            const path = route.route_coordinates.map((p) => [Number(p.latitude), Number(p.longitude)]);
+            const path = route.route_coordinates
+                .sort((a, b) => a.order_position - b.order_position)
+                .map((p) => [Number(p.latitude), Number(p.longitude)]);
 
             return {
                 id: route.id,
