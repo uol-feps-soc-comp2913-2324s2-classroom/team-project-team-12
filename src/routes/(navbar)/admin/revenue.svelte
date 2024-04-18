@@ -1,56 +1,61 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { user } from '$lib/interfaces';
-    import {Select,Input,Table,TableHead,TableHeadCell,TableSearch,TableBody,TableBodyCell,TableBodyRow} from 'flowbite-svelte';
+    import {
+        Select,
+        Input,
+        Table,
+        TableHead,
+        TableHeadCell,
+        TableSearch,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+    } from 'flowbite-svelte';
     let users: user[] = [];
     let chosenDate: Date = new Date();
     onMount(async () => {
         const response = await fetch('/api/getUsers');
         if (response.ok) {
-                users = await response.json();
-            } else {
-                console.error('Failed to fetch users');
+            users = await response.json();
+        } else {
+            console.error('Failed to fetch users');
         }
     });
-    console.log(chosenDate + 'chosen')
+    console.log(chosenDate + 'chosen');
     let todaysDate: Date = new Date();
     console.log(todaysDate);
-
 
     let numberOfWeeks: number = 1;
     let numberOfMonths: number = 0;
     let numberOfYears: number = 0;
 
+    let income: number = 0.0;
 
-    let income: number = 0.00;
+    const annualCost: number = 5.0; //membership_type value of 2
+    const monthlyCost: number = 0.5; //membership_type value of 1
+    const weeklyCost: number = 0.2; //membership_type value of 0
 
-    const annualCost: number = 5.00; //membership_type value of 2
-    const monthlyCost: number = 0.50;//membership_type value of 1
-    const weeklyCost: number = 0.20;//membership_type value of 0
-    
     let weeklyString = weeklyCost.toFixed(2);
     let monthlyString = monthlyCost.toFixed(2);
     let annualString = annualCost.toFixed(2);
-    
-    let toDisplay: string = "0.00";
-    let subscriptionStartDate: Date;
 
+    let toDisplay: string = '0.00';
+    let subscriptionStartDate: Date;
 
     let weekly_before_this: Date = new Date();
     let monthly_before_this: Date = new Date();
     let yearly_before_this: Date = new Date();
 
-
     let weeklys: number = 0;
     let monthlys: number = 0;
     let yearlys: number = 0;
-
 
     $: {
         numberOfWeeks, chosenDate;
         weeklys = 0;
         monthlys = 0;
-        yearlys= 0;
+        yearlys = 0;
         const chosenDateObj = new Date(chosenDate);
         numberOfMonths = Math.floor(numberOfWeeks / 4.345);
         numberOfYears = Math.floor(numberOfWeeks / 52.142);
@@ -62,12 +67,13 @@
 
         yearly_before_this = new Date(chosenDateObj);
         yearly_before_this.setFullYear(chosenDateObj.getFullYear() + numberOfYears);
-        income =+ 0.00;
+        income = +0.0;
 
         for (let i = 0; i < users.length; i++) {
-            subscriptionStartDate = new Date(users[i].subscription_start_date);
-            if (users[i].membership_type == 0) {
-                if (subscriptionStartDate <= chosenDateObj) {
+            if (users[i].subscription_id != 'undefined' || users[i].subscription_id != '') {
+                subscriptionStartDate = new Date(users[i].subscription_start_date);
+                if (users[i].membership_type == 0) {
+                    if (subscriptionStartDate <= chosenDateObj) {
                         income += weeklyCost * Math.floor(numberOfWeeks);
                         weeklys = weeklys + Math.floor(numberOfWeeks);
                     }
@@ -83,7 +89,8 @@
                         yearlys = yearlys + Math.floor(numberOfYears);
                     }
                 }
-            } 
+            }
+        }
         toDisplay = income.toFixed(2);
         weeklyString = weeklyCost.toFixed(2);
         monthlyString = monthlyCost.toFixed(2);
@@ -92,11 +99,11 @@
 </script>
 
 <Select bind:value={numberOfWeeks}>
-    <option value=1.0000>Weekly</option>
-    <option value=4.3453>Monthly</option>
-    <option value=13.0357>3 Months</option>
-    <option value=26.0715>6 Months</option>
-    <option value=52.1429>Yearly</option>
+    <option value="1.0000">Weekly</option>
+    <option value="4.3453">Monthly</option>
+    <option value="13.0357">3 Months</option>
+    <option value="26.0715">6 Months</option>
+    <option value="52.1429">Yearly</option>
 </Select>
 <Input bind:value={chosenDate} type="date" min={todaysDate} />
 <h1>Revenue</h1>

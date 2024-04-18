@@ -47,7 +47,6 @@ export const load = (async ({ cookies }) => {
 
 export const actions = {
     update: async ({ cookies, request }) => {
-        const username = cookies.get('sessionId');
         const type = await request.json();
         try {
             cookies.set('paymentPlan', type, {
@@ -60,6 +59,46 @@ export const actions = {
           } catch (verificationError) {
             return fail(400);
           }
+    },
+    cancel: async ({ cookies, request }) => {
+        const username = cookies.get('sessionId');
+        user = await prisma.user.findUnique({
+            where: {
+            username: username as string,
+            },
+        });
+        const customerId = user?.stripe_token;
+        const subscriptions = await stripe.subscriptions.list({
+            limit: 3,
+            customer: customerId,
+        });
+        console.log(subscriptions.data[0].id);
+        const subscription = await stripe.subscriptions.update(
+            subscriptions.data[0].id,
+            {
+                cancel_at_period_end: true,
+            }
+        )
+        try {
+            await prisma.user.update({
+                where: {
+                    username: username as string,
+                },
+                data: {
+                    membership_type: 4,
+                    subscription_id: "",
+                },
+            })
+        }
+        catch (error) {
+            console.error('Error during cancellation update:', error);
+            return {
+                status: 500,
+                body: { message: 'Internal Server Error.' },
+            };
+        }
+        location.reload;
+
     }
 
 }

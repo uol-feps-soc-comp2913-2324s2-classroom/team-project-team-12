@@ -1,11 +1,11 @@
-import { redirect } from '@sveltejs/kit';
-import { dev } from '$app/environment';
 import prisma from '$lib/prisma';
+import gpxParser from 'gpxparser';
+import { redirect } from '@sveltejs/kit';
 
 import type { RouteEntry } from '$lib/interfaces';
 
 // Append a route to the DB
-const appendRouteToDB = async (userId: number, privacy: number, route: RouteEntry) => {
+const appendRouteToDB = async (userId: number, route: RouteEntry) => {
     // Append the route metadata to its respective table
     let newRoute = await prisma.routes.create({
         data: {
@@ -13,7 +13,7 @@ const appendRouteToDB = async (userId: number, privacy: number, route: RouteEntr
             created_on: route.createdOn,
             approximate_completion_time: route.completionTime,
             creator: userId,
-            publicity: privacy,
+            publicity: route.publicity,
             length: 0,
         },
     });
@@ -50,20 +50,23 @@ export const actions = {
         try {
             // Parse the data
             let data = await file.text();
-            let json = JSON.parse(data) as RouteEntry[];
 
-            let routes = json.map((route) => {
-                route.createdOn = new Date(route.createdOn);
-                route.path = route.path.map((coord) => [Number(coord[0]), Number(coord[1])]);
+            let gpx = new gpxParser();
+            gpx.parse(data.replace(/(\r\n|\n|\r)/gm, ''));
 
-                return route;
-            });
+            if (gpx.routes.length == 0) return { success: false };
 
-            // Log the new route data (for troubleshooting)
-            if (dev) console.log(routes);
+            const routes = gpx.routes.map((r) => ({
+                name: r.name,
+                creator: username,
+                createdOn: new Date(),
+                completionTime: (r.points[r.points.length - 1].time.getTime() - r.points[0].time.getTime()) / 1000,
+                path: r.points.map((p) => [p.lat, p.lon]),
+                publicity: Number(privacy),
+            }));
 
             // Append the route to the DB
-            routes.forEach((r) => appendRouteToDB(userId as number, Number(privacy), r));
+            routes.forEach((r) => appendRouteToDB(userId as number, r));
 
             // Load the map page
             return { success: true };
