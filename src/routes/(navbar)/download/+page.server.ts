@@ -45,7 +45,15 @@ export const actions = {
             result += `\t<name>${r.route_name}</name>\n`;
 
             // Export each point in the route
-            r.route_coordinates.forEach((p) => (result += `\t<rtept lat="${p.latitude}" lon="${p.longitude}" />\n`));
+            r.route_coordinates.forEach((p, i) => {
+                result += `\t<rtept lat="${p.latitude}" lon="${p.longitude}">`;
+
+                if (i == 0) result += `<time>${r.created_on.toISOString()}</time>`;
+                if (i == filteredRoutes.length)
+                    result += `<time>${new Date(+r.created_on + r.approximate_completion_time * 1000).toISOString()}</time>`;
+
+                result += '</rtept>\n';
+            });
 
             result += '</rte>\n';
         });

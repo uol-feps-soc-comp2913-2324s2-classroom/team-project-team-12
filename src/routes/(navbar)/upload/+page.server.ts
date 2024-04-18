@@ -60,7 +60,7 @@ export const actions = {
                 name: r.name,
                 creator: username,
                 createdOn: new Date(),
-                completionTime: 1,
+                completionTime: (r.points[r.points.length - 1].time.getTime() - r.points[0].time.getTime()) / 1000,
                 path: r.points.map((p) => [p.lat, p.lon]),
                 publicity: Number(privacy),
             }));
