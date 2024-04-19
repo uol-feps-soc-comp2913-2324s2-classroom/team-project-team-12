@@ -2,7 +2,7 @@
     import { Listgroup, ListgroupItem, Avatar } from 'flowbite-svelte';
     export let memberOfGroups: { id: number, name: string }[] = [];
 
-    let searchTerm = "";
+    export let searchTerm = "";
     
     const leaveGroup = async (group: { id: number, name: string }) => {
       const formData = new FormData();
@@ -40,7 +40,6 @@
   
   <Listgroup active class="w-full md:w-80">
     <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-white">Groups</h3>
-    <input type="text" bind:value={searchTerm} placeholder="Search..." class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
     {#each filteredGroups as group}
       <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
           <a rel="external" href="../group/{group.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
