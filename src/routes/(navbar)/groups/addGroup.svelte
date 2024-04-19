@@ -52,7 +52,6 @@
 
   <Dropdown bind:isOpen={isDropdownOpen} class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg dark:bg-gray-700">
     <div class="px-4 py-2">
-      <input type="text" bind:value={groupName} placeholder="Enter group name" class="w-full px-4 py-2 mb-4 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
     </div>
     <DropdownItem on:click={handleCreateGroup} class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-white cursor-pointer">
       Create Group

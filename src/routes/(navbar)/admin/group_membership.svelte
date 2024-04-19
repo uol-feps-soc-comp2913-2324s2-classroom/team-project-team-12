@@ -30,6 +30,7 @@
         formData.append('request', group_membership.request.toString());
         formData.append('member', group_membership.member.toString());
         formData.append('admin', group_membership.admin.toString());
+        formData.append('invite', group_membership.invite.toString());
         console.log(group_membership.admin);
         try {
             if (!formData.has('id')) {
@@ -109,6 +110,7 @@
             <TableHeadCell>Request</TableHeadCell>
             <TableHeadCell>Member</TableHeadCell>
             <TableHeadCell>Admin</TableHeadCell>
+            <TableHeadCell>Invite</TableHeadCell>
     </TableHead>
     <TableBody>
         {#each group_memberships.filter((gm) => (gm.group_id.toString().includes(searchTerm) || gm.user_id.toString().includes(searchTerm))).slice(currentPage * group_membershipsPerPage, (currentPage + 1) * group_membershipsPerPage) as group_membership}
@@ -120,6 +122,7 @@
                     <TableBodyCell>{group_membership.request}</TableBodyCell>
                     <TableBodyCell>{group_membership.member}</TableBodyCell>
                     <TableBodyCell>{group_membership.admin}</TableBodyCell>
+                    <TableBodyCell>{group_membership.invite}</TableBodyCell>
                 </TableBodyRow>
             {/if}
             {#if lockedFields == 0}
@@ -133,14 +136,20 @@
                             <option value={false}>false</option>
                         </Select>
                     </TableBodyCell>
-                    <TableBodyCell
-                        ><Select bind:value={group_membership.member}>
+                    <TableBodyCell>
+                        <Select bind:value={group_membership.member}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
                         </Select>
                     </TableBodyCell>
-                    <TableBodyCell
-                        ><Select bind:value={group_membership.admin}>
+                    <TableBodyCell>
+                        <Select bind:value={group_membership.admin}>
+                            <option value={true}>true</option>
+                            <option value={false}>false</option>
+                        </Select>
+                    </TableBodyCell>
+                    <TableBodyCell>
+                        <Select bind:value={group_membership.invite}>
                             <option value={true}>true</option>
                             <option value={false}>false</option>
                         </Select>
