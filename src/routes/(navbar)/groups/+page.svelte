@@ -12,6 +12,8 @@
   const notMemberOfGroups = data.notMemberOfGroups;
   const groupRequests = data.groupRequests;
   const requested = data.requested;
+  const currentUsersFriends = data.currentUserFriends;
+  const invitedGroups = data.invitedWithCreator;
 
   let searchTerm = "";
 
@@ -21,7 +23,6 @@
   bind:value={searchTerm}
   placeholder="Search groups"
   on:input={() => {
-    console.log(searchTerm);
   }} />
 
 <div class="container">
@@ -30,7 +31,7 @@
   </div>
 
 <div class="requests-container">
-    <Requestlist {groupRequests} searchTerm={searchTerm}/>
+    <Requestlist groupRequests={groupRequests} groupInvites={invitedGroups} searchTerm={searchTerm}/>
   </div>
 
 <div class="discover-groups-container">
@@ -38,7 +39,7 @@
   </div>
 
   <div class="add-groups-container">
-    <AddGroups/>
+    <AddGroups currentUsersFriends={currentUsersFriends}/>
   </div>
 </div>
 
