@@ -16,14 +16,16 @@
           });
   
           const result = await response.json();
-  
-          if (response.ok) {
-              console.log(result.message || 'Friend deleted successfully');
+          let actualResult = result.data;
+          actualResult = JSON.parse(actualResult);
+          
+          if (actualResult[1] == 200) {
+              console.log('Friend deleted successfully');
               memberOfGroups = memberOfGroups.filter(g => g.id !== group.id);
               location.reload();
               
           } else {
-              console.error(result.error || 'Failed to delete friend');
+            console.error(actualResult[3] || 'Failed to delete friend');
           }
       } catch (error) {
           console.error('Error during friend deletion:', error);

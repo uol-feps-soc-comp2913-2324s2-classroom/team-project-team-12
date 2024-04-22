@@ -18,17 +18,19 @@
           });
   
           const result = await response.json();
-  
-          if (response.ok) {
-              console.log(result.message || 'Left group successfully');
+          let actualResult = result.data;
+          actualResult = JSON.parse(actualResult);
+          
+          if (actualResult[1] == 200) {
+              console.log(result.message || 'Requested group successfully');
               notMemberOfGroups = notMemberOfGroups.filter(g => g.id !== group.id);
               location.reload();
               
           } else {
-              console.error(result.error || 'Failed to leave group');
-          }
+            console.error(actualResult[3] || 'Failed to request group');
+        }
       } catch (error) {
-          console.error('Error leaving group:', error);
+          console.error('Error requesting group:', error);
       }
   };
   
@@ -44,15 +46,17 @@
           });
   
           const result = await response.json();
-  
-          if (response.ok) {
-              console.log(result.message || 'Cancel group request successfully');
+          let actualResult = result.data;
+          actualResult = JSON.parse(actualResult);
+          
+          if (actualResult[1] == 200) {
+              console.log('Canceled group request successfully');
               notMemberOfGroups = notMemberOfGroups.filter(g => g.id !== group.id);
               location.reload();
               
-          } else {
-              console.error(result.error || 'Failed to cancel group request');
-          }
+            } else {
+              console.error(actualResult[3] || 'Failed to cancel group request');
+        }
       } catch (error) {
           console.error('Error leaving group:', error);
       }
@@ -72,7 +76,7 @@
   </script>
   
   <Listgroup active class="w-full md:w-80">
-    <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-white">People</h3>
+    <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-white">Groups</h3>
     {#each filteredGroups as group}
       <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
           <a rel="external" href="../group/{group.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
