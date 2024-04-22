@@ -20,7 +20,7 @@ export const load = async ({ cookies }) => {
                 in: [
                   ...(await prisma.group_membership.findMany({
                     where: {
-                      user_id: user?.id, member: true, invite: false
+                      user_id: user?.id, member: true
                     },
                     select: { group_id: true }
                   })).map(mem => mem.group_id)
@@ -38,7 +38,6 @@ export const load = async ({ cookies }) => {
         where: {
             groups: { creator: user?.id },
             request: true,
-            member: false  // Requests for groups created by the user
         },
         include: {
             groups: {
@@ -59,7 +58,6 @@ export const load = async ({ cookies }) => {
         where: {
             user_id: user?.id,
             request: true,
-            member: false  // Requests for groups created by the user
         },
         include: {
             groups: {
@@ -75,7 +73,6 @@ export const load = async ({ cookies }) => {
         where: {
             user_id: user?.id,
             invite: true,
-            member: false  // Requests for groups created by the user
         },
         include: {
             groups: {
@@ -248,6 +245,7 @@ export const actions = {
                 const updatedMembership = Object.assign({}, membership);
                 //updates membership with new values
                 updatedMembership.member = true;
+                updatedMembership.request = false;
                 updatedMembership.invite = false;
                 //update membership in database
                 await prisma.group_membership.update({
@@ -355,7 +353,6 @@ export const actions = {
                         data: {
                             group_id: groupID,
                             user_id: user?.id,
-                            request: true,
                             member: true,
                             admin: true,
                         },
@@ -367,9 +364,6 @@ export const actions = {
                                 data: {
                                     group_id: groupID,
                                     user_id: idList[i],
-                                    request: false,
-                                    member: false,
-                                    admin: false,
                                     invite: true
                                 },
                             });
