@@ -73,6 +73,7 @@
             bind:value={password}
             type = "password"
             name = "newpass"
+            minlength="8"
             required
         />
         {#if error}

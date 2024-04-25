@@ -29,7 +29,6 @@ export interface user {
     email: string;
     password: string;
     membership_type: number | null;
-    subscription_start_date: Date;
     paid: boolean;
     default_publicity: number | null;
     admin_status: boolean;

@@ -7,7 +7,7 @@ import type { RouteEntry } from '$lib/interfaces';
 // Append a route to the DB
 const appendRouteToDB = async (userId: number, privacy: number, route: RouteEntry) => {
     // Append the route metadata to its respective table
-    let newRoute = await prisma.routes.create({
+    const newRoute = await prisma.routes.create({
         data: {
             route_name: route.name,
             created_on: route.createdOn,
@@ -49,10 +49,10 @@ export const actions = {
 
         try {
             // Parse the data
-            let data = await file.text();
-            let json = JSON.parse(data) as RouteEntry[];
+            const data = await file.text();
+            const json = JSON.parse(data) as RouteEntry[];
 
-            let routes = json.map((route) => {
+            const routes = json.map((route) => {
                 route.createdOn = new Date(route.createdOn);
                 route.path = route.path.map((coord) => [Number(coord[0]), Number(coord[1])]);
 

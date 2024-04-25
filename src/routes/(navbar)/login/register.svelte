@@ -98,6 +98,7 @@
             <Input type="password"
                 bind:value={password}
                 name="password"
+                minlength="8"
                 required
             />
         </Label>
