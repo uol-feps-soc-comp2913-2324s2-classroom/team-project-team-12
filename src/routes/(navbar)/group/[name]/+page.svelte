@@ -1,3 +1,12 @@
+<svelte:head>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+</svelte:head>
+
 <script lang="ts">
     // @ts-nocheck
     export let data;
@@ -5,16 +14,12 @@
     export const members = data.members;
     export const creator = data.creator;
     export const memberCount = data.memberCount;
-    export const groupRouteEntries = data.groupRouteEntryObj;
+    export let groupRouteEntries = data.groupRouteEntryObj;
     export const currentUser = data.user;
     import SingleRoute from "$lib/components/SingleRoute.svelte";
 
     import { Button, Card, Tabs, TabItem, Listgroup, ListgroupItem, Avatar, Heading, List, Li } from 'flowbite-svelte';
-    import User from "../../admin/user.svelte";
-    
-
-    console.log("suicide", groupRouteEntries.routes);
-    
+        
     function getInitials(fullName) {
         // Split the full name into an array of words
         const nameArray = fullName.split(" ");
@@ -38,35 +43,36 @@
     };
 
     const deleteRouteFromGroup = (route: RouteEntry) => {
-    //console.log('adding ', route.name, 'to group ', route.group);
-    const formData = new FormData();
-    formData.append('type', 'deleteRouteFromGroup');
-    formData.append('routeID', route.id.toString());
-    formData.append('userID', currentUser.id.toString());
-    fetch('/routes', {
-        method: 'POST',
-        body: formData
-    }).then(response => response.json())
-        .then(data => {
-            let actualResponse = data.data;
-            actualResponse = JSON.parse(actualResponse);
-            //update the groupRouteEntries with the new group
-            if (actualResponse[1] == 200) {
-                alertStatus = 2;
-                let newGroupRouteEntries = groupRouteEntries.map(groupRouteEntry => {
-                if (groupRouteEntry.group_name == route.group) {
-                        groupRouteEntry.routes.push(route);
-                        alertStatus = 1;
+        const formData = new FormData();
+        formData.append('type', 'deleteRouteFromGroup');
+        formData.append('routeID', route.id.toString());
+        formData.append('groupID', group.id.toString());
+        const groupUrl = `/group/${encodeURIComponent(group.name)}/`;
+        fetch(groupUrl, {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+            .then(data => {
+                let actualResponse = data.data;
+                actualResponse = JSON.parse(actualResponse);
+                //update the groupRouteEntries with the new group
+                if (actualResponse[1] == 200) {
+                    alertStatus = 2;
+                    let newGroupRouteEntries = groupRouteEntries.map(groupRouteEntry => {
+                        if (groupRouteEntry.group_name == route.group) {
+                            groupRouteEntry.routes.push(route);
+                            alertStatus = 1;
+                        }
+                        return groupRouteEntry;
+                    });
+                    groupRouteEntries = newGroupRouteEntries;
                 }
-                return groupRouteEntry;
+                
+            })
+            .catch((error) => {
+                console.error('Error removing route:', error);
             });
-            }
-            
-        })
-        .catch((error) => {
-           
-        });
-}
+    }
 
 </script>
  
@@ -131,8 +137,8 @@
                 </TabItem>
                 <TabItem class="w-full">
                     <span slot="title">Routes</span>
-                    {#if groupRouteEntries.length == 0}
-                            <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no Routes.</div>
+                    {#if groupRouteEntries.routes.length == 0}
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">Group has no Routes.</div>
                     {:else}
                         <Listgroup items={groupRouteEntries.routes} let:item class="border-0 dark:!bg-transparent">
                             <div class="flex items-center space-x-4 rtl:space-x-reverse">
@@ -152,6 +158,13 @@
                                     <p class="text-sm text-gray-500 truncate dark:text-gray-400">
                                         Route Duration: {getRouteDuration(item)}
                                     </p>
+                                </div>
+                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                    {#if (currentUser.username === item.creator || currentUser.username === creator.username)}
+                                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                            <Button color=light on:click={() => deleteRouteFromGroup(item)}>Remove</Button>
+                                        </div>
+                                    {/if}
                                 </div>
                             </div>
                         </Listgroup>

@@ -122,8 +122,6 @@ export const load = (async ({ cookies, params: { name } }) => {
     };
     groupRouteEntries.push(groupRouteEntryObj);
     //#############################
-
-    console.log("here",groupRouteEntryObj.routes,"end")
     
     return { group, members, creator, memberCount, groupRouteEntryObj, user};
 }) as PageServerLoad;
@@ -133,18 +131,17 @@ export const load = (async ({ cookies, params: { name } }) => {
 
 export const actions = {
     default: async ({ request }) => {
-        //console.log("request recieved");
         const data = await request.formData();
         const type = data.get('type');
         const groupID = data.get('groupID');
         const routeID = data.get('routeID');
+
         //Data and type validation
         if (type == null) return { status: 400, body: { error: 'No type specified' } };
 
         if (type == 'deleteRouteFromGroup') {
             if (routeID == null) return { status: 400, body: { error: 'No route specified' } };
             if (groupID == undefined) return { status: 400, body: { error: 'Invalid group name' } };
-            console.log("DASDSDWASDSADW")
             const routeIDNum = Number(routeID);
             const groupIDNum = Number(groupID);
 
@@ -160,7 +157,6 @@ export const actions = {
                     id: groupRouteID?.id,
                 },
             });
-                    //console.log("Added route to group");
                 }
         return { status: 400, body: { error: 'Invalid type' } };
     },
