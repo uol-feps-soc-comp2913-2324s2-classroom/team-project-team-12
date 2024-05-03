@@ -30,6 +30,7 @@ export interface user {
     password: string;
     membership_type: number | null;
     subscription_start_date: Date;
+    next_payment_date: Date;
     paid: boolean;
     default_publicity: number | null;
     admin_status: boolean;

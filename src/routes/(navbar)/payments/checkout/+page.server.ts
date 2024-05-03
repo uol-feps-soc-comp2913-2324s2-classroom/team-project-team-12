@@ -5,7 +5,7 @@ import { fail } from '@sveltejs/kit';
 import type { user } from '$lib/interfaces'
 import { redirect } from '@sveltejs/kit'
 
-let user: user
+let user: user;
 
 export const load = (async ({ cookies }) => {
   const username = cookies.get('sessionId');
@@ -57,7 +57,12 @@ export const load = (async ({ cookies }) => {
     } catch (verificationError) {
       return fail(400);
     }
-  
+    if (!subscription.latest_invoice || !subscription.latest_invoice.payment_intent) {
+      return {
+        status: 500,
+        body: { message: 'Internal Server Error.' },
+      };
+    }
     return {
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       returnUrl: new URL('/payments/complete', env.DOMAIN).toString()
