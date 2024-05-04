@@ -20,6 +20,18 @@ export const load = (async ({ cookies }) => {
   if(type === user?.membership_type){
     throw redirect(303, '/payments')
   }
+  let timeNow = new Date()
+  if (timeNow < user.next_payment_date) {
+    await prisma.user.update({
+      where: {
+        username: username as string,
+      },
+      data: {
+        membership_type: Number(type),
+      },
+    })
+    throw redirect(303, '/payments');
+  }
 
   const customerId = user?.stripe_token;
   const subscriptionId = user?.subscription_id;
@@ -77,6 +89,20 @@ export const load = (async ({ cookies }) => {
       }
     );
     const currentDate = new Date()
+    let next_date = user?.next_payment_date
+    if (next_date == null || (user.paid === false || (user.paid === true && currentDate > next_date)) ) {
+      if (type == 0) {
+        next_date = new Date(currentDate.setDate(currentDate.getDate() + 7))
+      }
+      if (type == 1) {
+        next_date = new Date(currentDate.setMonth(currentDate.getMonth() + 1))
+      }
+      if (type == 2) {
+        next_date = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1))
+      }
+    }
+    let paid_to = user.paid
+
     try {
       await prisma.user.update({
           where: {
@@ -85,6 +111,8 @@ export const load = (async ({ cookies }) => {
           data: {
               membership_type: Number(type),
               subscription_start_date: currentDate.toISOString(),
+              next_payment_date: next_date.toISOString(),
+              paid: true
           },
       })
     }

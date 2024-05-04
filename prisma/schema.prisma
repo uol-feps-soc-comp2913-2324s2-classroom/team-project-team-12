@@ -127,7 +127,7 @@ model user {
   password                                 String
   membership_type                          Int                @default(4)
   subscription_start_date                  DateTime           @default("2024-01-01T00:00:00.000Z")
-  next_payment_date                        DateTime           @default(now())
+  next_payment_date                        DateTime?          
   paid                                     Boolean            @default(false)
   default_publicity                        Int                @default(2)
   admin_status                             Boolean            @default(false)

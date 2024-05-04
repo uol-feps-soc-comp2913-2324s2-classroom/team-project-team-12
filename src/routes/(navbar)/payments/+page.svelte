@@ -13,10 +13,10 @@
     const typedData = data as { membership_type?: number };
     const typedData2 = data as { subscription_start_date?: Date};
     const subscription_start_date = typedData2 ? typedData2.subscription_start_date : null;
-    let next_payment_date = data.user?.next_payment_date ? new Date(data.user.next_payment_date) : new Date();
+    let next_payment_date = data.user.next_payment_date;
     let membership_type = typedData ? typedData.membership_type : 4;
     let registerMessage = ""
-
+    let currentTime = new Date();
     const handleCancel = async () => {
         console.log('cancel')
         try {
@@ -29,6 +29,7 @@
             console.error('Error during update:', error);
             registerMessage = 'Could not cancel subscription. Please try again later.';
         }
+        location.reload();
         console.log('done')
     }
 
@@ -57,9 +58,15 @@
         <Button on:click={handleCancel}>Cancel Subscription</Button>
         {/if}
         </div>
+        {#if user.next_payment_date != null}
         <Secondary style="text-transform:uppercase">Current Plan: {plan}</Secondary>
         {#if plan != 'unselected'}
-            <Secondary style="text-transform:uppercase">Next Payment: {next_payment_date.toLocaleDateString("en-uk")}</Secondary>
+            <Secondary style="text-transform:uppercase">Next Payment: {user.next_payment_date.toLocaleDateString("en-uk")}</Secondary>
+            {:else}
+            <Secondary style="text-transform:uppercase">Active Until {user.next_payment_date.toLocaleDateString("en-uk")}</Secondary>
+        {/if}
+        {:else}
+        <Secondary style="text-transform:uppercase">No Active Subscription</Secondary>
         {/if}
     </div>
     <br>

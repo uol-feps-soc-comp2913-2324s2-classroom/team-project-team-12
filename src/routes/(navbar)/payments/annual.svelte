@@ -29,7 +29,7 @@
             </h5>
             <div class="flex items-baseline text-gray-900 dark:text-white">
             <span class="text-3xl font-semibold">£</span>
-            <span class="text-5xl font-extrabold tracking-tight">100</span>
+            <span class="text-5xl font-extrabold tracking-tight">45.00</span>
             <span class="ms-1 text-xl font-normal text-gray-500 dark:text-gray-400">/year</span>
             </div>
             <ul class="my-7 space-y-4">
@@ -55,7 +55,7 @@
                 </li>
                 <li class="flex space-x-2 rtl:space-x-reverse">
                     <CheckCircleSolid class="w-4 h-4 text-primary-600 dark:text-primary-500" />
-                    <span class="text-base font-normal leading-tight text-gray-500 dark:text-gray-400">Save over <b>£50!</b></span>
+                    <span class="text-base font-normal leading-tight text-gray-500 dark:text-gray-400">Save <b>25%!</b></span>
                 </li>
             </ul>
             <GradientButton class="w-full" color="pinkToOrange" disabled={user.membership_type == 2}  on:click={handleUpdate}>

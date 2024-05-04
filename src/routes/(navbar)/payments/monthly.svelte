@@ -26,7 +26,7 @@
         <h5 class="mb-4 text-xl font-medium text-gray-500 dark:text-gray-400">Monthly plan</h5>
         <div class="flex items-baseline text-gray-900 dark:text-white">
         <span class="text-3xl font-semibold">£</span>
-        <span class="text-5xl font-extrabold tracking-tight">12.59</span>
+        <span class="text-5xl font-extrabold tracking-tight">5.00</span>
         <span class="ms-1 text-xl font-normal text-gray-500 dark:text-gray-400">/month</span>
         </div>
         <ul class="my-7 space-y-4">
@@ -51,8 +51,8 @@
                 <span class="text-base font-normal leading-tight text-gray-500 dark:text-gray-400">View shared data on a map.</span>
             </li>
         </ul>
-        <GradientButton on:click={handleUpdate} class="w-full" color="pinkToOrange" disabled={user.membership_type == 1}>
+        <Button on:click={handleUpdate} class="w-full" disabled={user.membership_type == 1}>
             {#if user.membership_type == 1} Your Plan {:else} Choose Plan {/if}
-        </GradientButton>
+        </Button>
     </Card>
 </div>
