@@ -14,6 +14,9 @@ export const load = async ({ cookies }) => {
     const user = await prisma.user.findUnique({ where: { username } });
     const userId = user?.id;
 
+    // Enforce the paywall
+    if (user?.membership_type == 4 || user.next_payment_date < new Date()) throw redirect(302, '/payments');
+
     const userRoutesToShow = await prisma.routes_to_show.findMany({ where: { user_id: userId } });
 
     const userRoutes = userRoutesToShow.map(async (r): Promise<RouteEntry> => {

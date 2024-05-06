@@ -67,7 +67,19 @@ export const actions = {
             username: username as string,
             },
         });
+        if (!user) {
+            return {
+                status: 404,
+                body: { message: 'User not found.' },
+            };
+        }
         const customerId = user?.stripe_token;
+        if (!customerId) {
+            return {
+                status: 404,
+                body: { message: 'Customer not found.' },
+            };
+        }
         const subscriptions = await stripe.subscriptions.list({
             limit: 3,
             customer: customerId,
