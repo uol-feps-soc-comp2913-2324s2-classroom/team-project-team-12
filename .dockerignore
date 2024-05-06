@@ -1,0 +1,12 @@
+Dockerfile
+build
+node_modules
+README.md
+.git
+.npmrc
+.prettierrc
+.eslintrc.cjs
+.svelte-kit
+.dockerignore
+.gitignore
+.prettierignore

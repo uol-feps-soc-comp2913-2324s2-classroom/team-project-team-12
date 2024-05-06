@@ -1,7 +1,19 @@
 import prisma from '$lib/prisma';
-import { redirect } from '@sveltejs/kit';
+import { json, redirect } from '@sveltejs/kit';
 
-let routes;
+// Returns a valid header for a GPX file
+const gpxHeader = (username: string) => {
+    return `\
+<?xml version="1.0"?>
+<gpx
+\tversion="1.0"
+\tcreator="Journeys"
+\txmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+\txmlns="http://www.topografix.com/GPX/1/0"
+\txsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+\t<name>Journeys - ${username}'s Exported Data</name>
+`;
+};
 
 export const actions = {
     default: async ({ request, cookies }) => {
@@ -10,75 +22,49 @@ export const actions = {
         if (username == undefined) throw redirect(302, '/login');
 
         // Get the user's ID
-        const curUser = await prisma.user.findUnique({ where: { username } });
+        const user = await prisma.user.findUnique({ where: { username } });
+        const userId = user?.id;
 
-        console.log(curUser);
-
-        const data  = await request.formData();
+        const data = await request.formData();
         const period = data?.get('start');
 
-        console.log(period);
+        let startDate = new Date(period.toString());
 
-        try {
-            let startDate;
-            
-            if(period != null){
-                startDate = new Date(period.toString());
-            }
+        const routes = await prisma.routes.findMany({
+            where: { creator: userId },
+            include: { route_coordinates: true },
+        });
 
-            console.log(startDate);
+        const filteredRoutes = routes.filter((r) => startDate <= r.created_on);
 
-            if(curUser){
-                const routeList = await prisma.routes.findMany({
-                    where: {
-                        creator: curUser.id,
-                    },
-                    include: {
-                        route_coordinates: true // Include route coordinates for each route
-                    }
-                });
+        let result = gpxHeader(username);
 
-                console.log(routeList);
+        // Export each route
+        filteredRoutes.forEach((r) => {
+            result += '<rte>\n';
+            result += `\t<name>${r.route_name}</name>\n`;
 
-                routes = [];
+            // Export each point in the route
+            r.route_coordinates.forEach((p, i) => {
+                result += `\t<rtept lat="${p.latitude}" lon="${p.longitude}">`;
 
-                for (let i = 0; i < routeList.length; i++) {
-                    if(startDate && startDate <= routeList[i].created_on){
-                        const longitudes = routeList[i].route_coordinates.map(coord => coord.longitude).join(',');
-                        const latitudes = routeList[i].route_coordinates.map(coord => coord.latitude).join(',');
-                        routes.push({
-                            name: routeList[i].route_name,
-                            created_on: routeList[i].created_on,
-                            length: routeList[i].length,
-                            completion_time: routeList[i].approximate_completion_time,
-                            latitudes: latitudes,
-                            longitudes: longitudes,
-                        });
-                    }
-                }
+                if (i == 0) result += `<time>${r.created_on.toISOString()}</time>`;
+                if (i == r.route_coordinates.length - 1)
+                    result += `<time>${new Date(+r.created_on + r.approximate_completion_time * 1000).toISOString()}</time>`;
 
-                const formattedData = routes.map(route => ({
-                    name: route.name,
-                    created_on: route.created_on.toString(),
-                    length: route.length,
-                    'completion_time': route.completion_time,
-                    path: route.latitudes.split(',').map((latitude, index) => [parseFloat(latitude), parseFloat(route.longitudes.split(',')[index])]) // Parse strings to floats and create an array of [latitude, longitude] pairs
-                }));
+                result += '</rtept>\n';
+            });
 
-                console.log(formattedData);
+            result += '</rte>\n';
+        });
 
-                const jsonData = JSON.stringify(formattedData, null, 2);
+        // Terminate the file correctly
+        result += '</gpx>';
 
-                console.log(jsonData);
-
-                return {
-                    status: 200,
-                    body: jsonData
-                }
-            }
-        }
-        catch (error){
-            return 500;
-        }
-    }
-}
+        return {
+            status: 200,
+            body: result,
+            'content-type': 'application/xml',
+        };
+    },
+};

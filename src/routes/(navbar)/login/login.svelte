@@ -23,11 +23,10 @@
 
             if (result.status === 200) {
                 console.log(result.message || 'Login successful');
-                goto('/map');
+                window.location = '/map';
             } else {
                 error = 'Incorrect username or password';
             }
-
         } catch (error) {
             console.error('Error during login:', error);
             loginMessage = 'Internal Server Error';
@@ -36,27 +35,17 @@
 </script>
 
 <form class="flex flex-col space-y-6" name="login" method="post" on:submit|preventDefault={handleLogin}>
-    <Input type="hidden" name="type" value="login"/>
-    <Label>Username: 
-        <Input  
-            bind:value={username}
-            type = "text"
-            name = "username"
-            required
-        />
+    <Input type="hidden" name="type" value="login" />
+    <Label
+        >Username:
+        <Input bind:value={username} type="text" name="username" required />
     </Label>
-    <Label>Password:
-        <Input
-            bind:value={password}
-            type="password"
-            name = "password"
-            required
-        />
+    <Label
+        >Password:
+        <Input bind:value={password} type="password" name="password" required />
     </Label>
     {#if error}
         <p>{error}</p>
     {/if}
     <Button class="mt-4" type="submit">Submit</Button>
 </form>
-
-

@@ -11,17 +11,17 @@
         formData.append('type', 'logout');
 
         const response = await fetch('/logout', {
-                method: 'POST',
-                body: formData,
+            method: 'POST',
+            body: formData,
         });
 
         const result = await response.json();
-        
+
         // if logged out, go to landing page.
-        if(result.status === 200) {
-            goto('/');
+        if (result.status === 200) {
+            window.location = '/';
         }
-    }
+    };
 </script>
 
 <Navbar class="drop-shadow">
@@ -34,13 +34,12 @@
     </NavBrand>
     <NavUl>
         {#if data.user != undefined}
-        <NavLi href="/map">Home</NavLi>
-        <NavLi href="/friends">Friends</NavLi>
-        <NavLi href="/groups">Groups</NavLi>
-        <NavLi href="/routes">Routes</NavLi>
-        <NavLi href="/payments">Pricing</NavLi>
+            <NavLi href="/map">Home</NavLi>
+            <NavLi href="/friends">Friends</NavLi>
+            <NavLi href="/groups">Groups</NavLi>
+            <NavLi href="/routes">Routes</NavLi>
+            <NavLi href="/payments">Pricing</NavLi>
         {/if}
-
     </NavUl>
 
     <div class="flex items-center">
@@ -61,10 +60,9 @@
         <DarkMode />
         {#if data.user}
             <ToolbarButton size="lg" on:click={logoutUser}>
-                <ArrowRightToBracketOutline></ArrowRightToBracketOutline>
+                <ArrowRightToBracketOutline />
             </ToolbarButton>
         {/if}
-        
     </div>
 </Navbar>
 

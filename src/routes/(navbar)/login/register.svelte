@@ -1,7 +1,7 @@
 <script>
     import { goto } from '$app/navigation';
     import { Input, Button, Label } from 'flowbite-svelte';
-    
+
     let registerMessage = '';
     let usernameMessage = '';
     let emailMessage = '';
@@ -15,7 +15,7 @@
 
     const handleRegister = async () => {
         if (password !== confirmPassword) {
-            registerMessage = "Passwords do not match";
+            registerMessage = 'Passwords do not match';
             return;
         }
         const formData = new FormData();
@@ -37,13 +37,13 @@
             if (result.status === 200) {
                 registerMessage = result.message || 'Registration successful';
                 // If registration is successful, navigate to the payments
-                goto('/payments');
-            } else if(result.status === 401){
+                window.location = '/payments';
+            } else if (result.status === 401) {
                 usernameMessage = result.message || 'Username taken.';
-            } else if(result.status === 402){
+            } else if (result.status === 402) {
                 emailMessage = result.message || 'Account with email already exists.';
-            } else if(result.statis === 403){
-                emailMessage = result.message || 'Invalid email address.'
+            } else if (result.statis === 403) {
+                emailMessage = result.message || 'Invalid email address.';
             } else {
                 registerMessage = 'Error registering user.';
             }
@@ -52,7 +52,6 @@
             registerMessage = 'Internal Server Error';
         }
     };
-
 </script>
 
 <form class="flex flex-col space-y-3" name="register" method="post" on:submit|preventDefault={handleRegister}>

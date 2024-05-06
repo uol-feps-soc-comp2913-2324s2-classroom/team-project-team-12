@@ -1,36 +1,45 @@
 <title>Journeys</title>
 <script>
+
   export let data;
   import Grouplist from './grouplist.svelte';
   import Discoverlist from './discoverlist.svelte';
   import Requestlist from './requestlist.svelte';
   import AddGroups from './addGroup.svelte';
-  
+  import { Input } from 'flowbite-svelte';
 
   const memberOfGroups = data.currentUserGroups;
   const notMemberOfGroups = data.notMemberOfGroups;
   const groupRequests = data.groupRequests;
   const requested = data.requested;
+  const currentUsersFriends = data.currentUserFriends;
+  const invitedGroups = data.invitedWithCreator;
 
-
+  let searchTerm = "";
 
 </script>
 
+<Input
+  bind:value={searchTerm}
+  placeholder="Search groups"
+  on:input={() => {
+  }} />
+
 <div class="container">
   <div class="groups-container">
-    <Grouplist {memberOfGroups}/>
+    <Grouplist {memberOfGroups} searchTerm={searchTerm}/>
   </div>
 
 <div class="requests-container">
-    <Requestlist {groupRequests} />
+    <Requestlist groupRequests={groupRequests} groupInvites={invitedGroups} searchTerm={searchTerm}/>
   </div>
 
 <div class="discover-groups-container">
-    <Discoverlist notMemberOfGroups={notMemberOfGroups} requested={requested}/>
+    <Discoverlist notMemberOfGroups={notMemberOfGroups} requested={requested} searchTerm={searchTerm}/>
   </div>
 
   <div class="add-groups-container">
-    <AddGroups/>
+    <AddGroups currentUsersFriends={currentUsersFriends}/>
   </div>
 </div>
 

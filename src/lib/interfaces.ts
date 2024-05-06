@@ -70,6 +70,7 @@ export interface group_membership {
     request: boolean;
     member: boolean;
     admin: boolean;
+    invite: boolean;
 }
 
 export interface group_route {

@@ -44,7 +44,7 @@ $: filteredFriends = currentUserFriends.filter(friend =>
   {#each filteredFriends as friend}
   <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
       <a rel="external" href="../profile/{friend.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">
-        <Avatar src={getDefaultProfilePictureUrl(friend)} size="xs" />
+        <Avatar src={getDefaultProfilePictureUrl(friend)} size="xs" style="margin-right: 8px;" />
         <span>{friend.name}</span>
       </a>
       <button on:click={() => deleteFriend(friend)} class="flex items-center p-1 text-sm font-medium text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-500 hover:underline rounded-b-lg">

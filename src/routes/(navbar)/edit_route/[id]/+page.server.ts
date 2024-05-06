@@ -2,6 +2,9 @@
 import prisma from '$lib/prisma';
 import type { user, route } from '$lib/interfaces'
 import { redirect } from '@sveltejs/kit';
+import Filter from 'bad-words';
+
+let filter = new Filter();
 
 let user: user;
 let route: route | null;
@@ -107,11 +110,11 @@ export const actions = {
             }
             let routeName: string | null = null;
             if (data.get("routeName")?.toString() != null) routeName = data.get("routeName")?.toString() || null;
-            if (routeName != null && routeName.length > 50 && routeName.length < 1) {
+            if (routeName != null && routeName.length > 25 && routeName.length < 1) {
                 return {
                     status: 400,
                     body: {
-                        message: "Route name must be between 1 and 50 characters"
+                        message: "Route name must be between 1 and 25 characters"
                     }
                 }
             }
@@ -134,11 +137,54 @@ export const actions = {
                     }
                 }
             }
+            let cleanName = filter.clean(routeName);
+            
+            if (cleanName !== routeName) {
+                return {
+                    status: 400,
+                    body: {
+                        message: "Route name contains inappropriate words"
+                    }
+                }
+            } else {
+                
+                if (routeName != null) {
+                    let flag = false;
+                let substring = routeName.substring(0, 25);
+                for (let i = 0; i < substring.length; i++) {
+                    //split the string into substrings of 4-8 characters
+                    substring = routeName.substring(i, i + 8);
+                    if (filter.isProfane(substring)) flag = true;
+                    if (filter.isProfane(substring)) console.log(substring);
+                    substring = routeName.substring(i, i + 7);
+                    if (filter.isProfane(substring)) flag = true;
+                    if (filter.isProfane(substring)) console.log(substring);
+                    substring = routeName.substring(i, i + 6);
+                    if (filter.isProfane(substring)) flag = true;
+                    if (filter.isProfane(substring)) console.log(substring);
+                    substring = routeName.substring(i, i + 5);
+                    if (filter.isProfane(substring)) flag = true;
+                    if (filter.isProfane(substring)) console.log(substring);
+                    substring = routeName.substring(i, i + 4);
+                    if (filter.isProfane(substring)) flag = true ;
+                    if (filter.isProfane(substring)) console.log(substring);
+                }
+                if (flag) {
+                    return {
+                        status: 400,
+                        body: {
+                            message: "Route name contains inappropriate words"
+                        }
+                    }
+                }
+            }
+        }
+
             //update route
             let finalname: string;
             if (routeName != null) finalname = routeName;
             else finalname = route.route_name || 'Unnamed Route';
-            route.route_name = finalname;
+            route.route_name = finalname.substring(0, 25);
             let finallength: number;
             if (length != null) finallength = length;
             else finallength = route.length || 0;

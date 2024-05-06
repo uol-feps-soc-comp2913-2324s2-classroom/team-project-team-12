@@ -76,7 +76,8 @@ export async function load() {
             user_id: groupMembershipList[i].user_id,
             request: groupMembershipList[i].request,
             member: groupMembershipList[i].member,
-            admin: groupMembershipList[i].admin
+            admin: groupMembershipList[i].admin,
+            invite: groupMembershipList[i].invite
         });
     }
     //console.log(group_memberships);
@@ -485,6 +486,11 @@ export const actions = {
                 const admin = (data.get("admin") === "true");
                 if (admin != null && admin != undefined)
                 updatedGroupMembership.admin = admin;
+            }
+            if (data.get("invite") != null) {
+                const invite = (data.get("invite") === "true");
+                if (invite != null && invite != undefined)
+                updatedGroupMembership.invite = invite;
             }
             //update group membership in database
             await prisma.group_membership.update({
