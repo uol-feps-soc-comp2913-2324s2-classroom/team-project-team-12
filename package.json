@@ -6,7 +6,7 @@
         "dev": "vite dev",
         "build": "vite build",
         "start": "concurrently --kill-others \"npm:electron:dev\" \"npm:electron:start\"",
-        "deploy": "vite build && vite preview --host",
+        "deploy": "npm i && vite build && vite preview --host",
         "electron:dev": "vite preview --port 3000",
         "electron:start": "electron src/electron.js",
         "preview": "vite preview",

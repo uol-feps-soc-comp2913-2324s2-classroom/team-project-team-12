@@ -32,31 +32,29 @@ Journeys is a feature-rich route tracking program developed for Uni of Leeds' CO
 * [Kaitlyn Chan](https://github.com/sc22kc2)
 
 
+## Requirements
+* node-js >= v18.13
+* npm
+* docker (optional)
+
+
 ## Deployment
-
-### Installing Dependencies
-
-Upon cloning the project, pull and install remote dependencies using:
-```bash
-npm install
-```
-
-### Deployment (Without Docker)
 
 To simplify deployment, we have created a single command to prepare and run a live production server:
 ```bash
 npm run deploy
 ```
 
-If you would like to create a production version of the app without hosting a web server, use `npm run build` and the software will be compiled into the `/build` directory. You can preview this production build with `npm run preview`.
+If you would like to create a production version of the app without hosting a web server, use `npm run build` and the software will be compiled into the `/build` directory. Remember to run `npm install` first to pull and install and remote dependencies. You can preview this production build using `npm run preview`.
 
 
-### Deployment (Using Docker)
+### Using Docker
 
 To generate a Docker image file, run:
 ```bash
 docker build --tag journeys .
 ```
+and run a container using your preferred Docker client. We recommend Docker Desktop for its first party support.
 
 
 ## Development
