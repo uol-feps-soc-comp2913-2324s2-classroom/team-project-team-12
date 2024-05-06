@@ -1,5 +1,14 @@
-<script>
+<script lang="ts">
+    import { goto } from '$app/navigation';
+    import { onMount } from 'svelte';
+
     export let data;
+
+    onMount(() => {
+        setInterval(() => {
+            window.location.assign('/map');
+        }, 3000);
+    });
 </script>
 
 <body>
