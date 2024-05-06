@@ -23,11 +23,11 @@
     }
 
     let plan = 'None';
-    if(membershiptype === 1){
+    if(membershiptype === 0){
         plan = "Weekly";
-    }else if(membershiptype === 2){
+    }else if(membershiptype === 1){
         plan = "Monthly";
-    }else if(membershiptype === 3){
+    }else if(membershiptype === 2){
         plan = "Annually";
     }
 

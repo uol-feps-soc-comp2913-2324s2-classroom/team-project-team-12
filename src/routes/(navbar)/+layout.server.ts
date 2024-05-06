@@ -1,14 +1,16 @@
 import prisma from '$lib/prisma.js';
 
 export const load = async ({ cookies }) => {
-    let username = cookies.get('sessionId');
-    if (username === undefined) {
+    const username = cookies.get('sessionId');
+    const password = cookies.get('sessionPass');
+    if (username === undefined || password === undefined) {
         return {user: null};
     }
 
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
         where: {
-            username: username
+            username: username,
+            password: password
         }
     });
     return {user};

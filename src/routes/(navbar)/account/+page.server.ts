@@ -2,7 +2,6 @@ import prisma from '$lib/prisma';
 import { fail } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
 import type { user } from '$lib/interfaces';
-import fs from 'fs';
 
 let curUser: user;
 let invalid = true;
@@ -95,6 +94,14 @@ export const actions = {
                             password: newHashed,
                         },
                     });
+
+                    cookies.set('sessionPass', newHashed, {
+                        httpOnly: true,
+                        sameSite: 'strict',
+                        secure: false,
+                        path: '/',
+                        maxAge: 60 * 60 * 24 * 7
+                    });
                 }
             }catch (error){
                 return {
@@ -166,39 +173,16 @@ export const actions = {
                     path: '/'
                 });
 
+                cookies.delete('sessionPass', {
+                    path: '/'
+                });
+
                 return { 
                     status: 200,
                     body: deleted
                 }
             } catch (error) {
                 return fail(500);
-            }
-        } else if(type === "upload") {
-            const file = data.get('file') as File;
-
-            console.log(file);
-
-            console.log(file.name);
-
-            const filePath = `$lib/pfps/${curUser.username}`;
-            try {
-                // Write the file directly to the specified path
-               // Create a readable stream from the file and write it to the destination
-                const reader = file.stream().getReader();
-                const writer = fs.createWriteStream(filePath);
-
-                // Read the file chunk by chunk and write it to the destination
-                let result;
-                while (!(result = await reader.read()).done) {
-                    writer.write(result.value);
-                }
-
-                // Close the writer stream
-                writer.end();
-                        
-                console.log('File saved successfully');
-            } catch (error) {
-                console.error('Error saving file:', error);
             }
         }
     }

@@ -4,7 +4,6 @@
     import type { user } from '$lib/interfaces'
     import { onMount } from "svelte";
     import Data from './data.svelte';
-    import Upload from './upload.svelte'
     import { Card, Avatar, Button, Modal, Tooltip } from 'flowbite-svelte';
     import { ExclamationCircleOutline, PenOutline } from 'flowbite-svelte-icons';
     
@@ -60,18 +59,8 @@
             <div class="flex flex-col items-center space-y-1 pb-4">
                 <div class="profilepic">
                     <div class="icon">
-                        <Avatar style="object-fit: cover; opacity: 1; transition: opacity .2s ease-in-out;" border size="lg">{getInitials(user.first_name,user.last_name)}</Avatar>
+                        <Avatar border size="lg">{getInitials(user.first_name,user.last_name)}</Avatar>
                     </div>
-                    <!--
-                    <div class="pfpcontent">
-                        <Button color="transparent" on:click={() => (edit = true)}>
-                            <PenOutline size="lg" />
-                        </Button>
-                        <Modal title="Upload Profile Picture" bind:open={edit} autoclose={false}>
-                            <Upload />
-                        </Modal>
-                    </div>
-                    -->
                 </div>
                 <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{user.first_name} {user.last_name}</h5>
                 <span class="text-sm text-gray-500 dark:text-gray-400">@{user.username}</span>
@@ -106,32 +95,10 @@
     .data {
         margin: 5px;
     }
-
-    .pfpcontent {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        opacity: 0;
-        transition: opacity .2s ease-in-out;
-    }
-
+    
     .profilepic {
         position: relative;
     }
 
-    .profilepic:hover .pfpcontent {
-        opacity: 1;
-    }
-
-    .profilepic:hover .icon {
-        opacity: 0.5;
-    }
 
 </style>

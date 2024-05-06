@@ -116,6 +116,7 @@ CREATE TABLE "user" (
     "password" TEXT NOT NULL,
     "membership_type" INTEGER NOT NULL DEFAULT 4,
     "subscription_start_date" DATETIME NOT NULL DEFAULT '2024-01-01 00:00:00 +00:00',
+    "next_payment_date" DATETIME,
     "paid" BOOLEAN NOT NULL DEFAULT false,
     "default_publicity" INTEGER NOT NULL DEFAULT 2,
     "admin_status" BOOLEAN NOT NULL DEFAULT false,
