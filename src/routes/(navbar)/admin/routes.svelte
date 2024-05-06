@@ -143,7 +143,7 @@
         {/each}
     </TableBody>
 </Table>
-<Button color="dark" pill on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
+<Button pill on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if !lockedFields}
     <Button color="green" pill on:click={handleUpdateAll}>Update All</Button>
 {/if}

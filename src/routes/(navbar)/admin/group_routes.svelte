@@ -121,8 +121,8 @@
 {#if lockedFields == 0}
     <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button on:click={nextPage} disabled={(currentPage + 1) * group_routesPerPage >= group_routes.length}>Next</Button>
+<Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * group_routesPerPage >= group_routes.length}>Next</Button>
 <div>
     Results Per Page
     <Select bind:value={group_routesPerPage} on:change={() => currentPage = 0} >

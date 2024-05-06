@@ -33,6 +33,10 @@ export async function load({ cookies, url }) {
       }
     }
 
+    if (next_date != null) {
+        next_date = next_date.toISOString();
+    }
+
     let message
 
 
@@ -47,7 +51,7 @@ export async function load({ cookies, url }) {
                         membership_type: Number(type),
                         subscription_start_date: currentDate.toISOString(),
                         subscription_id: subscriptionId,
-                        next_payment_date: next_date.toISOString(),
+                        next_payment_date: next_date,
                         paid: true
                     },
                 })

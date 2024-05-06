@@ -152,8 +152,8 @@
 {#if !lockedFields}
     <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button on:click={nextPage} disabled={(currentPage + 1) * relationshipsPerPage >= relationships.length}>Next</Button>
+<Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * relationshipsPerPage >= relationships.length}>Next</Button>
 <div>
     Results Per Page
     <Select bind:value={relationshipsPerPage} on:change={() => currentPage = 0}>
