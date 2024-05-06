@@ -17,6 +17,7 @@ export async function load() {
             password: userList[i].password,
             membership_type: userList[i].membership_type,
             subscription_start_date: userList[i].subscription_start_date,
+            next_payment_date: userList[i].next_payment_date,
             paid: userList[i].paid,
             default_publicity: userList[i].default_publicity,
             admin_status: userList[i].admin_status,
@@ -222,6 +223,11 @@ export const actions = {
             const lastPayment = data.get("subscription_start_date");
             if (lastPayment != null)
             updatedUser.subscription_start_date = new Date(lastPayment.toString());
+        }
+        if (data.get("next_payment_date") != null) {
+            const nextPayment = data.get("next_payment_date");
+            if (nextPayment != null)
+            updatedUser.next_payment_date = new Date(nextPayment.toString());
         }
         if ((data.get("paid") != null)) {
             const paid = (data.get("paid") === "true");

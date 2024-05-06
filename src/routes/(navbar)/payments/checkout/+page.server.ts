@@ -5,7 +5,7 @@ import { fail } from '@sveltejs/kit';
 import type { user } from '$lib/interfaces'
 import { redirect } from '@sveltejs/kit'
 
-let user: user
+let user: user;
 
 export const load = (async ({ cookies }) => {
   const username = cookies.get('sessionId');
@@ -19,6 +19,18 @@ export const load = (async ({ cookies }) => {
 
   if(type === user?.membership_type){
     throw redirect(303, '/payments')
+  }
+  let timeNow = new Date()
+  if (timeNow < user.next_payment_date) {
+    await prisma.user.update({
+      where: {
+        username: username as string,
+      },
+      data: {
+        membership_type: Number(type),
+      },
+    })
+    throw redirect(303, '/payments');
   }
 
   const customerId = user?.stripe_token;
@@ -57,7 +69,12 @@ export const load = (async ({ cookies }) => {
     } catch (verificationError) {
       return fail(400);
     }
-  
+    if (!subscription.latest_invoice || !subscription.latest_invoice.payment_intent) {
+      return {
+        status: 500,
+        body: { message: 'Internal Server Error.' },
+      };
+    }
     return {
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       returnUrl: new URL('/payments/complete', env.DOMAIN).toString()
@@ -72,6 +89,20 @@ export const load = (async ({ cookies }) => {
       }
     );
     const currentDate = new Date()
+    let next_date = user?.next_payment_date
+    if (next_date == null || (user.paid === false || (user.paid === true && currentDate > next_date)) ) {
+      if (type == 0) {
+        next_date = new Date(currentDate.setDate(currentDate.getDate() + 7))
+      }
+      if (type == 1) {
+        next_date = new Date(currentDate.setMonth(currentDate.getMonth() + 1))
+      }
+      if (type == 2) {
+        next_date = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1))
+      }
+    }
+    let paid_to = user.paid
+
     try {
       await prisma.user.update({
           where: {
@@ -80,6 +111,8 @@ export const load = (async ({ cookies }) => {
           data: {
               membership_type: Number(type),
               subscription_start_date: currentDate.toISOString(),
+              next_payment_date: next_date.toISOString(),
+              paid: true
           },
       })
     }
