@@ -2,7 +2,8 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
-    import { Button, Label, Fileupload, Select } from 'flowbite-svelte';
+    import { Button, Label, Fileupload, Select, Alert } from 'flowbite-svelte';
+    import { InfoCircleSolid } from 'flowbite-svelte-icons';
 
     let privacySettings = [
         { value: 2, name: 'Public' },
@@ -32,5 +33,13 @@
         </div>
 
         <Button class="mt-4" type="submit">Submit</Button>
+        <Alert color="none" class="mt-8 dark:bg-gray-700 bg-gray-200 text-black dark:text-white">
+            <InfoCircleSolid slot="icon" class="w-5 h-5" />
+            <span class="font-medium">Before Uploading!</span>
+            Verify that your file uses GPX route (<code>&lt;rte/&gt;</code>) tags and <b>not</b> track (<code
+                >&lt;trk/&gt;</code
+            >) tags, as Journeys only supports route data. Ensure file compatibility by using our
+            <a class="text-blue-600 dark:text-blue-400" href="/download">awesome export feature</a>.
+        </Alert>
     </form>
 </main>

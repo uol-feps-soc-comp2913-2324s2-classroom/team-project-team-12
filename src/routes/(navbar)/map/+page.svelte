@@ -113,7 +113,7 @@
                 {#await data.userRoutes}
                     <Card>Loading...</Card>
                 {:then userRoutes}
-                    {#if userRoutes.filter((r) => r.creator == data.user).length == 0}
+                    {#if userRoutes.filter((r) => r.creator == data.username).length == 0}
                         <Card>No user routes selected</Card>
                     {:else}
                         {#each userRoutes as route (route.id)}
@@ -277,7 +277,7 @@
                 {#await data.userRoutes}
                     <Card>Loading...</Card>
                 {:then userRoutes}
-                    {#if userRoutes.filter((r) => r.creator != data.user).length == 0}
+                    {#if userRoutes.filter((r) => r.creator != data.username).length == 0}
                         <Card>No public routes selected</Card>
                     {:else}
                         {#each userRoutes as route (route.id)}
