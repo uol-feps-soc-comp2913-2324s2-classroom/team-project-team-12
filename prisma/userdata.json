@@ -5,7 +5,8 @@
             "first_name": "Journeys",
             "last_name": "Admin",
             "email": "ed19h2c@leeds.ac.uk",
-            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG",
+            "admin_status": true
         }
     },
     {
@@ -15,7 +16,9 @@
             "last_name": "Doe",
             "email": "johndoe@example.com",
             "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG",
-            "default_publicity": 0    
+            "default_publicity": 0,
+            "admin_status": false
+
         }
     },
     {
@@ -25,7 +28,8 @@
             "last_name": "Smith",
             "email": "janesmith@example.com",
             "password": "$2b$10$dB9T6kGGOI4SECcA/0hPeOYXopM9rvTLoEE8I3jtlODToHcJhtuaC",
-            "default_publicity": 1   
+            "default_publicity": 1,
+            "admin_status": false 
         }
     },
     {
@@ -35,7 +39,8 @@
             "last_name": "Jones",
             "email": "mikejones@example.com",
             "password": "$2b$10$cYyEPqOnOoulrF6JX77bi.aSyepYCA57KnzZhAs4wF2ZlSCanzTz6",
-            "default_publicity": 1    
+            "default_publicity": 1,
+            "admin_status": false   
         }
     },
     {
@@ -45,7 +50,8 @@
             "last_name": "Brown",
             "email": "sarahbrown@example.com",
             "password": "$2b$10$Oi9.1/el8QBiYpriSiCzRuy1eZlodz82Ik/UXFLXbE/z4J8GxGhIm",
-            "default_publicity": 2    
+            "default_publicity": 2,
+            "admin_status": false  
         }
     },
     {
@@ -55,7 +61,8 @@
             "last_name": "White",
             "email": "paulwhite@example.com",
             "password": "$2b$10$Kf/w/equ0.DAK.DJ5e5dP.atLDAlkvAlPzzKNAWZ68CFqAsyH2WNW",
-            "default_publicity": 0    
+            "default_publicity": 0,
+            "admin_status": false  
         }
     },
     {
@@ -64,7 +71,9 @@
             "first_name": "Lisa",
             "last_name": "Green",
             "email": "lisagreen@example.com",
-            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG",
+            "default_publicity": 1,
+            "admin_status": false
         }
     },
     {
@@ -73,7 +82,9 @@
             "first_name": "David",
             "last_name": "Black",
             "email": "davidblack@example.com",
-            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG",
+            "default_publicity": 2,
+            "admin_status": false
         }
     },
     {
@@ -82,8 +93,11 @@
             "first_name": "Emily",
             "last_name": "Brown",
             "email": "emilybrown@example.com",
-            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG"
+            "password": "$2b$10$wo4DfJ5PeU1ZuPOQpoxKdeMf8APvVhvv/42VYZHLd/k41ZEXR1jTG",
+            "default_publicity": 0,
+            "admin_status": false
         }
     }
+    
 
 ]

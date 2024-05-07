@@ -8,7 +8,7 @@
     import RouteCoordinates from './route_coordinates.svelte';
     import Tabs from './Tabs.svelte';
     import Revenue from './revenue.svelte';
-    import {Button, Input} from 'flowbite-svelte';
+    import {Button, Input, Card} from 'flowbite-svelte';
 
     export let data;
     let access = false;
@@ -77,35 +77,27 @@
     itemTuples.push({ label: 'Revenue',value: valueCount, component: Revenue, prop: null});
 </script>
 {#if !access}
-    <Input  bind:value={username} placeholder="username" />
-    <Input  bind:value={password} placeholder="password" />
-    <Button on:click={() => login()}>Login</Button>
-    <p>{errorMessage}</p>
+    <div class="loginBox">
+        <Card padding="lg">
+            <Input  bind:value={username} type="text" placeholder="username" />
+            <br>
+            <Input  bind:value={password} type="password" placeholder="password" />
+            <br>
+            <Button on:click={() => login()}>Login</Button>
+            <p>{errorMessage}</p>
+        </Card>
+    </div>
 {/if}  
 {#if access}
     <Tabs itemTuples={itemTuples} />
 {/if}
 
-<!---
-{#if users}
-    <User {users} />
-{/if}
-{#if relationships}
-    <Relationship {relationships} />
-{/if}
-{#if routes}
-    <Routes {routes} />
-{/if}
-{#if groups}
-    <Groups {groups} />
-{/if}
-{#if group_memberships}
-    <GroupMembership {group_memberships} />
-{/if}
-{#if group_routes}
-    <GroupRoutes {group_routes} />
-{/if}
-{#if route_coordinates}
-    <RouteCoordinates {route_coordinates} />
-{/if}
--->
+<style>
+    .loginBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding:10px;
+    }
+</style>

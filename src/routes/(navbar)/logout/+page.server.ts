@@ -9,6 +9,10 @@ export const actions = {
                     path: '/'
                 });
 
+                cookies.delete('sessionPass', {
+                    path: '/'
+                });
+
                 return {
                     status: 200
                 }
