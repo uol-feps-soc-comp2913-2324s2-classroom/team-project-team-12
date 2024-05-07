@@ -111,6 +111,14 @@ const addRouteToGroup = (route: RouteEntry) => {
         <div class="searchDiv">
         <Input type="text" bind:value={searchTerm} placeholder="Search routes..." />
         </div>
+        <div class="topButtons">
+            <Button color="alternative" pill style="margin-right: 10px" on:click={() => updateCurrentPage("Your Routes")}>Your Routes</Button>
+            <Button color="alternative" pill style="margin-right: 10px" on:click={() => updateCurrentPage("Friends Routes")}>Friends Routes</Button>
+            <Button color="alternative" pill style="margin-right: 10px" on:click={() => updateCurrentPage("Public Routes")}>Public Routes</Button>
+            {#each groupRouteEntries as groupRouteEntry (groupRouteEntry)}
+                <Button color="alternative" pill style="margin-right: 10px" on:click={() => updateCurrentPage(groupRouteEntry.group_name)}>{groupRouteEntry.group_name}</Button>
+            {/each}
+        </div>
         <RouteHorizontalScroll user_id={userData.id} nameOfList="Your Routes" routeEntries={userRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} showGroupOnMap={false} {updateCurrentPage}/>
         {#if friendsRouteEntries.length > 0}
         <RouteHorizontalScroll user_id={userData.id} nameOfList="Friends Routes" routeEntries={friendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} searchTerm={searchTerm} showGroupOnMap={false} {updateCurrentPage} />
@@ -132,18 +140,19 @@ const addRouteToGroup = (route: RouteEntry) => {
             {/each}
         {/if}
         {#if currentPage == 1}
-            <RouteGridPage nameOfList="Your Routes" user_id={userData.id} showGroupOnMap={false}   routeEntries={userRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
+            <RouteGridPage nameOfList="Your Routes" searchTerm={searchTerm} user_id={userData.id} showGroupOnMap={false}   routeEntries={userRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
         {/if}
         {#if currentPage == 2}
-            <RouteGridPage nameOfList="Friends Routes"  user_id={userData.id} showGroupOnMap={false} routeEntries={friendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
+            <RouteGridPage nameOfList="Friends Routes" searchTerm={searchTerm} user_id={userData.id} showGroupOnMap={false} routeEntries={friendsRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
         {/if}
         {#if currentPage == 3}
-            <RouteGridPage nameOfList="Public Routes" user_id={userData.id} showGroupOnMap={false} routeEntries={publicRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
+            <RouteGridPage nameOfList="Public Routes" searchTerm={searchTerm} user_id={userData.id} showGroupOnMap={false} routeEntries={publicRouteEntries} adminGroupNames={adminGroupNames} addRouteToGroup={addRouteToGroup} {updateCurrentPage}/>
         {/if}
         {#each groupRouteEntries as groupRouteEntry (groupRouteEntry)}
             {#if currentPage == 4 + groupRouteEntries.indexOf(groupRouteEntry)}
                 <RouteGridPage 
                     user_id={userData.id}
+                    searchTerm={searchTerm}
                     showGroupOnMap={groupRouteEntry.showOnMap}
                     nameOfList={groupRouteEntry.group_name} 
                     routeEntries={groupRouteEntry.routes} 
@@ -173,8 +182,25 @@ const addRouteToGroup = (route: RouteEntry) => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 5vh;
+    margin-bottom: 1vh;
     width: 100%;
     height: 5vh;
   }
+
+    .topButtons {
+        display: flex;
+        flex-direction: row;
+        justify-content: auto;
+        padding-right: 100px;
+        margin-bottom: 5vh;
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+        width: 100%;
+        height: 3rem;
+        overflow-x: scroll;
+    }
+
+    .topButtons::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari and Opera */
+    }
 </style>
