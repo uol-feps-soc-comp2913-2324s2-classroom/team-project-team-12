@@ -16,7 +16,10 @@
     export const memberCount = data.memberCount;
     export let groupRouteEntries = data.groupRouteEntryObj;
     export const currentUser = data.user;
+    export let friends = data.currentUserFriends;
     import SingleRoute from "$lib/components/SingleRoute.svelte";
+    import type user from '$lib/interfaces';
+
 
     import { Button, Card, Tabs, TabItem, Listgroup, ListgroupItem, Avatar, Heading, List, Li } from 'flowbite-svelte';
         
@@ -71,6 +74,30 @@
             })
             .catch((error) => {
                 console.error('Error removing route:', error);
+            });
+    }
+
+    const inviteToGroup = async (friend: user) => {
+        const formData = new FormData();
+        formData.append('type', 'inviteToGroup');
+        formData.append('friendID', friend.id.toString());
+        formData.append('groupID', group.id.toString());
+        const groupUrl = `/group/${encodeURIComponent(group.name)}/`;
+        fetch(groupUrl, {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+            .then(data => {
+                let actualResponse = data.data;
+                actualResponse = JSON.parse(actualResponse);
+                //update the groupRouteEntries with the new group
+                if (actualResponse[1] == 200) {
+                    console.log('Invited friend to group');
+                }
+                
+            })
+            .catch((error) => {
+                console.error('Error inviting to group:', error);
             });
     }
 
@@ -170,6 +197,31 @@
                         </Listgroup>
                     {/if}
                 </TabItem>
+                {#if currentUser.id === group.creator}
+                <TabItem class="w-full" open>
+                    <span slot="title">Invites</span>
+                    {#if friends.length == 0}
+                        <div class="flex items-center space-x-4 rtl:space-x-reverse">No friends to invite</div>
+                    {:else}
+                        <Listgroup items={friends} let:item class="border-0 dark:!bg-transparent">
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                <Avatar>{getInitials(item.first_name + " " + item.last_name)}</Avatar>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                        {item.first_name} {item.last_name}
+                                    </p>
+                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                        @{item.username}
+                                    </p>
+                                </div>
+                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                    <Button color=light on:click={() => inviteToGroup(item)}>Invite</Button>
+                                </div>
+                            </div>   
+                        </Listgroup>
+                    {/if}
+                </TabItem>
+                {/if}
             </Tabs>
         </Card>
     </div>

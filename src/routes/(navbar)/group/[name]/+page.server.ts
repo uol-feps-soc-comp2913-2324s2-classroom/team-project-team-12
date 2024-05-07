@@ -54,6 +54,45 @@ export const load = (async ({ cookies, params: { name } }) => {
         }
     });
 
+    const currentUserFriends = await prisma.user.findMany({
+        where: {
+            OR: [
+                {
+                    id: {
+                        in: [
+                            // Subquery to find IDs of users who are friends with the current user
+                            ...(
+                                await prisma.relationship.findMany({
+                                    where: {
+                                        user_id2: user?.id,
+                                        is_friend: true,
+                                    },
+                                    select: { user_id1: true },
+                                })
+                            ).map((rel) => rel.user_id1),
+                        ],
+                    },
+                },
+                {
+                    id: {
+                        in: [
+                            // Subquery to find IDs of users who are friends with the current user
+                            ...(
+                                await prisma.relationship.findMany({
+                                    where: {
+                                        user_id1: user?.id,
+                                        is_friend: true,
+                                    },
+                                    select: { user_id2: true },
+                                })
+                            ).map((rel) => rel.user_id2),
+                        ],
+                    },
+                },
+            ],
+        },
+    });
+
     const memberCount = members.length;
 
     const creator = await prisma.user.findFirst({
@@ -123,7 +162,7 @@ export const load = (async ({ cookies, params: { name } }) => {
     groupRouteEntries.push(groupRouteEntryObj);
     //#############################
     
-    return { group, members, creator, memberCount, groupRouteEntryObj, user};
+    return { group, members, creator, memberCount, groupRouteEntryObj, user, currentUserFriends};
 }) as PageServerLoad;
 
 
@@ -135,10 +174,12 @@ export const actions = {
         const type = data.get('type');
         const groupID = data.get('groupID');
         const routeID = data.get('routeID');
+        const friendID = data.get('friendID');
+
 
         //Data and type validation
         if (type == null) return { status: 400, body: { error: 'No type specified' } };
-
+        try {
         if (type == 'deleteRouteFromGroup') {
             if (routeID == null) return { status: 400, body: { error: 'No route specified' } };
             if (groupID == undefined) return { status: 400, body: { error: 'Invalid group name' } };
@@ -158,6 +199,54 @@ export const actions = {
                 },
             });
                 }
-        return { status: 400, body: { error: 'Invalid type' } };
+
+        if (type === 'inviteToGroup' && user?.id !== undefined) {
+            const friendIDNum = Number(friendID);
+            const groupIDNum = Number(groupID);
+
+            try {
+
+                const existingMembership = await prisma.group_membership.findFirst({
+                        where: {
+                            group_id: groupIDNum,
+                            user_id: friendIDNum,
+                        },
+                });
+
+                if (existingMembership) {
+                        return {
+                            status: 400,
+                            body: { error: 'They already have a membership' },
+                        };
+                        
+                } else {
+                    console.log(friendIDNum, groupIDNum, "lol");
+
+                    console.log("here");
+
+
+                    await prisma.group_membership.create({
+                        data: {
+                            user_id: friendIDNum,
+                            group_id: groupIDNum,
+                            invite: true,
+                        },
+                    });
+                }
+                } catch (error) {
+                    console.error('Error sending invite:', error);
+                } finally {
+                    await prisma.$disconnect();
+                }
+            }
+        } catch (error) {
+            return {
+                status: 400,
+                body: { error: 'Error completing action' },
+            };
+        }
+        return {
+            status: 200,
+        };
     },
 };
