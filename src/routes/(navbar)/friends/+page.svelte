@@ -8,6 +8,7 @@
   import FriendList from './friendlist.svelte';
   import UnaddedList from './unaddedlist.svelte';
   import RequestsList from './requests.svelte';
+  import { Input } from 'flowbite-svelte';
 
   let currentUserFriends;
   let friendRequests;
@@ -29,19 +30,27 @@
     requested = data.requested || [];
   }
 
+  let searchTerm = "";
+
 </script>
+
+<Input
+  bind:value={searchTerm}
+  placeholder="Search..."
+  on:input={() => {
+  }} />
 
 <div class="container">
   <div class="friends-container">
-    <FriendList {currentUserFriends}/>
+    <FriendList {currentUserFriends} searchTerm={searchTerm}/>
   </div>
 
 <div class="requests-container">
-    <RequestsList friendRequests={friendRequests} />
+    <RequestsList friendRequests={friendRequests} searchTerm={searchTerm} />
   </div>
 
 <div class="unadded-people-container">
-    <UnaddedList people={unaddedPeople} requested={requested}/>
+    <UnaddedList people={unaddedPeople} requested={requested} searchTerm={searchTerm}/>
   </div>
 </div>
 

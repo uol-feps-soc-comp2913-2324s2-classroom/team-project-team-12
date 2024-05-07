@@ -224,7 +224,6 @@ export const actions = {
 
 
         try {
-
             if (type === "deleteFriend") {
                 //lookup relationship by id
                 const relationship = await prisma.relationship.findFirst({
@@ -263,6 +262,8 @@ export const actions = {
                             ]
                         }
                     });
+
+
             
                     if (existingRelationship) {
                         return {
@@ -291,7 +292,7 @@ export const actions = {
             
             
 
-
+            
             if (type === "acceptFriend") {
                 
                 //lookup relationship by id
@@ -362,13 +363,7 @@ export const actions = {
             body: relationship
             };
         }
-
-            else {
-                throw new Error("Invalid action type.");
-            }
-
-
-            
+     
             
         } catch (error) {
             return {
@@ -377,6 +372,11 @@ export const actions = {
         
             };
         }
+
+        return{
+          status: 200
+      }
+        
         
 
     }

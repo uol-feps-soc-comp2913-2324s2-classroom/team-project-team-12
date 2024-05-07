@@ -50,7 +50,6 @@
         if (actualResult[1] == 200) {
           console.log(result.message || 'Created group successfully');
           toggleDropdown(); // Close the dropdown after creating the group
-          location.reload();
         } else {
           console.error(actualResult[3] || 'Failed to create group');
         }
