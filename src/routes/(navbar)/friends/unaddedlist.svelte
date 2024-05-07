@@ -4,7 +4,7 @@
   export let requested: { id: number, name: string }[] = [];
   export let searchTerm = "";
   let currentPage = 1;
-  const pageSize = 2;
+  const pageSize = 5;
 
   const addFriend = async (person: { id: number, name: string }) => {
     const formData = new FormData();

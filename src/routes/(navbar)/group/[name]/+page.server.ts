@@ -44,13 +44,12 @@ export const load = (async ({ cookies, params: { name } }) => {
 
     // Extract user IDs from group membership
     const groupMembersId = group.group_membership.map(member => member.user_id);
-    
     // Fetch user objects for each user ID
     const members = await prisma.user.findMany({
         where: {
             id: {
                 in: groupMembersId
-            }
+            },
         }
     });
 
@@ -92,6 +91,13 @@ export const load = (async ({ cookies, params: { name } }) => {
             ],
         },
     });
+
+
+    const filteredFriends = currentUserFriends.filter(currentUser => !members.some(member => member.id === currentUser.id));
+
+
+    
+    
 
     const memberCount = members.length;
 
@@ -162,7 +168,7 @@ export const load = (async ({ cookies, params: { name } }) => {
     groupRouteEntries.push(groupRouteEntryObj);
     //#############################
     
-    return { group, members, creator, memberCount, groupRouteEntryObj, user, currentUserFriends};
+    return { group, members, creator, memberCount, groupRouteEntryObj, user, filteredFriends};
 }) as PageServerLoad;
 
 
@@ -220,9 +226,6 @@ export const actions = {
                         };
                         
                 } else {
-                    console.log(friendIDNum, groupIDNum, "lol");
-
-                    console.log("here");
 
 
                     await prisma.group_membership.create({

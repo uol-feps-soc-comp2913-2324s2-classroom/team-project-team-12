@@ -4,7 +4,7 @@
 
     export let searchTerm = "";
     let currentPage = 1;
-    const pageSize = 2;
+    const pageSize = 5;
     
     const leaveGroup = async (group: { id: number, name: string }) => {
       const formData = new FormData();

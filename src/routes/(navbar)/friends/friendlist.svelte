@@ -3,7 +3,7 @@
   export let currentUserFriends: { id: number, name: string }[] = [];
   export let searchTerm = "";
   let currentPage = 1;
-  const pageSize = 2;
+  const pageSize = 5;
 
   const deleteFriend = async (friend: { id: number, name: string }) => {
     const formData = new FormData();

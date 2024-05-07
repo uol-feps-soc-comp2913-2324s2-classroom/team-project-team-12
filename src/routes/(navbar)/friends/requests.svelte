@@ -4,7 +4,7 @@
   export let friendRequests: { id: number, name: string }[] = [];
   import { Listgroup, ListgroupItem, Avatar } from 'flowbite-svelte';
   let currentPage = 1;
-  const pageSize = 1;
+  const pageSize = 5;
   
   const acceptFriend = async (request: { id: number, name: string }) => {
     const formData = new FormData();

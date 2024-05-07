@@ -16,7 +16,7 @@
     export const memberCount = data.memberCount;
     export let groupRouteEntries = data.groupRouteEntryObj;
     export const currentUser = data.user;
-    export let friends = data.currentUserFriends;
+    export let friends = data.filteredFriends;
     import SingleRoute from "$lib/components/SingleRoute.svelte";
     import type user from '$lib/interfaces';
 
