@@ -34,6 +34,13 @@ export const actions = {
                 path: '/',
                 maxAge: 60 * 60 * 24 * 7
             });
+            cookies.set('sessionPass', user.password, {
+              httpOnly: true,
+                sameSite: 'strict',
+                secure: false,
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7
+            });
         } catch (verificationError) {
             return fail(400);
         }
@@ -101,6 +108,13 @@ export const actions = {
 
         try {
           cookies.set('sessionId', username as string, {
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: false,
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7
+          });
+          cookies.set('sessionPass', hashed, {
             httpOnly: true,
             sameSite: 'strict',
             secure: false,

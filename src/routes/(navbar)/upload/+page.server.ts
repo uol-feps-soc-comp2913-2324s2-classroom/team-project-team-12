@@ -7,7 +7,7 @@ import type { RouteEntry } from '$lib/interfaces';
 // Append a route to the DB
 const appendRouteToDB = async (userId: number, route: RouteEntry) => {
     // Append the route metadata to its respective table
-    let newRoute = await prisma.routes.create({
+    const newRoute = await prisma.routes.create({
         data: {
             route_name: route.name,
             created_on: route.createdOn,

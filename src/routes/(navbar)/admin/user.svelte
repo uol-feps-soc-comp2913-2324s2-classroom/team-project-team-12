@@ -29,6 +29,7 @@
         if (user.password) formData.append('password', user.password);
         if (user.membership_type) formData.append('membership_type', user.membership_type.toString());
         if (user.subscription_start_date) formData.append('subscription_start_date', user.subscription_start_date.toString());
+        if (user.next_payment_date) formData.append('next_payment_date', user.next_payment_date.toString());
         formData.append('paid', user.paid.toString());
         if (user.default_publicity) formData.append('default_publicity', user.default_publicity.toString());
         formData.append('admin_status', user.admin_status.toString());
@@ -115,8 +116,8 @@
             <TableHeadCell>Email</TableHeadCell>
             <TableHeadCell>Password</TableHeadCell>
             <TableHeadCell>Membership Type</TableHeadCell>
+            <TableHeadCell>Start Date</TableHeadCell>
             <TableHeadCell>Next Payment</TableHeadCell>
-            <TableHeadCell>Last Payment</TableHeadCell>
             <TableHeadCell>Paid</TableHeadCell>
             <TableHeadCell>Default Publicity</TableHeadCell>
             <TableHeadCell>Admin Status</TableHeadCell>
@@ -135,6 +136,7 @@
                     <TableBodyCell>{user.password}</TableBodyCell>
                     <TableBodyCell>{user.membership_type}</TableBodyCell>
                     <TableBodyCell>{user.subscription_start_date}</TableBodyCell>
+                    <TableBodyCell>{user.next_payment_date}</TableBodyCell>
                     <TableBodyCell>{user.paid}</TableBodyCell>
                     <TableBodyCell>{user.default_publicity}</TableBodyCell>
                     <TableBodyCell>{user.admin_status}</TableBodyCell>
@@ -151,7 +153,8 @@
                     <TableBodyCell><Input type="text" bind:value={user.email} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={user.password} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={user.membership_type} /></TableBodyCell>
-                    <TableBodyCell><Input type="text" bind:value={user.subscription_start_date} /></TableBodyCell>
+                    <TableBodyCell>{user.subscription_start_date}</TableBodyCell>
+                    <TableBodyCell>{user.next_payment_date}</TableBodyCell>
                     <TableBodyCell>
                         <Select bind:value={user.paid}>
                             <option value={true}>true</option>
@@ -182,10 +185,10 @@
 
 <Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if !lockedFields}
-    <Button on:click={handleUpdateAll}>Update All</Button>
+    <Button pill color="light" on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button on:click={nextPage} disabled={(currentPage + 1) * usersPerPage >= users.length}>Next</Button>
+<Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * usersPerPage >= users.length}>Next</Button>
 <div>
 Results Per Page
 <Select bind:value={usersPerPage} on:change={() => currentPage = 0}>

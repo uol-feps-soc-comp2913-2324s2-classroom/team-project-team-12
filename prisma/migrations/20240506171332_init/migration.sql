@@ -24,6 +24,7 @@ CREATE TABLE "group_membership" (
     "request" BOOLEAN NOT NULL DEFAULT false,
     "member" BOOLEAN NOT NULL DEFAULT false,
     "admin" BOOLEAN NOT NULL DEFAULT false,
+    "invite" BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT "group_membership_group_id_fkey" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT "group_membership_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
 );
@@ -115,6 +116,7 @@ CREATE TABLE "user" (
     "password" TEXT NOT NULL,
     "membership_type" INTEGER NOT NULL DEFAULT 4,
     "subscription_start_date" DATETIME NOT NULL DEFAULT '2024-01-01 00:00:00 +00:00',
+    "next_payment_date" DATETIME,
     "paid" BOOLEAN NOT NULL DEFAULT false,
     "default_publicity" INTEGER NOT NULL DEFAULT 2,
     "admin_status" BOOLEAN NOT NULL DEFAULT false,

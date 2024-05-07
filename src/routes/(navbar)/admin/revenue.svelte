@@ -11,6 +11,9 @@
         TableBody,
         TableBodyCell,
         TableBodyRow,
+        P,
+        Heading,
+        Hr
     } from 'flowbite-svelte';
     let users: user[] = [];
     let chosenDate: Date = new Date();
@@ -97,7 +100,9 @@
         annualString = annualCost.toFixed(2);
     }
 </script>
-
+<Heading tag="h2">Revenue</Heading>
+<Hr />
+<div class="optionBox">
 <Select bind:value={numberOfWeeks}>
     <option value="1.0000">Weekly</option>
     <option value="4.3453">Monthly</option>
@@ -106,8 +111,8 @@
     <option value="52.1429">Yearly</option>
 </Select>
 <Input bind:value={chosenDate} type="date" min={todaysDate} />
-<h1>Revenue</h1>
-<h2>Income: £{toDisplay}</h2>
+</div>
+<Heading tag="h3">Income: £{toDisplay}</Heading>
 <Table>
     <TableHead>
         <TableHeadCell>Subscription Type</TableHeadCell>
@@ -136,3 +141,14 @@
         </TableBodyRow>
     </TableBody>
 </Table>
+
+<style>
+    .optionBox {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    .optionBox > * {
+        width: 48%;
+    }
+</style>

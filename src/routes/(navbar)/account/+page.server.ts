@@ -94,6 +94,14 @@ export const actions = {
                             password: newHashed,
                         },
                     });
+
+                    cookies.set('sessionPass', newHashed, {
+                        httpOnly: true,
+                        sameSite: 'strict',
+                        secure: false,
+                        path: '/',
+                        maxAge: 60 * 60 * 24 * 7
+                    });
                 }
             }catch (error){
                 return {
@@ -147,6 +155,33 @@ export const actions = {
                     status: 200
                 }
             }catch (error){
+                return fail(500);
+            }
+        } else if(type === "delete") {
+            try {
+                let deleted;
+
+                if(curUser){
+                    deleted = await prisma.user.delete({
+                        where: {
+                            username: curUser.username as string
+                        }
+                    });
+                }
+
+                cookies.delete('sessionId', {
+                    path: '/'
+                });
+
+                cookies.delete('sessionPass', {
+                    path: '/'
+                });
+
+                return { 
+                    status: 200,
+                    body: deleted
+                }
+            } catch (error) {
                 return fail(500);
             }
         }

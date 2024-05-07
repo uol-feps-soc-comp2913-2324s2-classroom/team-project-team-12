@@ -31,8 +31,8 @@
 </script>
 
 <body>
-    <h1>Payment</h1>
     {#if stripe}
+        <h1 class="dark:text-white">Payment</h1>
         <form on:submit|preventDefault={submit}>
             <Elements {stripe} {clientSecret} bind:elements>
                 <PaymentElement />
@@ -41,7 +41,11 @@
             <button>Pay</button>
         </form>
     {:else}
-        Loading Stripe...
+        <div
+            class="fixed top-0 left-0 -z-10 w-screen h-screen flex flex-col dark:text-white justify-center items-center"
+        >
+            Loading Checkout...
+        </div>
     {/if}
 </body>
 
@@ -49,11 +53,7 @@
     h1 {
         font-size: 225%;
     }
-    body {
-        font-family: 'Poppins';
-    }
     button {
-        font-family: 'Poppins';
         font-size: 115%;
         font-weight: bold;
         border-radius: 12px;

@@ -161,12 +161,12 @@
         {/each}
     </TableBody>
 </Table>
-<Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
+<Button pill on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if !lockedFields}
     <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
-<Button on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button on:click={nextPage} disabled={(currentPage + 1) * group_membershipsPerPage >= group_memberships.length}>Next</Button>
+<Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
+<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * group_membershipsPerPage >= group_memberships.length}>Next</Button>
 <div>
     Results Per Page
     <Select bind:value={group_membershipsPerPage} on:change={() => currentPage = 0}>
