@@ -25,9 +25,9 @@
             console.error('Failed to fetch users');
         }
     });
-    console.log(chosenDate + 'chosen');
+    //console.log(chosenDate + 'chosen');
     let todaysDate: Date = new Date();
-    console.log(todaysDate);
+    //console.log(todaysDate);
 
     let numberOfWeeks: number = 1;
     let numberOfMonths: number = 0;
@@ -35,9 +35,9 @@
 
     let income: number = 0.0;
 
-    const annualCost: number = 5.0; //membership_type value of 2
-    const monthlyCost: number = 0.5; //membership_type value of 1
-    const weeklyCost: number = 0.2; //membership_type value of 0
+    const annualCost: number = 45.00; //membership_type value of 2
+    const monthlyCost: number = 5.00; //membership_type value of 1
+    const weeklyCost: number = 1.50; //membership_type value of 0
 
     let weeklyString = weeklyCost.toFixed(2);
     let monthlyString = monthlyCost.toFixed(2);
@@ -81,16 +81,13 @@
                         weeklys = weeklys + Math.floor(numberOfWeeks);
                     }
                 } else if (users[i].membership_type == 1) {
-                    if (subscriptionStartDate <= chosenDateObj) {
-                        console.log('number of months ' + numberOfMonths);
-                        income += monthlyCost * Math.floor(numberOfMonths);
-                        monthlys = monthlys + Math.floor(numberOfMonths);
-                    }
+                    //console.log('number of months ' + numberOfMonths);
+                    //console.log('user: ', users[i].username);
+                    income += monthlyCost * Math.floor(numberOfMonths);
+                    monthlys = monthlys + Math.floor(numberOfMonths);
                 } else if (users[i].membership_type == 2) {
-                    if (subscriptionStartDate <= chosenDateObj) {
-                        income += annualCost * Math.floor(numberOfYears);
-                        yearlys = yearlys + Math.floor(numberOfYears);
-                    }
+                    income += annualCost * Math.floor(numberOfYears);
+                    yearlys = yearlys + Math.floor(numberOfYears);
                 }
             }
         }

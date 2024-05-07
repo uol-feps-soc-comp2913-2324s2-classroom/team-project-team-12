@@ -140,17 +140,17 @@ export const actions = {
         if (type === "login") {
             const username = data.get("username")?.toString();
             const password = data.get("password")?.toString();
-            console.log(username + " " + password);
+            //console.log(username + " " + password);
             if (username != null && password != null) {
                 const user = await prisma.user.findUnique({
                     where: {
                         username: username,
                     },
                 });
-                console.log(user);
+                //console.log(user);
                 if (user != null) {
                     const match = await bcrypt.compare(password, user.password);
-                    console.log(match);
+                    //console.log(match);
                     if (match) {
                         if (user.admin_status) {
                             return {
@@ -238,7 +238,7 @@ export const actions = {
             if (defaultPublicity != null)
             updatedUser.default_publicity = defaultPublicity;
         }
-        console.log(data.get("admin_status"));
+        //console.log(data.get("admin_status"));
         if ((data.get("admin_status") != null)) {
             const adminStatus = (data.get("admin_status") === "true");
             updatedUser.admin_status = adminStatus;
@@ -295,7 +295,7 @@ export const actions = {
             }
             if (data.get("user_id2") != null) {
                 const user_id2 = Number(data.get("user_id2"));
-                console.log("here");
+                //console.log("here");
                 if (user_id2 != null && user_id2 != undefined)
                 updatedRelationship.user_id2 = user_id2;
             }
