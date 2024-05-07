@@ -50,7 +50,7 @@ export const actions = {
             body: user.username,
         };
     } else {
-        console.log('fail');
+        // console.log('fail');
         return fail(401);
     }
       

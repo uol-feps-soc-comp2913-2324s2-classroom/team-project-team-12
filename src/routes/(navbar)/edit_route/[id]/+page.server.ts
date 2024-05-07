@@ -19,7 +19,7 @@ let privacySettings = [
 
 export const load = async ({ cookies, params }) => {
   const username = cookies.get('sessionId');
-  console.log(username);
+  // console.log(username);
   const route_id = parseInt(params.id);
     if(!route_id){
         invalid = true;
@@ -56,7 +56,7 @@ export const load = async ({ cookies, params }) => {
         invalid = true;
         redirect(302,'../routes');
     }
-    console.log(route.id);
+    // console.log(route.id);
     if(route.creator !== user.id){
         invalid = true;
         redirect(302,'../routes');
@@ -146,28 +146,21 @@ export const actions = {
                         message: "Route name contains inappropriate words"
                     }
                 }
-            } else {
-                
+            }
+            else {
+
                 if (routeName != null) {
                     let flag = false;
                 let substring = routeName.substring(0, 25);
+                //remove any spaces from the string
+                let initTime = Date.now();
+                substring = substring.replaceAll(/\s/g, '');
                 for (let i = 0; i < substring.length; i++) {
-                    //split the string into substrings of 4-8 characters
-                    substring = routeName.substring(i, i + 8);
+                    for (let j = 0; j < 25; j++) {
+                    substring = routeName.substring(i,i+j);
+                    substring = substring.replaceAll(/\s/g, '');
                     if (filter.isProfane(substring)) flag = true;
-                    if (filter.isProfane(substring)) console.log(substring);
-                    substring = routeName.substring(i, i + 7);
-                    if (filter.isProfane(substring)) flag = true;
-                    if (filter.isProfane(substring)) console.log(substring);
-                    substring = routeName.substring(i, i + 6);
-                    if (filter.isProfane(substring)) flag = true;
-                    if (filter.isProfane(substring)) console.log(substring);
-                    substring = routeName.substring(i, i + 5);
-                    if (filter.isProfane(substring)) flag = true;
-                    if (filter.isProfane(substring)) console.log(substring);
-                    substring = routeName.substring(i, i + 4);
-                    if (filter.isProfane(substring)) flag = true ;
-                    if (filter.isProfane(substring)) console.log(substring);
+                    if (flag) break;
                 }
                 if (flag) {
                     return {
@@ -178,7 +171,7 @@ export const actions = {
                     }
                 }
             }
-        }
+        }}
 
             //update route
             let finalname: string;

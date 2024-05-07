@@ -2,6 +2,7 @@ import prisma from '$lib/prisma';
 import { fail } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
 import type { user } from '$lib/interfaces';
+import { stripe } from '$lib/stripe';
 
 let curUser: user;
 let invalid = true;
@@ -140,6 +141,7 @@ export const actions = {
             }
         }else if(type === "privacy"){
             try {
+                // change user privacy
                 const selectedPriv = data.get('selected');
                 if(curUser){
                     await prisma.user.update({
@@ -169,6 +171,25 @@ export const actions = {
                     });
                 }
 
+                // cancel the stripe subscription so it doesnt continue charging
+                const customerId = curUser?.stripe_token;
+                if (!customerId) {
+                    return {
+                        status: 404,
+                        body: { message: 'Customer not found.' },
+                    };
+                }
+                const subscriptions = await stripe.subscriptions.list({
+                    limit: 3,
+                    customer: customerId,
+                });
+                const subscription = await stripe.subscriptions.update(
+                    subscriptions.data[0].id,
+                    {
+                        cancel_at_period_end: true,
+                    }
+                )
+
                 cookies.delete('sessionId', {
                     path: '/'
                 });
@@ -179,7 +200,7 @@ export const actions = {
 
                 return { 
                     status: 200,
-                    body: deleted
+                    body: deleted, subscription
                 }
             } catch (error) {
                 return fail(500);

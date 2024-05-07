@@ -116,8 +116,10 @@
             <TableHeadCell>Email</TableHeadCell>
             <TableHeadCell>Password</TableHeadCell>
             <TableHeadCell>Membership Type</TableHeadCell>
+            {#if lockedFields}
             <TableHeadCell>Start Date</TableHeadCell>
             <TableHeadCell>Next Payment</TableHeadCell>
+            {/if}
             <TableHeadCell>Paid</TableHeadCell>
             <TableHeadCell>Default Publicity</TableHeadCell>
             <TableHeadCell>Admin Status</TableHeadCell>
@@ -153,8 +155,6 @@
                     <TableBodyCell><Input type="text" bind:value={user.email} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={user.password} /></TableBodyCell>
                     <TableBodyCell><Input type="text" bind:value={user.membership_type} /></TableBodyCell>
-                    <TableBodyCell>{user.subscription_start_date}</TableBodyCell>
-                    <TableBodyCell>{user.next_payment_date}</TableBodyCell>
                     <TableBodyCell>
                         <Select bind:value={user.paid}>
                             <option value={true}>true</option>

@@ -125,6 +125,12 @@
         margin-right: 15px;
     }
 
+    .scroll-area {
+        max-height: 300px;
+        height: auto;
+        overflow-y: auto; 
+    }
+
 </style>
 
 <body>
@@ -153,22 +159,24 @@
                         {#if userFriends.length == 0}
                             <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no friends.</div>
                         {:else}
-                            <Listgroup items={userFriends} let:item class="border-0 dark:!bg-transparent">
-                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                                    <Avatar>{getInitials(item.first_name + " " + item.last_name)}</Avatar>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                            {item.first_name} {item.last_name}
-                                        </p>
-                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                            @{item.username}
-                                        </p>
-                                    </div>
-                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                        <Button color="light" rel="external" href="../profile/{item.username}">View Profile</Button>
-                                    </div>
-                                </div>   
-                            </Listgroup>
+                            <div class="scroll-area">
+                                <Listgroup items={userFriends} let:item class="border-0 dark:!bg-transparent">
+                                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                        <Avatar>{getInitials(item.first_name + " " + item.last_name)}</Avatar>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                {item.first_name} {item.last_name}
+                                            </p>
+                                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                @{item.username}
+                                            </p>
+                                        </div>
+                                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                            <Button color="light" rel="external" href="../profile/{item.username}">View Profile</Button>
+                                        </div>
+                                    </div>   
+                                </Listgroup>
+                            </div>
                         {/if}
                     </TabItem>
                     <TabItem class="w-full" >
@@ -176,22 +184,24 @@
                         {#if userGroups.length == 0}
                             <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no groups.</div>
                         {:else}
-                            <Listgroup items={userGroups} let:item class="border-0 dark:!bg-transparent">
-                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                                    <Avatar>{getInitials(item.name)}</Avatar>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                            {item.name}
-                                        </p>
-                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                            Members: {item.memberCount}
-                                        </p>
+                            <div class="scroll-area">
+                                <Listgroup items={userGroups} let:item class="border-0 dark:!bg-transparent">
+                                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                        <Avatar>{getInitials(item.name)}</Avatar>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                {item.name}
+                                            </p>
+                                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                Members: {item.memberCount}
+                                            </p>
+                                        </div>
+                                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                            <Button color="light" href="../../group/{item.name}">View Group</Button>
+                                        </div>
                                     </div>
-                                    <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                        <Button color="light" href="../../group/{item.name}">View Group</Button>
-                                    </div>
-                                </div>
-                            </Listgroup>
+                                </Listgroup>
+                            </div>
                         {/if}
                     </TabItem>
                     <TabItem class="w-full" >
@@ -199,24 +209,26 @@
                         {#if resolvedRoutes.length == 0}
                             <div class="flex items-center space-x-4 rtl:space-x-reverse">User has no Routes.</div>
                         {:else}
-                            <Listgroup items={resolvedRoutes} let:item class="border-0 dark:!bg-transparent">
-                                <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                                    <div class="map-container">
-                                        <SingleRoute route={item}/>
+                            <div class="scroll-area">
+                                <Listgroup items={resolvedRoutes} let:item class="border-0 dark:!bg-transparent">
+                                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                                        <div class="map-container">
+                                            <SingleRoute route={item}/>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                                {item.name}
+                                            </p>
+                                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                Date Created: {item.createdOn.toLocaleString()}
+                                            </p>
+                                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                                Route Duration: {getRouteDuration(item)}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                            {item.name}
-                                        </p>
-                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                            Date Created: {item.createdOn.toLocaleString()}
-                                        </p>
-                                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                            Route Duration: {getRouteDuration(item)}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Listgroup>
+                                </Listgroup>
+                            </div>
                         {/if}
                     </TabItem>    
                 </Tabs>

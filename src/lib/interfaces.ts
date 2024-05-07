@@ -29,11 +29,8 @@ export interface user {
     email: string;
     password: string;
     membership_type: number | null;
-<<<<<<< HEAD
-=======
     subscription_start_date: Date;
-    next_payment_date: Date;
->>>>>>> 7f8e4d915c78001ac9a69b563e74d99e2166c15d
+    next_payment_date: Date | null;
     paid: boolean;
     default_publicity: number | null;
     admin_status: boolean;

@@ -15,7 +15,7 @@ export const load = (async ({ cookies }) => {
     });
 
     if(user){
-        console.log(user.username);
+        // console.log(user.username);
     }
 
     if (user?.stripe_token === "undefined"){
