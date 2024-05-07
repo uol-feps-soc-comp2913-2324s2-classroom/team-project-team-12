@@ -341,23 +341,30 @@ export const actions = {
 
                 const firstRelationshipId = relationship ? relationship.id : undefined;
 
-                await prisma.relationship.delete({
-                    where: {
-                        id: firstRelationshipId,
-                    },
-                });
-                return {
-                    status: 200,
-                    body: relationship,
-                };
-            } else {
-                throw new Error('Invalid action type.');
-            }
+            await prisma.relationship.delete({
+              where: {
+                  id: firstRelationshipId
+              }
+          });
+            return {
+            status: 200,
+            body: relationship
+            };
+        }
+     
+            
         } catch (error) {
             return {
                 status: 400,
                 body: { error: 'Error completing action' },
             };
         }
-    },
+
+        return{
+          status: 200
+      }
+        
+        
+
+    }
 };
