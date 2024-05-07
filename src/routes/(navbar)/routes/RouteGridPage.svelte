@@ -10,13 +10,11 @@
 
 <script lang="ts">
     import type { RouteEntry } from '$lib/interfaces';
-    import { Hr, Button, Input, Select, Heading, P, A, Mark, Secondary,Card, List, Li} from 'flowbite-svelte';
+    import { Hr, Button, Input, Select, Heading, P, A, Mark, Secondary,Card, List, Li, Breadcrumb, BreadcrumbItem,Tooltip} from 'flowbite-svelte';
     import { ArrowLeftOutline, EyeSlashOutline, EyeOutline, PenOutline} from 'flowbite-svelte-icons';
     import SingleRoute from "$lib/components/SingleRoute.svelte";
     import { goto } from '$app/navigation';
-    import type { Linter } from 'eslint';
     import AddGroup from '../groups/addGroup.svelte';
-    import { page } from '$app/stores';
     export let addRouteToGroup: (route: RouteEntry) => void;
     export let routeEntries: RouteEntry[] = [];
     export let nameOfList: string = "";
@@ -24,7 +22,7 @@
     export let updateCurrentPage: (value: string) => void;
     export let showGroupOnMap: boolean;
     export let user_id: number;
-    let searchTerm = "";
+    export let searchTerm: string = "";
     let maxPerPage = 24;
     let currentPage = 0;
     
@@ -69,7 +67,7 @@
     }
 
     let pageIndex = 0;
-    let itemsPerPage = 4;
+    let itemsPerPage = 8;
 
     function nextPage() {
         if (pageIndex < routeEntries.length / itemsPerPage - 1) {
@@ -91,9 +89,14 @@
 <div class="container">
     <div class="top-section">
         <div class="left-top-section">
-        <button style="display: flex" on:click={() => updateCurrentPage("Main")} role="button">
-            <ArrowLeftOutline class="w-12 h-12 text-primary-700"  />
-        </button>
+        
+        <Breadcrumb>
+            <Button color="alternative" style="display: flex" on:click={() => updateCurrentPage("Main")} role="button">
+            <BreadcrumbItem on:click={() => updateCurrentPage("Main")}>Routes</BreadcrumbItem>
+            </Button>
+            <Tooltip>Go back to routes</Tooltip>
+            <BreadcrumbItem>{nameOfList} </BreadcrumbItem>
+        </Breadcrumb>
         </div>
         <div class="top-mid-section">
         <button on:click={() => updateCurrentPage(nameOfList)}>
@@ -105,16 +108,28 @@
             <Button color="blue" on:click={() => toggleShowGroupOnMap(nameOfList)}>
                     <EyeOutline />
             </Button>
+            <Tooltip> Hide on map </Tooltip>
         {:else}
             <Button color="red" on:click={() => toggleShowGroupOnMap(nameOfList)}>
                     <EyeSlashOutline />
             </Button>
+            <Tooltip> Show on map </Tooltip>
         {/if}
         {/if}
         </div>
-        <div class="right-top-section">
-            <Button on:click={prevPage} disabled={pageIndex === 0}>Previous</Button>
-            <Button on:click={nextPage} disabled={pageIndex * itemsPerPage >= routeEntries.length - itemsPerPage}>Next</Button>
+        <div class="top-right-section">
+            <div class="next-last">
+                <Button on:click={prevPage} disabled={pageIndex === 0}>Previous</Button>
+                <Button on:click={nextPage} disabled={pageIndex * itemsPerPage >= routeEntries.length - itemsPerPage}>Next</Button>
+            </div>
+            <Heading customSize="text-lg font-semibold">Routes per page</Heading>
+            <Select bind:value={itemsPerPage} on:change={() => pageIndex = 0}>
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="12">12</option>
+                <option value="16">16</option>
+                <option value="20">20</option>
+            </Select>
         </div>
 
     </div>
@@ -130,14 +145,17 @@
                         {#if nameOfList === "Your Routes"}
                             <div class="edit-map-button">
                                 <Button on:click={() => editRoute(route)}><PenOutline /></Button>
+                                <Tooltip>Edit route</Tooltip>
                             </div>
                         {/if}
                         {#if (nameOfList === "Your Routes" || nameOfList === "Friends Routes" || nameOfList === "Public Routes")}
                             <div class="show-map-buttons">
                                 {#if route.showOnMap}
                                     <Button color='blue' on:click={() => toggleShowOnMap(route)}><EyeOutline /></Button>
+                                    <Tooltip> Hide on map </Tooltip>
                                 {:else}
                                     <Button color='red' on:click={() => toggleShowOnMap(route)}><EyeSlashOutline /></Button>
+                                    <Tooltip> Show on map </Tooltip>
                                 {/if}        
                             </div>
                         {/if}
@@ -146,10 +164,12 @@
                     
                     <Heading customSize="text-lg font-semibold">{route.name}</Heading>
                     <List list="none" tag="ul">
-                    {#if route.completionTime > 60}
-                    <Li>{Math.floor(route.completionTime / 60)} Hours {route.completionTime %60} Minutes</Li>
+                    {#if route.completionTime > 3600}
+                    <Li>{Math.floor(route.completionTime / 3600)} Hours {Math.floor((route.completionTime % 3600) / 60)} Minutes {route.completionTime % 60} Seconds </Li>
+                    {:else if route.completionTime > 60} 
+                    <Li>{Math.floor(route.completionTime / 60)} Minutes {route.completionTime % 60} Seconds </Li>
                     {:else}
-                    <Li>{route.completionTime} Minutes</Li>
+                    <Li>{route.completionTime} Seconds </Li>
                     {/if}
                     <Li>Created by {route.creator}</Li>
                     <Li>Uploaded on {route.createdOn.toLocaleDateString()} at {route.createdOn.toLocaleTimeString()} </Li>
@@ -162,6 +182,7 @@
                         {/each}
                     </Select>
                     <Button on:click={() => addRouteToGroup(route)}>+</Button>
+                    <Tooltip>Add route to group</Tooltip>
                 </div>
                 {/if}
                 </div>
@@ -170,14 +191,6 @@
     {/each}
 </div>
 <Hr />
-<Heading customSize="text-lg font-semibold">Routes per page</Heading>
-            <Select bind:value={itemsPerPage} on:change={() => pageIndex = 0}>
-                <option value="4">4</option>
-                <option value="8">8</option>
-                <option value="12">12</option>
-                <option value="16">16</option>
-                <option value="20">20</option>
-            </Select>
 </div>
 
 
