@@ -459,7 +459,7 @@ export const actions = {
 
         if (type === "updateGroupMembership") {
             //lookup group membership by id
-            console.log(data.get("group_id"), data.get("user_id"), data.get("admin"));
+            // console.log(data.get("group_id"), data.get("user_id"), data.get("admin"));
             const groupMembership = await prisma.group_membership.findUnique({
                 where: {
                     id: id,

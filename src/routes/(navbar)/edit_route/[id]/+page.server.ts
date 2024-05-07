@@ -19,7 +19,7 @@ let privacySettings = [
 
 export const load = async ({ cookies, params }) => {
   const username = cookies.get('sessionId');
-  console.log(username);
+  // console.log(username);
   const route_id = parseInt(params.id);
     if(!route_id){
         invalid = true;
@@ -56,7 +56,7 @@ export const load = async ({ cookies, params }) => {
         invalid = true;
         redirect(302,'../routes');
     }
-    console.log(route.id);
+    // console.log(route.id);
     if(route.creator !== user.id){
         invalid = true;
         redirect(302,'../routes');
