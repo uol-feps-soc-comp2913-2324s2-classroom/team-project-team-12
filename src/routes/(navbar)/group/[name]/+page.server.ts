@@ -62,6 +62,20 @@ export const load = (async ({ cookies, params: { name } }) => {
         }
     })
 
+    // Find the user's friends
+    const relationships = await prisma.relationship.findMany({
+        where: {
+            OR: [
+                { user_id1: user.id, is_friend: true },
+                { user_id2: user.id, is_friend: true }
+            ]
+        }
+    });
+
+    const isFriend = creator && relationships.some(relationship => {
+        return relationship.user_id1 === creator.id || relationship.user_id2 === creator.id;
+    });
+
     // Retrieve a route's path
     const getRoutePath = async (id: number): Promise<Path> => {
         // Retrieve the path from the database
@@ -122,8 +136,11 @@ export const load = (async ({ cookies, params: { name } }) => {
     };
     groupRouteEntries.push(groupRouteEntryObj);
     //#############################
+
+    const isMember = members.some(member => member.id === user.id);
+
+    return { group, members, creator, memberCount, groupRouteEntryObj, user, isFriend, isMember};
     
-    return { group, members, creator, memberCount, groupRouteEntryObj, user};
 }) as PageServerLoad;
 
 
