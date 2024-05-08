@@ -130,5 +130,14 @@ npm run dev -- --open
 ```
 
 
+## Testing
+All unit and integration tests can be executed using a single command:
+```bash
+npm run test
+```
+
+To view or edit integration and unit tests, visit `src/integration.test.ts` or `src/unit.test.ts` respectively.
+
+
 ## Documentation
 See [repo wiki](https://github.com/uol-feps-soc-comp2913-2324s2-classroom/team-project-team-12/wiki)
