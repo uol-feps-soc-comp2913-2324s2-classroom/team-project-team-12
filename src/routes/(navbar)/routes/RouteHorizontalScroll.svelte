@@ -11,16 +11,17 @@
 <script lang="ts">
     import type {RouteEntry, user} from '$lib/interfaces';
     import { goto } from '$app/navigation';
-    import {Card,List,Li, Button, Input, Select,Heading, Hr, P, A, Mark, Secondary } from 'flowbite-svelte';
+    import {Card,List,Li, Button, Input, Select,Heading, Hr, P, A, Mark, Secondary, Tooltip } from 'flowbite-svelte';
     import { EyeOutline,EyeSlashOutline, PenOutline, CaretRightOutline } from 'flowbite-svelte-icons';
     import SingleRoute from "$lib/components/SingleRoute.svelte";
+
 
     export let user_id: number;
     export let addRouteToGroup: (route:RouteEntry) => void;
     export let routeEntries:RouteEntry[] = [];
     export let nameOfList:string = "";
     export let adminGroupNames:string[] = [];
-    export let searchTerm = "";
+    export let searchTerm;
     export let updateCurrentPage: (value: string) => void;
     export let showGroupOnMap: boolean;
     
@@ -68,19 +69,26 @@
 </script>
 
 <div class="container">
-        <button on:click={() => updateCurrentPage(nameOfList)}>
+        <div class="title-box">
+        <Button color="alternative" on:click={() => updateCurrentPage(nameOfList)}>
+            <div class="title-button">
         <Heading>{nameOfList} </Heading>
         <Secondary>{routeEntries.filter((r) => (r.name.toUpperCase().includes(searchTerm.toUpperCase())) || r.creator.toUpperCase().includes(searchTerm.toUpperCase())).length} routes </Secondary>
-        </button>
+        </div>
+        </Button>
+        </div>
         {#if !(nameOfList === "Your Routes" || nameOfList === "Public Routes" || nameOfList === "Friends Routes")}
         {#if showGroupOnMap}
             <Button color="blue" on:click={() => toggleShowGroupOnMap(nameOfList)}>
                     <EyeOutline />
             </Button>
+            <Tooltip>Click to hide routes in this group on the map </Tooltip>
         {:else}
             <Button color="red" on:click={() => toggleShowGroupOnMap(nameOfList)}>
                     <EyeSlashOutline />
             </Button>
+            <Tooltip>Click to show routes in this group on the map
+            </Tooltip>
         {/if}
         {/if}
     <Hr />
@@ -96,14 +104,17 @@
                         {#if nameOfList === "Your Routes"}
                             <div class="edit-map-button">
                                 <Button on:click={() => editRoute(route)}><PenOutline /></Button>
+                                <Tooltip>Click to edit route</Tooltip>
                             </div>
                         {/if}
                         {#if (nameOfList === "Your Routes" || nameOfList === "Friends Routes" || nameOfList === "Public Routes")}
                             <div class="show-map-buttons">
                                 {#if route.showOnMap}
                                     <Button color='blue' on:click={() => toggleShowOnMap(route)}><EyeOutline /></Button>
+                                    <Tooltip>Click to hide route on the map</Tooltip>
                                 {:else}
                                     <Button color='red' on:click={() => toggleShowOnMap(route)}><EyeSlashOutline /></Button>
+                                    <Tooltip>Click to show route on the map</Tooltip>
                                 {/if}        
                             </div>
                         {/if}
@@ -112,10 +123,21 @@
                     
                     <Heading customSize="text-lg font-semibold">{route.name}</Heading>
                     <List list="none" tag="ul">
-                    {#if route.completionTime > 60}
-                    <Li>{Math.floor(route.completionTime / 60)} Hours {route.completionTime %60} Minutes</Li>
+                        {#if route.completionTime > 3600}
+                        <Li>
+                            {Math.floor(route.completionTime / 3600)} {Math.floor(route.completionTime / 3600) == 1 ? 'Hour' : 'Hours'} 
+                            {Math.floor((route.completionTime % 3600) / 60)} {Math.floor((route.completionTime % 3600) / 60) == 1 ? 'Minute' : 'Minutes'} 
+                            {route.completionTime % 60} {route.completionTime % 60 == 1 ? 'Second' : 'Seconds'}
+                        </Li>
+                    {:else if route.completionTime > 60}
+                        <Li>
+                            {Math.floor(route.completionTime / 60)} {Math.floor(route.completionTime / 60) == 1 ? 'Minute' : 'Minutes'} 
+                            {route.completionTime % 60} {route.completionTime % 60 == 1 ? 'Second' : 'Seconds'}
+                        </Li>
                     {:else}
-                    <Li>{route.completionTime} Minutes</Li>
+                        <Li>
+                            {route.completionTime} {route.completionTime == 1 ? 'Second' : 'Seconds'}
+                        </Li>
                     {/if}
                     <Li>Created by {route.creator}</Li>
                     <Li>Uploaded on {route.createdOn.toLocaleDateString()} at {route.createdOn.toLocaleTimeString()} </Li>
@@ -128,16 +150,17 @@
                         {/each}
                     </Select>
                     <Button on:click={() => addRouteToGroup(route)}>+</Button>
+                    <Tooltip>Add route to group</Tooltip>
                 </div>
                 {/if}
                 </div>
             </Card>
         </div>
+        <div class="between-cards"></div>
         {/if}
-    <div class="between-cards"></div>
     {/each}
-    {#if routeEntries.length > 9}
-        <Button class="see-more-button" size="xl" on:click={() => updateCurrentPage(nameOfList)}>
+    {#if routeEntries.length > 5}
+        <Button color="alternative" class="see-more-button" size="xl" on:click={() => updateCurrentPage(nameOfList)}>
             <CaretRightOutline size="xl" />
         </Button>
     {/if}
@@ -228,7 +251,7 @@
     .see-more-button {
         position: relative;
         width: 200px;
-        height: 600px;
+        height: 500px;
         justify-content: center;
         align-items: center;
         display: flex;
@@ -258,4 +281,21 @@
         display: none; /* For Chrome, Safari and Opera */
     }
 
+    .title-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+    .title-box {
+    margin: auto;
+}
+
+.title-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
 </style>

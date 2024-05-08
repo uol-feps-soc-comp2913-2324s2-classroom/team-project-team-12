@@ -44,15 +44,60 @@ export const load = (async ({ cookies, params: { name } }) => {
 
     // Extract user IDs from group membership
     const groupMembersId = group.group_membership.map(member => member.user_id);
-    
     // Fetch user objects for each user ID
     const members = await prisma.user.findMany({
         where: {
             id: {
                 in: groupMembersId
-            }
+            },
         }
     });
+
+    const currentUserFriends = await prisma.user.findMany({
+        where: {
+            OR: [
+                {
+                    id: {
+                        in: [
+                            // Subquery to find IDs of users who are friends with the current user
+                            ...(
+                                await prisma.relationship.findMany({
+                                    where: {
+                                        user_id2: user?.id,
+                                        is_friend: true,
+                                    },
+                                    select: { user_id1: true },
+                                })
+                            ).map((rel) => rel.user_id1),
+                        ],
+                    },
+                },
+                {
+                    id: {
+                        in: [
+                            // Subquery to find IDs of users who are friends with the current user
+                            ...(
+                                await prisma.relationship.findMany({
+                                    where: {
+                                        user_id1: user?.id,
+                                        is_friend: true,
+                                    },
+                                    select: { user_id2: true },
+                                })
+                            ).map((rel) => rel.user_id2),
+                        ],
+                    },
+                },
+            ],
+        },
+    });
+
+
+    const filteredFriends = currentUserFriends.filter(currentUser => !members.some(member => member.id === currentUser.id));
+
+
+    
+    
 
     const memberCount = members.length;
 
@@ -61,6 +106,20 @@ export const load = (async ({ cookies, params: { name } }) => {
             id: group.creator
         }
     })
+
+    // Find the user's friends
+    const relationships = await prisma.relationship.findMany({
+        where: {
+            OR: [
+                { user_id1: user.id, is_friend: true },
+                { user_id2: user.id, is_friend: true }
+            ]
+        }
+    });
+
+    const isFriend = creator && relationships.some(relationship => {
+        return relationship.user_id1 === creator.id || relationship.user_id2 === creator.id;
+    });
 
     // Retrieve a route's path
     const getRoutePath = async (id: number): Promise<Path> => {
@@ -122,8 +181,11 @@ export const load = (async ({ cookies, params: { name } }) => {
     };
     groupRouteEntries.push(groupRouteEntryObj);
     //#############################
+
+    const isMember = members.some(member => member.id === user.id);
+
+    return { group, members, creator, memberCount, groupRouteEntryObj, user, isFriend, isMember, filteredFriends};
     
-    return { group, members, creator, memberCount, groupRouteEntryObj, user};
 }) as PageServerLoad;
 
 
@@ -135,10 +197,12 @@ export const actions = {
         const type = data.get('type');
         const groupID = data.get('groupID');
         const routeID = data.get('routeID');
+        const friendID = data.get('friendID');
+
 
         //Data and type validation
         if (type == null) return { status: 400, body: { error: 'No type specified' } };
-
+        try {
         if (type == 'deleteRouteFromGroup') {
             if (routeID == null) return { status: 400, body: { error: 'No route specified' } };
             if (groupID == undefined) return { status: 400, body: { error: 'Invalid group name' } };
@@ -158,6 +222,51 @@ export const actions = {
                 },
             });
                 }
-        return { status: 400, body: { error: 'Invalid type' } };
+
+        if (type === 'inviteToGroup' && user?.id !== undefined) {
+            const friendIDNum = Number(friendID);
+            const groupIDNum = Number(groupID);
+
+            try {
+
+                const existingMembership = await prisma.group_membership.findFirst({
+                        where: {
+                            group_id: groupIDNum,
+                            user_id: friendIDNum,
+                        },
+                });
+
+                if (existingMembership) {
+                        return {
+                            status: 400,
+                            body: { error: 'They already have a membership' },
+                        };
+                        
+                } else {
+
+
+                    await prisma.group_membership.create({
+                        data: {
+                            user_id: friendIDNum,
+                            group_id: groupIDNum,
+                            invite: true,
+                        },
+                    });
+                }
+                } catch (error) {
+                    console.error('Error sending invite:', error);
+                } finally {
+                    await prisma.$disconnect();
+                }
+            }
+        } catch (error) {
+            return {
+                status: 400,
+                body: { error: 'Error completing action' },
+            };
+        }
+        return {
+            status: 200,
+        };
     },
 };
