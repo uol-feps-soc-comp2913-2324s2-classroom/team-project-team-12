@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.db"
+}
+
+model groups_to_show {
+  id       Int    @id @unique(map: "sqlite_autoindex_groups_to_show_1") @default(autoincrement())
+  user_id  Int
+  group_id Int
+  user     user   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  groups   groups @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, group_id])
+}
+
+model routes_to_show {
+  id       Int    @id @unique(map: "sqlite_autoindex_routesToShow_1") @default(autoincrement())
+  user_id  Int
+  route_id Int
+  user     user   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  routes   routes @relation(fields: [route_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, route_id])
+}
+
+model group_membership {
+  id       Int     @id @default(autoincrement())
+  group_id Int
+  user_id  Int
+  request  Boolean @default(false)
+  member   Boolean @default(false)
+  admin    Boolean @default(false)
+  invite   Boolean @default(false)
+  groups   groups  @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users    user    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model group_routes {
+  id       Int     @id @default(autoincrement())
+  group_id Int
+  route_id Int
+  priority Int     @default(0)
+  routes   routes? @relation(fields: [route_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  groups   groups? @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model groups {
+  id               Int                @id @unique(map: "sqlite_autoindex_groups_1") @default(autoincrement())
+  name             String             @unique(map: "sqlite_autoindex_groups_2")
+  creator          Int
+  publicity        Int                @default(2)
+  group_routes     group_routes[]
+  user             user?              @relation(fields: [creator], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  group_membership group_membership[]
+  groups_to_show   groups_to_show[]
+}
+
+model journey_coordinates {
+  id             Int       @id @unique(map: "sqlite_autoindex_journey_coordinates_1") @default(autoincrement())
+  journey_id     Int
+  latitude       Decimal
+  longitude      Decimal
+  order_position Int
+  time           DateTime? @default(now())
+  journeys       journeys? @relation(fields: [journey_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model journeys {
+  id                  Int                   @id @unique(map: "sqlite_autoindex_journeys_1") @default(autoincrement())
+  user_id             Int
+  started             DateTime?             @default(now())
+  finished            DateTime?
+  label               String?
+  is_route            Boolean?              @default(false)
+  route_id            Int?
+  journey_coordinates journey_coordinates[]
+  routes              routes?               @relation(fields: [route_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                user?                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model relationship {
+  id                               Int     @id @default(autoincrement())
+  user_id1                         Int
+  user_id2                         Int
+  friend_request                   Boolean @default(false)
+  is_friend                        Boolean @default(false)
+  is_blocked                       Boolean @default(false)
+  user_relationship_user_id2Touser user?   @relation("relationship_user_id2Touser", fields: [user_id2], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user_relationship_user_id1Touser user?   @relation("relationship_user_id1Touser", fields: [user_id1], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model route_coordinates {
+  id             Int     @id @unique(map: "sqlite_autoindex_route_coordinates_1") @default(autoincrement())
+  route_id       Int
+  latitude       Decimal
+  longitude      Decimal
+  order_position Int?
+  routes         routes? @relation(fields: [route_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model routes {
+  id                          Int                 @id @unique(map: "sqlite_autoindex_routes_1") @default(autoincrement())
+  route_name                  String
+  created_on                  DateTime            @default(now())
+  length                      Int
+  approximate_completion_time Int
+  creator                     Int
+  publicity                   Int                 @default(2)
+  group_routes                group_routes[]
+  journeys                    journeys[]
+  route_coordinates           route_coordinates[]
+  user                        user?               @relation(fields: [creator], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  routes_to_show routes_to_show[]
+}
+
+model user {
+  id                                       Int                @id @unique(map: "sqlite_autoindex_user_1") @default(autoincrement())
+  username                                 String             @unique(map: "sqlite_autoindex_user_2")
+  first_name                               String
+  last_name                                String
+  email                                    String             @unique(map: "sqlite_autoindex_user_3")
+  password                                 String
+  membership_type                          Int                @default(4)
+  subscription_start_date                  DateTime           @default("2024-01-01T00:00:00.000Z")
+  next_payment_date                        DateTime?          
+  paid                                     Boolean            @default(false)
+  default_publicity                        Int                @default(2)
+  admin_status                             Boolean            @default(false)
+  stripe_token                             String             @default("undefined")
+  subscription_id                          String             @default("undefined")
+  owner                                    Boolean            @default(false)
+  groups                                   groups[]
+  journeys                                 journeys[]
+  relationship_relationship_user_id2Touser relationship[]     @relation("relationship_user_id2Touser")
+  relationship_relationship_user_id1Touser relationship[]     @relation("relationship_user_id1Touser")
+  routes                                   routes[]
+  group_membership                         group_membership[]
+  groups_to_show                           groups_to_show[]
+  routes_to_show                           routes_to_show[]
+}

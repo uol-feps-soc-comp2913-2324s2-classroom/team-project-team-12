@@ -1,0 +1,47 @@
+[
+    {
+        "relationship": {
+            "user_id1": 1,
+            "user_id2": 2,
+            "friend_request": true,
+            "is_friend": false,
+            "is_blocked": false
+        }
+    },
+    {
+        "relationship": {
+            "user_id1": 1,
+            "user_id2": 3,
+            "friend_request": true,
+            "is_friend": false,
+            "is_blocked": false
+        }
+    },
+    {
+        "relationship": {
+            "user_id1": 2,
+            "user_id2": 3,
+            "friend_request": false,
+            "is_friend": true,
+            "is_blocked": false
+        }
+    },
+    {
+        "relationship": {
+            "user_id1": 2,
+            "user_id2": 4,
+            "friend_request": false,
+            "is_friend": true,
+            "is_blocked": false
+        }
+    },
+    {
+        "relationship": {
+            "user_id1": 3,
+            "user_id2": 5,
+            "friend_request": true,
+            "is_friend": false,
+            "is_blocked": false
+        }
+    }
+]

@@ -1,0 +1,30 @@
+[
+    {
+        "group": {
+            "name": "Hiking Enthusiasts",
+            "creator": 1,
+            "publicity": 2
+        }
+    },
+    {
+        "group": {
+            "name": "City Explorers",
+            "creator": 2,
+            "publicity": 1
+        }
+    },
+    {
+        "group": {
+            "name": "Nature Lovers",
+            "creator": 3,
+            "publicity": 2
+        }
+    },
+    {
+        "group": {
+            "name": "Adventure Seekers",
+            "creator": 4,
+            "publicity": 1
+        }
+    }
+]

@@ -1,0 +1,128 @@
+[
+    {
+        "route": {
+            "route_name": "Route 1",
+            "creator": 2,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 2",
+            "creator": 2,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 3",
+            "creator": 3,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 4",
+            "creator": 4,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 5",
+            "creator": 5,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 6",
+            "creator": 6,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 7",
+            "creator": 7,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 8",
+            "creator": 6,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 9",
+            "creator": 4,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 10",
+            "creator": 1,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 11",
+            "creator": 1,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 12",
+            "creator": 1,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 13",
+            "creator": 1,
+            "publicity": 2,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    },
+    {
+        "route": {
+            "route_name": "Route 14",
+            "creator": 1,
+            "publicity": 1,
+            "length": 5,
+            "approximate_completion_time": 6
+        }
+    }
+]
