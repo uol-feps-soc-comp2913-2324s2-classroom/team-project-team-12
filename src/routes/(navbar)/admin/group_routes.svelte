@@ -1,6 +1,16 @@
 <script lang="ts">
     import type { group_route } from '$lib/interfaces';
-    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+    import {
+        Button,
+        Input,
+        Select,
+        Table,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+        TableHead,
+        TableHeadCell,
+    } from 'flowbite-svelte';
     export let prop: group_route[];
     let group_routes = prop;
 
@@ -86,16 +96,23 @@
 
     var lockedFields = 1;
 </script>
+
 <Input type="text" bind:value={searchTerm} />
 <Table>
     <TableHead>
-            <TableHeadCell>ID</TableHeadCell>
-            <TableHeadCell>Group ID</TableHeadCell>
-            <TableHeadCell>Route ID</TableHeadCell>
-            <TableHeadCell>Priority</TableHeadCell>
+        <TableHeadCell>ID</TableHeadCell>
+        <TableHeadCell>Group ID</TableHeadCell>
+        <TableHeadCell>Route ID</TableHeadCell>
+        <TableHeadCell>Priority</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#each group_routes.filter((gr) => ((gr.route_id != null && gr.route_id.toString().includes(searchTerm)) || (gr.group_id != null && gr.group_id.toString().includes(searchTerm)))).slice(currentPage * group_routesPerPage, (currentPage + 1) * group_routesPerPage) as group_route}
+        {#each group_routes
+            .filter((gr) => (gr.route_id != null && gr.route_id
+                            .toString()
+                            .includes(searchTerm)) || (gr.group_id != null && gr.group_id
+                            .toString()
+                            .includes(searchTerm)))
+            .slice(currentPage * group_routesPerPage, (currentPage + 1) * group_routesPerPage) as group_route}
             {#if lockedFields == 1}
                 <TableBodyRow>
                     <TableBodyCell>{group_route.id}</TableBodyCell>
@@ -122,10 +139,12 @@
     <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
 <Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * group_routesPerPage >= group_routes.length}>Next</Button>
+<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * group_routesPerPage >= group_routes.length}
+    >Next</Button
+>
 <div>
     Results Per Page
-    <Select bind:value={group_routesPerPage} on:change={() => currentPage = 0} >
+    <Select bind:value={group_routesPerPage} on:change={() => (currentPage = 0)}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>

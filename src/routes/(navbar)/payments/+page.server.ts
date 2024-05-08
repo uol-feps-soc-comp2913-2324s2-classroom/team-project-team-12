@@ -1,11 +1,11 @@
-import prisma  from '$lib/prisma';
-import type { user } from '$lib/interfaces'
+import prisma from '$lib/prisma';
+import type { user } from '$lib/interfaces';
 import { fail } from '@sveltejs/kit';
-import { stripe } from '$lib/stripe'
+import { stripe } from '$lib/stripe';
 
 let user: user | null;
 
-export const load = (async ({ cookies }) => {
+export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
 
     const user = await prisma.user.findUnique({
@@ -14,16 +14,16 @@ export const load = (async ({ cookies }) => {
         },
     });
 
-    if(user){
+    if (user) {
         // console.log(user.username);
     }
 
-    if (user?.stripe_token === "undefined"){
+    if (user?.stripe_token === 'undefined') {
         try {
             const customer = await stripe.customers.create({
                 email: user?.email,
-                name: user?.first_name + " " + user.last_name
-              })
+                name: user?.first_name + ' ' + user.last_name,
+            });
 
             await prisma.user.update({
                 where: {
@@ -32,9 +32,8 @@ export const load = (async ({ cookies }) => {
                 data: {
                     stripe_token: customer.id,
                 },
-            })
-        }
-        catch (error) {
+            });
+        } catch (error) {
             console.error('Error during customer creation:', error);
             return {
                 status: 500,
@@ -43,39 +42,39 @@ export const load = (async ({ cookies }) => {
         }
     }
     return user;
-});
+};
 
 export const actions = {
     update: async ({ cookies, request }) => {
         const type = await request.json();
         try {
             cookies.set('paymentPlan', type, {
-              httpOnly: true,
-              sameSite: 'strict',
-              secure: false,
-              path: '/',
-              maxAge: 60 * 60 * 24 * 7
+                httpOnly: true,
+                sameSite: 'strict',
+                secure: false,
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7,
             });
-          } catch (verificationError) {
+        } catch (verificationError) {
             return fail(400);
-          }
+        }
     },
     cancel: async ({ cookies, request }) => {
         const username = cookies.get('sessionId');
-        try { 
-        cookies.set('paymentPlan', '4', {
-            httpOnly: true,
-            sameSite: 'strict',
-            secure: false,
-            path: '/',
-            maxAge: 60 * 60 * 24 * 7
-        });
+        try {
+            cookies.set('paymentPlan', '4', {
+                httpOnly: true,
+                sameSite: 'strict',
+                secure: false,
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7,
+            });
         } catch (verificationError) {
             return fail(400);
         }
         user = await prisma.user.findUnique({
             where: {
-            username: username as string,
+                username: username as string,
             },
         });
         if (!user) {
@@ -91,28 +90,23 @@ export const actions = {
                 body: { message: 'Customer not found.' },
             };
         }
-        
-            await prisma.user.update({
-                where: {
-                    username: username as string,
-                },
-                data: {
-                    membership_type: 4,
-                    subscription_id: "NaN",
-                },
-            })
-            const subscriptions = await stripe.subscriptions.list({
-                limit: 3,
-                customer: customerId,
-            });
-        const subscription = await stripe.subscriptions.update(
-            subscriptions.data[0].id,
-            {
-                cancel_at_period_end: true,
-            }
-        );
+
+        await prisma.user.update({
+            where: {
+                username: username as string,
+            },
+            data: {
+                membership_type: 4,
+                subscription_id: 'NaN',
+            },
+        });
+        const subscriptions = await stripe.subscriptions.list({
+            limit: 3,
+            customer: customerId,
+        });
+        const subscription = await stripe.subscriptions.update(subscriptions.data[0].id, {
+            cancel_at_period_end: true,
+        });
         location.reload;
-
-    }
-
-}
+    },
+};

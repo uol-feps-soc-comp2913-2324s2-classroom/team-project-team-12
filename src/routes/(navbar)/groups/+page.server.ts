@@ -14,7 +14,8 @@ export const load = async ({ cookies }) => {
     })) as user;
 
     // Enforce the paywall
-    if (user?.membership_type == 4 || (user.next_payment_date !== null && user.next_payment_date < new Date())) throw redirect(302, '/payments');
+    if (user?.membership_type == 4 || (user.next_payment_date !== null && user.next_payment_date < new Date()))
+        throw redirect(302, '/payments');
 
     const currentUserGroups = await prisma.groups.findMany({
         where: {

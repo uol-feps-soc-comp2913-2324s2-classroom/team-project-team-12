@@ -1,6 +1,16 @@
 <script lang="ts">
     import type { route_coordinate } from '$lib/interfaces';
-    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+    import {
+        Button,
+        Input,
+        Select,
+        Table,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+        TableHead,
+        TableHeadCell,
+    } from 'flowbite-svelte';
     import Decimal from 'decimal.js';
     export let prop: route_coordinate[];
     let route_coordinates = prop;
@@ -95,17 +105,20 @@
 
     var lockedFields = 1;
 </script>
+
 <Input type="text" bind:value={searchTerm} placeholder="Search..." />
 <Table>
     <TableHead>
-            <TableHeadCell>ID</TableHeadCell>
-            <TableHeadCell>Route ID</TableHeadCell>
-            <TableHeadCell>Latitude</TableHeadCell>
-            <TableHeadCell>Longitude</TableHeadCell>
-            <TableHeadCell>Order Position</TableHeadCell>
+        <TableHeadCell>ID</TableHeadCell>
+        <TableHeadCell>Route ID</TableHeadCell>
+        <TableHeadCell>Latitude</TableHeadCell>
+        <TableHeadCell>Longitude</TableHeadCell>
+        <TableHeadCell>Order Position</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#each route_coordinates.filter((rc) => (rc.route_id != null && rc.route_id.toString().includes(searchTerm))).slice(currentPage * route_coordinatesPerPage, (currentPage + 1) * route_coordinatesPerPage) as route_coordinate}
+        {#each route_coordinates
+            .filter((rc) => rc.route_id != null && rc.route_id.toString().includes(searchTerm))
+            .slice(currentPage * route_coordinatesPerPage, (currentPage + 1) * route_coordinatesPerPage) as route_coordinate}
             {#if lockedFields == 1}
                 <TableBodyRow>
                     <TableBodyCell>{route_coordinate.id}</TableBodyCell>
@@ -131,13 +144,18 @@
 </Table>
 <Button on:click={() => (lockedFields = lockedFields ? 0 : 1)}>Toggle Edit</Button>
 {#if lockedFields == 0}
-    <Button  on:click={handleUpdateAll}>Update All</Button>
+    <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
 <Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button pill color="light"  on:click={nextPage} disabled={(currentPage + 1) * route_coordinatesPerPage >= route_coordinates.length}>Next</Button>
+<Button
+    pill
+    color="light"
+    on:click={nextPage}
+    disabled={(currentPage + 1) * route_coordinatesPerPage >= route_coordinates.length}>Next</Button
+>
 <div>
     Results Per Page
-    <Select bind:value={route_coordinatesPerPage} on:change={() => currentPage = 0} >
+    <Select bind:value={route_coordinatesPerPage} on:change={() => (currentPage = 0)}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>

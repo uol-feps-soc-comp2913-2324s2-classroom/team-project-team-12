@@ -5,7 +5,6 @@
     import { goto } from '$app/navigation';
 
     export let data;
-  
 
     const logoutUser = async () => {
         const formData = new FormData();

@@ -13,7 +13,7 @@
         TableBodyRow,
         P,
         Heading,
-        Hr
+        Hr,
     } from 'flowbite-svelte';
     let users: user[] = [];
     let chosenDate: Date = new Date();
@@ -35,9 +35,9 @@
 
     let income: number = 0.0;
 
-    const annualCost: number = 45.00; //membership_type value of 2
-    const monthlyCost: number = 5.00; //membership_type value of 1
-    const weeklyCost: number = 1.50; //membership_type value of 0
+    const annualCost: number = 45.0; //membership_type value of 2
+    const monthlyCost: number = 5.0; //membership_type value of 1
+    const weeklyCost: number = 1.5; //membership_type value of 0
 
     let weeklyString = weeklyCost.toFixed(2);
     let monthlyString = monthlyCost.toFixed(2);
@@ -76,8 +76,8 @@
             if (users[i].membership_type != 4) {
                 subscriptionStartDate = new Date(users[i].subscription_start_date);
                 if (users[i].membership_type == 0) {
-                        income += weeklyCost * Math.floor(numberOfWeeks);
-                        weeklys = weeklys + Math.floor(numberOfWeeks);
+                    income += weeklyCost * Math.floor(numberOfWeeks);
+                    weeklys = weeklys + Math.floor(numberOfWeeks);
                 } else if (users[i].membership_type == 1) {
                     //console.log('number of months ' + numberOfMonths);
                     //console.log('user: ', users[i].username);
@@ -95,17 +95,18 @@
         annualString = annualCost.toFixed(2);
     }
 </script>
+
 <Heading tag="h2">Revenue</Heading>
 <Hr />
 <div class="optionBox">
-<Select bind:value={numberOfWeeks}>
-    <option value="1.0000">Weekly</option>
-    <option value="4.3453">Monthly</option>
-    <option value="13.0357">3 Months</option>
-    <option value="26.0715">6 Months</option>
-    <option value="52.1429">Yearly</option>
-</Select>
-<Input bind:value={chosenDate} type="date" min={todaysDate} />
+    <Select bind:value={numberOfWeeks}>
+        <option value="1.0000">Weekly</option>
+        <option value="4.3453">Monthly</option>
+        <option value="13.0357">3 Months</option>
+        <option value="26.0715">6 Months</option>
+        <option value="52.1429">Yearly</option>
+    </Select>
+    <Input bind:value={chosenDate} type="date" min={todaysDate} />
 </div>
 <Heading tag="h3">Income: £{toDisplay}</Heading>
 <Table>

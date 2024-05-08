@@ -1,32 +1,35 @@
-<svelte:head>
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""
-    />
-</svelte:head>
-
-
 <script lang="ts">
-    import type {RouteEntry, user} from '$lib/interfaces';
+    import type { RouteEntry, user } from '$lib/interfaces';
     import { goto } from '$app/navigation';
-    import {Card,List,Li, Button, Input, Select,Heading, Hr, P, A, Mark, Secondary, Tooltip } from 'flowbite-svelte';
-    import { EyeOutline,EyeSlashOutline, PenOutline, CaretRightOutline } from 'flowbite-svelte-icons';
-    import SingleRoute from "$lib/components/SingleRoute.svelte";
-
+    import {
+        Card,
+        List,
+        Li,
+        Button,
+        Input,
+        Select,
+        Heading,
+        Hr,
+        P,
+        A,
+        Mark,
+        Secondary,
+        Tooltip,
+    } from 'flowbite-svelte';
+    import { EyeOutline, EyeSlashOutline, PenOutline, CaretRightOutline } from 'flowbite-svelte-icons';
+    import SingleRoute from '$lib/components/SingleRoute.svelte';
 
     export let user_id: number;
-    export let addRouteToGroup: (route:RouteEntry) => void;
-    export let routeEntries:RouteEntry[] = [];
-    export let nameOfList:string = "";
-    export let adminGroupNames:string[] = [];
+    export let addRouteToGroup: (route: RouteEntry) => void;
+    export let routeEntries: RouteEntry[] = [];
+    export let nameOfList: string = '';
+    export let adminGroupNames: string[] = [];
     export let searchTerm;
     export let updateCurrentPage: (value: string) => void;
     export let showGroupOnMap: boolean;
-    
-    function toggleShowOnMap(route:RouteEntry) {
-        const routeIndex = routeEntries.findIndex(r => r.id === route.id);
+
+    function toggleShowOnMap(route: RouteEntry) {
+        const routeIndex = routeEntries.findIndex((r) => r.id === route.id);
         routeEntries[routeIndex] = { ...route, showOnMap: !route.showOnMap };
         routeEntries = routeEntries;
         const formData = new FormData();
@@ -36,9 +39,10 @@
         formData.append('showOnMap', route.showOnMap ? '1' : '0');
         fetch('/routes', {
             method: 'POST',
-            body: formData
-        }).then(response => response.json())
-            .then(data => {
+            body: formData,
+        })
+            .then((response) => response.json())
+            .then((data) => {
                 let actualResponse = data.data;
                 actualResponse = JSON.parse(actualResponse);
                 console.log('actual response', actualResponse);
@@ -54,121 +58,148 @@
         formData.append('showOnMap', showGroupOnMap ? '1' : '0');
         fetch('/routes', {
             method: 'POST',
-            body: formData
+            body: formData,
         });
         showGroupOnMap = !showGroupOnMap;
-
     }
-
-
 
     const editRoute = (route: RouteEntry) => {
         goto(`../edit_route/${route.id}`);
-    }
-
+    };
 </script>
 
+<svelte:head>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+</svelte:head>
+
 <div class="container">
-        <div class="title-box">
+    <div class="title-box">
         <Button color="alternative" on:click={() => updateCurrentPage(nameOfList)}>
             <div class="title-button">
-        <Heading>{nameOfList} </Heading>
-        <Secondary>{routeEntries.filter((r) => (r.name.toUpperCase().includes(searchTerm.toUpperCase())) || r.creator.toUpperCase().includes(searchTerm.toUpperCase())).length} routes </Secondary>
-        </div>
+                <Heading>{nameOfList}</Heading>
+                <Secondary
+                    >{routeEntries.filter(
+                        (r) =>
+                            r.name.toUpperCase().includes(searchTerm.toUpperCase()) ||
+                            r.creator.toUpperCase().includes(searchTerm.toUpperCase()),
+                    ).length} routes
+                </Secondary>
+            </div>
         </Button>
-        </div>
-        {#if !(nameOfList === "Your Routes" || nameOfList === "Public Routes" || nameOfList === "Friends Routes")}
+    </div>
+    {#if !(nameOfList === 'Your Routes' || nameOfList === 'Public Routes' || nameOfList === 'Friends Routes')}
         {#if showGroupOnMap}
             <Button color="blue" on:click={() => toggleShowGroupOnMap(nameOfList)}>
-                    <EyeOutline />
+                <EyeOutline />
             </Button>
-            <Tooltip>Click to hide routes in this group on the map </Tooltip>
+            <Tooltip>Click to hide routes in this group on the map</Tooltip>
         {:else}
             <Button color="red" on:click={() => toggleShowGroupOnMap(nameOfList)}>
-                    <EyeSlashOutline />
+                <EyeSlashOutline />
             </Button>
-            <Tooltip>Click to show routes in this group on the map
-            </Tooltip>
+            <Tooltip>Click to show routes in this group on the map</Tooltip>
         {/if}
-        {/if}
+    {/if}
     <Hr />
     <div class="scrollable-container">
         {#each routeEntries.slice(0, 10) as route, index}
-        {#if (route.name.toUpperCase().includes(searchTerm.toUpperCase()) || route.creator.toUpperCase().includes(searchTerm.toUpperCase())) }
-            <div class="flowbite-card">
-                <Card size="none" padding="none" class="w-100 h-100 px-0 m-0">
-                    <div class="map-container">
+            {#if route.name.toUpperCase().includes(searchTerm.toUpperCase()) || route.creator
+                    .toUpperCase()
+                    .includes(searchTerm.toUpperCase())}
+                <div class="flowbite-card">
+                    <Card size="none" padding="none" class="w-100 h-100 px-0 m-0">
+                        <div class="map-container">
                             <div class="route-map" id="map">
                                 <SingleRoute {route} />
                             </div>
-                        {#if nameOfList === "Your Routes"}
-                            <div class="edit-map-button">
-                                <Button on:click={() => editRoute(route)}><PenOutline /></Button>
-                                <Tooltip>Click to edit route</Tooltip>
-                            </div>
-                        {/if}
-                        {#if (nameOfList === "Your Routes" || nameOfList === "Friends Routes" || nameOfList === "Public Routes")}
-                            <div class="show-map-buttons">
-                                {#if route.showOnMap}
-                                    <Button color='blue' on:click={() => toggleShowOnMap(route)}><EyeOutline /></Button>
-                                    <Tooltip>Click to hide route on the map</Tooltip>
+                            {#if nameOfList === 'Your Routes'}
+                                <div class="edit-map-button">
+                                    <Button on:click={() => editRoute(route)}><PenOutline /></Button>
+                                    <Tooltip>Click to edit route</Tooltip>
+                                </div>
+                            {/if}
+                            {#if nameOfList === 'Your Routes' || nameOfList === 'Friends Routes' || nameOfList === 'Public Routes'}
+                                <div class="show-map-buttons">
+                                    {#if route.showOnMap}
+                                        <Button color="blue" on:click={() => toggleShowOnMap(route)}
+                                            ><EyeOutline /></Button
+                                        >
+                                        <Tooltip>Click to hide route on the map</Tooltip>
+                                    {:else}
+                                        <Button color="red" on:click={() => toggleShowOnMap(route)}
+                                            ><EyeSlashOutline /></Button
+                                        >
+                                        <Tooltip>Click to show route on the map</Tooltip>
+                                    {/if}
+                                </div>
+                            {/if}
+                        </div>
+                        <div class="bottom-half">
+                            <Heading customSize="text-lg font-semibold">{route.name}</Heading>
+                            <List list="none" tag="ul">
+                                {#if route.completionTime > 3600}
+                                    <Li>
+                                        {Math.floor(route.completionTime / 3600)}
+                                        {Math.floor(route.completionTime / 3600) == 1 ? 'Hour' : 'Hours'}
+                                        {Math.floor((route.completionTime % 3600) / 60)}
+                                        {Math.floor((route.completionTime % 3600) / 60) == 1 ? 'Minute' : 'Minutes'}
+                                        {route.completionTime % 60}
+                                        {route.completionTime % 60 == 1 ? 'Second' : 'Seconds'}
+                                    </Li>
+                                {:else if route.completionTime > 60}
+                                    <Li>
+                                        {Math.floor(route.completionTime / 60)}
+                                        {Math.floor(route.completionTime / 60) == 1 ? 'Minute' : 'Minutes'}
+                                        {route.completionTime % 60}
+                                        {route.completionTime % 60 == 1 ? 'Second' : 'Seconds'}
+                                    </Li>
                                 {:else}
-                                    <Button color='red' on:click={() => toggleShowOnMap(route)}><EyeSlashOutline /></Button>
-                                    <Tooltip>Click to show route on the map</Tooltip>
-                                {/if}        
-                            </div>
-                        {/if}
-                    </div>
-                    <div class="bottom-half">
-                    
-                    <Heading customSize="text-lg font-semibold">{route.name}</Heading>
-                    <List list="none" tag="ul">
-                        {#if route.completionTime > 3600}
-                        <Li>
-                            {Math.floor(route.completionTime / 3600)} {Math.floor(route.completionTime / 3600) == 1 ? 'Hour' : 'Hours'} 
-                            {Math.floor((route.completionTime % 3600) / 60)} {Math.floor((route.completionTime % 3600) / 60) == 1 ? 'Minute' : 'Minutes'} 
-                            {route.completionTime % 60} {route.completionTime % 60 == 1 ? 'Second' : 'Seconds'}
-                        </Li>
-                    {:else if route.completionTime > 60}
-                        <Li>
-                            {Math.floor(route.completionTime / 60)} {Math.floor(route.completionTime / 60) == 1 ? 'Minute' : 'Minutes'} 
-                            {route.completionTime % 60} {route.completionTime % 60 == 1 ? 'Second' : 'Seconds'}
-                        </Li>
-                    {:else}
-                        <Li>
-                            {route.completionTime} {route.completionTime == 1 ? 'Second' : 'Seconds'}
-                        </Li>
-                    {/if}
-                    <Li>Created by {route.creator}</Li>
-                    <Li>Uploaded on {route.createdOn.toLocaleDateString()} at {route.createdOn.toLocaleTimeString()} </Li>
-                    </List>
-                {#if nameOfList === "Your Routes" || nameOfList === "Public Routes"}
-                <div class="edit-show-box">
-                    <Select bind:value={route.group}>
-                        {#each adminGroupNames as group}
-                            <option value={group}>{group}</option>
-                        {/each}
-                    </Select>
-                    <Button on:click={() => addRouteToGroup(route)}>+</Button>
-                    <Tooltip>Add route to group</Tooltip>
+                                    <Li>
+                                        {route.completionTime}
+                                        {route.completionTime == 1 ? 'Second' : 'Seconds'}
+                                    </Li>
+                                {/if}
+                                <Li>Created by {route.creator}</Li>
+                                <Li
+                                    >Uploaded on {route.createdOn.toLocaleDateString()} at {route.createdOn.toLocaleTimeString()}
+                                </Li>
+                            </List>
+                            {#if nameOfList === 'Your Routes' || nameOfList === 'Public Routes'}
+                                <div class="edit-show-box">
+                                    <Select bind:value={route.group}>
+                                        {#each adminGroupNames as group}
+                                            <option value={group}>{group}</option>
+                                        {/each}
+                                    </Select>
+                                    <Button on:click={() => addRouteToGroup(route)}>+</Button>
+                                    <Tooltip>Add route to group</Tooltip>
+                                </div>
+                            {/if}
+                        </div>
+                    </Card>
                 </div>
-                {/if}
-                </div>
-            </Card>
-        </div>
-        <div class="between-cards"></div>
+                <div class="between-cards"></div>
+            {/if}
+        {/each}
+        {#if routeEntries.length > 5}
+            <Button
+                color="alternative"
+                class="see-more-button"
+                size="xl"
+                on:click={() => updateCurrentPage(nameOfList)}
+            >
+                <CaretRightOutline size="xl" />
+            </Button>
         {/if}
-    {/each}
-    {#if routeEntries.length > 5}
-        <Button color="alternative" class="see-more-button" size="xl" on:click={() => updateCurrentPage(nameOfList)}>
-            <CaretRightOutline size="xl" />
-        </Button>
-    {/if}
-</div>
+    </div>
 </div>
 
 <style>
-
     .container {
         max-width: none;
         width: 100%;
@@ -178,17 +209,15 @@
         align-items: left;
         justify-content: left;
         max-width: none;
-        
-        
     }
 
     .between-cards {
-        padding:1vw;
+        padding: 1vw;
     }
 
     .bottom-half {
         position: relative;
-        height:fit-content;
+        height: fit-content;
         display: flex;
         flex-direction: column;
         padding: 10px;
@@ -203,7 +232,6 @@
         margin: 0px;
     }
 
-
     .map-container {
         padding: 0px;
         margin: 0px;
@@ -215,8 +243,8 @@
     .route-map {
         z-index: 50;
         position: absolute;
-        top:0px;
-        left:0px;
+        top: 0px;
+        left: 0px;
         width: 100%;
         height: 100%;
     }
@@ -239,7 +267,6 @@
         height: 50px;
     }
     .edit-show-box {
-        
         z-index: 100;
         position: relative;
         display: flex;
@@ -266,16 +293,16 @@
     }
 
     .scrollable-container {
-    display: flex;
-    overflow-x: scroll;
-    height: 700px;
-    scrollbar-width: none; /* For Firefox */
-    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
-    height: 100%;
-    overflow-y: visible;
-    padding-left: 50px;
-    padding-right: 50px;
-}
+        display: flex;
+        overflow-x: scroll;
+        height: 700px;
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none; /* For Internet Explorer and Edge */
+        height: 100%;
+        overflow-y: visible;
+        padding-left: 50px;
+        padding-right: 50px;
+    }
 
     .scrollable-container::-webkit-scrollbar {
         display: none; /* For Chrome, Safari and Opera */
@@ -289,13 +316,13 @@
         padding: 10px;
     }
     .title-box {
-    margin: auto;
-}
+        margin: auto;
+    }
 
-.title-button {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
+    .title-button {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
 </style>

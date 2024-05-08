@@ -1,6 +1,16 @@
 <script lang="ts">
     import type { relationship } from '$lib/interfaces';
-    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+    import {
+        Button,
+        Input,
+        Select,
+        Table,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+        TableHead,
+        TableHeadCell,
+    } from 'flowbite-svelte';
     export let prop: relationship[];
     let relationships = prop;
 
@@ -99,15 +109,17 @@
 
 <Table>
     <TableHead>
-            <TableHeadCell>id</TableHeadCell>
-            <TableHeadCell>user_id1</TableHeadCell>
-            <TableHeadCell>user_id2</TableHeadCell>
-            <TableHeadCell>friend_request</TableHeadCell>
-            <TableHeadCell>is_friend</TableHeadCell>
-            <TableHeadCell>is_blocked</TableHeadCell>
+        <TableHeadCell>id</TableHeadCell>
+        <TableHeadCell>user_id1</TableHeadCell>
+        <TableHeadCell>user_id2</TableHeadCell>
+        <TableHeadCell>friend_request</TableHeadCell>
+        <TableHeadCell>is_friend</TableHeadCell>
+        <TableHeadCell>is_blocked</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#each relationships.filter(((r) => r.user_id1.toString().includes(searchTerm) || r.user_id2.toString().includes(searchTerm))).slice(currentPage * relationshipsPerPage, (currentPage + 1) * relationshipsPerPage) as relationship}
+        {#each relationships
+            .filter((r) => r.user_id1.toString().includes(searchTerm) || r.user_id2.toString().includes(searchTerm))
+            .slice(currentPage * relationshipsPerPage, (currentPage + 1) * relationshipsPerPage) as relationship}
             {#if lockedFields == 1}
                 <TableBodyRow>
                     <TableBodyCell>{relationship.id}</TableBodyCell>
@@ -153,10 +165,15 @@
     <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
 <Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * relationshipsPerPage >= relationships.length}>Next</Button>
+<Button
+    pill
+    color="light"
+    on:click={nextPage}
+    disabled={(currentPage + 1) * relationshipsPerPage >= relationships.length}>Next</Button
+>
 <div>
     Results Per Page
-    <Select bind:value={relationshipsPerPage} on:change={() => currentPage = 0}>
+    <Select bind:value={relationshipsPerPage} on:change={() => (currentPage = 0)}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>

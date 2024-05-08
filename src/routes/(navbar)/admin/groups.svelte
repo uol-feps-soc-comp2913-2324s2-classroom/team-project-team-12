@@ -1,6 +1,16 @@
 <script lang="ts">
     import type { group } from '$lib/interfaces';
-    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+    import {
+        Button,
+        Input,
+        Select,
+        Table,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+        TableHead,
+        TableHeadCell,
+    } from 'flowbite-svelte';
 
     export let prop: group[];
     let groups = prop;
@@ -97,13 +107,17 @@
 <Input type="text" bind:value={searchTerm} placeholder="Search" />
 <Table>
     <TableHead>
-            <TableHeadCell>id</TableHeadCell>
-            <TableHeadCell>name</TableHeadCell>
-            <TableHeadCell>creator</TableHeadCell>
-            <TableHeadCell>publicity</TableHeadCell>
+        <TableHeadCell>id</TableHeadCell>
+        <TableHeadCell>name</TableHeadCell>
+        <TableHeadCell>creator</TableHeadCell>
+        <TableHeadCell>publicity</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#each groups.filter((g) => (g.id.toString().includes(searchTerm) || g.name.includes(searchTerm) || g.creator.toString().includes(searchTerm))).slice(currentPage * groupsPerPage, (currentPage + 1) * groupsPerPage) as group}
+        {#each groups
+            .filter((g) => g.id.toString().includes(searchTerm) || g.name.includes(searchTerm) || g.creator
+                        .toString()
+                        .includes(searchTerm))
+            .slice(currentPage * groupsPerPage, (currentPage + 1) * groupsPerPage) as group}
             {#if lockedFields == 1}
                 <TableBodyRow>
                     <TableBodyCell>{group.id}</TableBodyCell>
@@ -133,7 +147,7 @@
 <Button pill on:click={nextPage} disabled={(currentPage + 1) * groupsPerPage >= groups.length}>Next</Button>
 <div>
     Results Per Page
-    <Select bind:value={groupsPerPage} on:change={() => currentPage = 0}>
+    <Select bind:value={groupsPerPage} on:change={() => (currentPage = 0)}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>

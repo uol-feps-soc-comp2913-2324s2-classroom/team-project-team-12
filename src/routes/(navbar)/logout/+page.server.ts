@@ -3,26 +3,25 @@ export const actions = {
         const data = await request.formData();
         const type = data.get('type');
 
-        if(type=="logout"){
+        if (type == 'logout') {
             try {
                 cookies.delete('sessionId', {
-                    path: '/'
+                    path: '/',
                 });
 
                 cookies.delete('sessionPass', {
-                    path: '/'
+                    path: '/',
                 });
 
                 return {
-                    status: 200
-                }
-            }
-            catch (error) {
+                    status: 200,
+                };
+            } catch (error) {
                 return {
                     status: 500,
-                    body: "Internal Server Error"
-                }
+                    body: 'Internal Server Error',
+                };
             }
         }
-    }
-}
+    },
+};

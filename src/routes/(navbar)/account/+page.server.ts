@@ -10,20 +10,20 @@ let invalid = true;
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
 
-    if(!username){
+    if (!username) {
         invalid = true;
-        return {invalid};
+        return { invalid };
     }
 
     invalid = false;
 
-    curUser = await prisma.user.findUnique({
+    curUser = (await prisma.user.findUnique({
         where: {
             username: username as string,
         },
-    }) as user;
+    })) as user;
 
-    return {curUser};
+    return { curUser };
 };
 
 export const actions = {
@@ -31,7 +31,7 @@ export const actions = {
         const data = await request.formData();
         const type = data.get('type');
 
-        if(type==="editusername"){
+        if (type === 'editusername') {
             const name = data.get('username');
 
             // check new username is unique
@@ -39,20 +39,19 @@ export const actions = {
 
             try {
                 users = await prisma.user.findMany();
-            }
-            catch (error) {
-                return new Response(JSON.stringify(error), {status: 500});
+            } catch (error) {
+                return new Response(JSON.stringify(error), { status: 500 });
             }
 
-            for(let i=0; i<users.length; i++){
+            for (let i = 0; i < users.length; i++) {
                 // check if username already exists
-                if(users[i].username==name){
+                if (users[i].username == name) {
                     return fail(401, { message: 'Username already exists.' });
                 }
             }
-        
+
             try {
-                if(curUser){
+                if (curUser) {
                     await prisma.user.update({
                         where: {
                             username: curUser.username as string,
@@ -62,31 +61,29 @@ export const actions = {
                         },
                     });
                 }
-                
+
                 cookies.set('sessionId', name as string, {
                     httpOnly: true,
                     sameSite: 'strict',
                     secure: false,
                     path: '/',
-                    maxAge: 60 * 60 * 24 * 7
+                    maxAge: 60 * 60 * 24 * 7,
                 });
-                
+
                 return {
                     status: 200,
                     body: { message: 'Username succesfully changed.' },
                 };
-        
+            } catch (error) {
+                console.error('Error editing username.');
             }
-            catch (error) {
-                console.error("Error editing username.");
-            }
-        }else if(type==="editpass"){
+        } else if (type === 'editpass') {
             const newPass = data.get('newpass');
-            try{
+            try {
                 // hash password
-                const newHashed = await bcrypt.hash(newPass as string, 10)
+                const newHashed = await bcrypt.hash(newPass as string, 10);
 
-                if(curUser){
+                if (curUser) {
                     await prisma.user.update({
                         where: {
                             username: curUser.username,
@@ -101,10 +98,10 @@ export const actions = {
                         sameSite: 'strict',
                         secure: false,
                         path: '/',
-                        maxAge: 60 * 60 * 24 * 7
+                        maxAge: 60 * 60 * 24 * 7,
                     });
                 }
-            }catch (error){
+            } catch (error) {
                 return {
                     status: 500,
                     body: { message: 'Internal Server Error.' },
@@ -114,16 +111,16 @@ export const actions = {
                 status: 200,
                 body: { message: 'Password Changed.' },
             };
-        }else if(type==="checkpass"){
+        } else if (type === 'checkpass') {
             try {
                 // check that the old password is correct before setting a new one
                 const oldPass = data.get('oldpass') as string;
 
                 let userPassword;
-                if(curUser){
+                if (curUser) {
                     userPassword = await bcrypt.compare(oldPass as string, curUser.password);
                 }
-        
+
                 if (userPassword) {
                     return {
                         status: 200,
@@ -139,11 +136,11 @@ export const actions = {
                     body: { message: 'Internal server error.' },
                 };
             }
-        }else if(type === "privacy"){
+        } else if (type === 'privacy') {
             try {
                 // change user privacy
                 const selectedPriv = data.get('selected');
-                if(curUser){
+                if (curUser) {
                     await prisma.user.update({
                         where: {
                             username: curUser.username as string,
@@ -154,20 +151,20 @@ export const actions = {
                     });
                 }
                 return {
-                    status: 200
-                }
-            }catch (error){
+                    status: 200,
+                };
+            } catch (error) {
                 return fail(500);
             }
-        } else if(type === "delete") {
+        } else if (type === 'delete') {
             try {
                 let deleted;
 
-                if(curUser){
+                if (curUser) {
                     deleted = await prisma.user.delete({
                         where: {
-                            username: curUser.username as string
-                        }
+                            username: curUser.username as string,
+                        },
                     });
                 }
 
@@ -183,28 +180,26 @@ export const actions = {
                     limit: 3,
                     customer: customerId,
                 });
-                const subscription = await stripe.subscriptions.update(
-                    subscriptions.data[0].id,
-                    {
-                        cancel_at_period_end: true,
-                    }
-                )
+                const subscription = await stripe.subscriptions.update(subscriptions.data[0].id, {
+                    cancel_at_period_end: true,
+                });
 
                 cookies.delete('sessionId', {
-                    path: '/'
+                    path: '/',
                 });
 
                 cookies.delete('sessionPass', {
-                    path: '/'
+                    path: '/',
                 });
 
-                return { 
+                return {
                     status: 200,
-                    body: deleted, subscription
-                }
+                    body: deleted,
+                    subscription,
+                };
             } catch (error) {
                 return fail(500);
             }
         }
-    }
-}
+    },
+};

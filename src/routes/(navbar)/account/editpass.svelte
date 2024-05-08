@@ -1,10 +1,10 @@
 <script>
     // @ts-nocheck
     import { Button, Modal, Input, Label } from 'flowbite-svelte';
-    let popup=false;
+    let popup = false;
     let password = '';
     let oldPassword = '';
-    let error='';
+    let error = '';
     let incorrectError = '';
 
     const passwordChange = async (event) => {
@@ -27,7 +27,7 @@
                 const formDataEditPass = new FormData();
                 formDataEditPass.append('newpass', password);
                 formDataEditPass.append('type', 'editpass');
-                console.log("editing password");
+                console.log('editing password');
                 const response = await fetch('/account', {
                     method: 'POST',
                     body: formDataEditPass,
@@ -51,7 +51,7 @@
             console.error('Internal Server Error');
             error = 'Internal Server Error.';
         }
-    }
+    };
 </script>
 
 <Button color="light" on:click={() => (popup = true)}>Edit</Button>
@@ -59,23 +59,12 @@
 <Modal title="Change Password" bind:open={popup} autoclose={false}>
     <form method="post" on:submit={passwordChange}>
         <Label>Enter current password</Label>
-        <Input  
-            bind:value={oldPassword}
-            type = "password"
-            name = "oldpass"
-            required
-        />
+        <Input bind:value={oldPassword} type="password" name="oldpass" required />
         {#if incorrectError}
             <p>{incorrectError}</p>
         {/if}
         <Label>Enter new password</Label>
-        <Input  
-            bind:value={password}
-            type = "password"
-            name = "newpass"
-            minlength="8"
-            required
-        />
+        <Input bind:value={password} type="password" name="newpass" minlength="8" required />
         {#if error}
             <p>{error}</p>
         {/if}

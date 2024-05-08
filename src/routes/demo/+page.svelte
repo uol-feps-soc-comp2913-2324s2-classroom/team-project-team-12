@@ -1,8 +1,8 @@
 <script>
     import { GoogleMap, LeafletMap } from '$lib';
     import Settings from './settings.svelte';
-    import { goto } from "$app/navigation";
-    import { onMount } from "svelte";
+    import { goto } from '$app/navigation';
+    import { onMount } from 'svelte';
 
     export let user;
     export let data;
@@ -19,7 +19,6 @@
         // Assign API_KEY after the navigation check to prevent server-side rendering issues
         API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     });
-
 </script>
 
 <svelte:head>
@@ -39,4 +38,3 @@
 
     <Settings />
 {/if}
-

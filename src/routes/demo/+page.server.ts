@@ -8,20 +8,20 @@ let routes;
 export const load = async ({ cookies }) => {
     const username = cookies.get('sessionId');
 
-    if(!username){
+    if (!username) {
         invalid = true;
-        return {invalid};
+        return { invalid };
     }
 
     invalid = false;
 
-    curUser = await prisma.user.findUnique({
+    curUser = (await prisma.user.findUnique({
         where: {
             username: username as string,
         },
-    }) as user;
+    })) as user;
 
-    return {curUser};
+    return { curUser };
 };
 
 export const actions = {
@@ -29,31 +29,31 @@ export const actions = {
         const data = await request.formData();
         const type = data.get('type');
 
-        if(type=="download"){
+        if (type == 'download') {
             try {
                 const startDateStr = data.get('start');
                 let startDate;
-                
-                if(startDateStr != null){
+
+                if (startDateStr != null) {
                     startDate = new Date(startDateStr.toString());
                 }
-    
-                if(curUser){
+
+                if (curUser) {
                     const routeList = await prisma.routes.findMany({
                         where: {
                             creator: curUser.id,
                         },
                         include: {
-                            route_coordinates: true // Include route coordinates for each route
-                        }
+                            route_coordinates: true, // Include route coordinates for each route
+                        },
                     });
 
                     routes = [];
 
                     for (let i = 0; i < routeList.length; i++) {
-                        if(startDate && startDate <= routeList[i].created_on){
-                            const longitudes = routeList[i].route_coordinates.map(coord => coord.longitude).join(',');
-                            const latitudes = routeList[i].route_coordinates.map(coord => coord.latitude).join(',');
+                        if (startDate && startDate <= routeList[i].created_on) {
+                            const longitudes = routeList[i].route_coordinates.map((coord) => coord.longitude).join(',');
+                            const latitudes = routeList[i].route_coordinates.map((coord) => coord.latitude).join(',');
                             routes.push({
                                 name: routeList[i].route_name,
                                 created_on: routeList[i].created_on,
@@ -65,41 +65,44 @@ export const actions = {
                         }
                     }
 
-                    const formattedData = routes.map(route => ({
+                    const formattedData = routes.map((route) => ({
                         name: route.name,
                         created_on: route.created_on.toString(),
                         length: route.length,
-                        'completion_time': route.completion_time,
-                        path: route.latitudes.split(',').map((latitude, index) => [parseFloat(latitude), parseFloat(route.longitudes.split(',')[index])]) // Parse strings to floats and create an array of [latitude, longitude] pairs
+                        completion_time: route.completion_time,
+                        path: route.latitudes
+                            .split(',')
+                            .map((latitude, index) => [
+                                parseFloat(latitude),
+                                parseFloat(route.longitudes.split(',')[index]),
+                            ]), // Parse strings to floats and create an array of [latitude, longitude] pairs
                     }));
 
                     const jsonData = JSON.stringify(formattedData, null, 2);
 
                     return {
                         status: 200,
-                        body: jsonData
-                    }
+                        body: jsonData,
+                    };
                 }
-            }
-            catch (error){
+            } catch (error) {
                 return 500;
             }
-        }else if(type=="logout"){
+        } else if (type == 'logout') {
             try {
                 cookies.delete('sessionId', {
-                    path: '/'
+                    path: '/',
                 });
 
                 return {
-                    status: 200
-                }
-            }
-            catch (error) {
+                    status: 200,
+                };
+            } catch (error) {
                 return {
                     status: 500,
-                    body: "Internal Server Error"
-                }
+                    body: 'Internal Server Error',
+                };
             }
         }
-    }
-}
+    },
+};

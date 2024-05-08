@@ -9,7 +9,7 @@
     <div class="main-container">
         <Card>
             <GlobeSolid size="xl" class="self-center whitespace-nowrap text-red-500" />
-            <br>
+            <br />
             <Tabs style="full" tabsType="full" defaultClass="flex">
                 <TabItem class="w-full" open>
                     <span slot="title">Login</span>

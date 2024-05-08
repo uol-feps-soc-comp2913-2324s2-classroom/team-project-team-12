@@ -55,62 +55,40 @@
 </script>
 
 <form class="flex flex-col space-y-3" name="register" method="post" on:submit|preventDefault={handleRegister}>
-        <Input type="hidden" name="type" value="register"/>
-        <Label>First name:
-            <Input type="text"
-                bind:value={fname}
-                name="firstname"
-                required
-            />
-        </Label>
-        <Label>Last name:
-            <Input type="text"
-                bind:value={lname}
-                name="lastname"
-                required
-            />
-        </Label>
-        <Label>
-            Username:
-            <Input type="text"
-                bind:value={user}
-                name="username"
-                required
-            />
-            {#if usernameMessage}
-                <p>{usernameMessage}</p>
-            {/if}
-        </Label>
-        <Label>
-            Email address: 
-            <Input type="email"
-                bind:value={email}
-                name="email"
-                required
-            />
-            {#if emailMessage}
-                <p>{emailMessage}</p>
-            {/if}
-        </Label>
-        <Label>
-            Password:
-            <Input type="password"
-                bind:value={password}
-                name="password"
-                minlength="8"
-                required
-            />
-        </Label>
-        <Label>
-            Confirm password:
-            <Input type="password"
-                bind:value={confirmPassword}
-                required
-            />
-        </Label>
-        <!-- if confirm password and password field don't match on submit -->
-        {#if registerMessage}
-            <p>{registerMessage}</p>
+    <Input type="hidden" name="type" value="register" />
+    <Label
+        >First name:
+        <Input type="text" bind:value={fname} name="firstname" required />
+    </Label>
+    <Label
+        >Last name:
+        <Input type="text" bind:value={lname} name="lastname" required />
+    </Label>
+    <Label>
+        Username:
+        <Input type="text" bind:value={user} name="username" required />
+        {#if usernameMessage}
+            <p>{usernameMessage}</p>
         {/if}
-        <Button type="submit">Submit</Button>
+    </Label>
+    <Label>
+        Email address:
+        <Input type="email" bind:value={email} name="email" required />
+        {#if emailMessage}
+            <p>{emailMessage}</p>
+        {/if}
+    </Label>
+    <Label>
+        Password:
+        <Input type="password" bind:value={password} name="password" minlength="8" required />
+    </Label>
+    <Label>
+        Confirm password:
+        <Input type="password" bind:value={confirmPassword} required />
+    </Label>
+    <!-- if confirm password and password field don't match on submit -->
+    {#if registerMessage}
+        <p>{registerMessage}</p>
+    {/if}
+    <Button type="submit">Submit</Button>
 </form>

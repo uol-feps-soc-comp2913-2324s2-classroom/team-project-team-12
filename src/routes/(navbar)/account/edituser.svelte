@@ -5,7 +5,7 @@
     let username = '';
     let errorMessage = '';
 
-    const editUsername = async(event) => {
+    const editUsername = async (event) => {
         event.preventDefault();
         const formData = new FormData();
         formData.append('username', username);
@@ -19,28 +19,20 @@
 
             let result = await response.json();
 
-            if(result.status === 401){
-                errorMessage = 'Username already exists.'
-            }else if(result.status === 200){
+            if (result.status === 401) {
+                errorMessage = 'Username already exists.';
+            } else if (result.status === 200) {
                 location.reload();
             }
-        }
-        catch {
-
-        }
-    }
+        } catch {}
+    };
 </script>
 
 <Button color="light" on:click={() => (popup = true)}>Edit</Button>
 
 <Modal title="Edit Username" bind:open={popup} autoclose={false}>
     <form method="post" on:submit={editUsername}>
-        <Input  
-            bind:value={username}
-            type = "text"
-            name = "newuser"
-            required
-        />
+        <Input bind:value={username} type="text" name="newuser" required />
         {#if errorMessage}
             <p>{errorMessage}</p>
         {/if}

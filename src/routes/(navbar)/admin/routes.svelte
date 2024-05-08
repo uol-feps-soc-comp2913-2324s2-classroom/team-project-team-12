@@ -1,6 +1,16 @@
 <script lang="ts">
     import type { route } from '$lib/interfaces';
-    import { Button, Input,Select, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+    import {
+        Button,
+        Input,
+        Select,
+        Table,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+        TableHead,
+        TableHeadCell,
+    } from 'flowbite-svelte';
     export let prop: route[];
     let routes = prop;
 
@@ -148,7 +158,9 @@
     <Button color="green" pill on:click={handleUpdateAll}>Update All</Button>
 {/if}
 <Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * routesPerPage >= routes.length}>Next</Button>
+<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * routesPerPage >= routes.length}
+    >Next</Button
+>
 <div>
     Results Per Page
     <Select bind:value={routesPerPage} on:change={() => (currentPage = 0)}>

@@ -341,18 +341,16 @@ export const actions = {
 
                 const firstRelationshipId = relationship ? relationship.id : undefined;
 
-            await prisma.relationship.delete({
-              where: {
-                  id: firstRelationshipId
-              }
-          });
-            return {
-            status: 200,
-            body: relationship
-            };
-        }
-     
-            
+                await prisma.relationship.delete({
+                    where: {
+                        id: firstRelationshipId,
+                    },
+                });
+                return {
+                    status: 200,
+                    body: relationship,
+                };
+            }
         } catch (error) {
             return {
                 status: 400,
@@ -360,11 +358,8 @@ export const actions = {
             };
         }
 
-        return{
-          status: 200
-      }
-        
-        
-
-    }
+        return {
+            status: 200,
+        };
+    },
 };

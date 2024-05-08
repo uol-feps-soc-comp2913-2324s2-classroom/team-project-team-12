@@ -22,7 +22,7 @@ export async function load() {
             default_publicity: userList[i].default_publicity,
             admin_status: userList[i].admin_status,
             stripe_token: userList[i].stripe_token,
-            owner: userList[i].owner
+            owner: userList[i].owner,
         });
     }
     //console.log(users);
@@ -36,7 +36,7 @@ export async function load() {
             user_id2: relationshipList[i].user_id2,
             friend_request: relationshipList[i].friend_request,
             is_friend: relationshipList[i].is_friend,
-            is_blocked: relationshipList[i].is_blocked
+            is_blocked: relationshipList[i].is_blocked,
         });
     }
     //console.log(relationshipList);
@@ -51,10 +51,9 @@ export async function load() {
             length: routeList[i].length,
             approximate_completion_time: routeList[i].approximate_completion_time,
             creator: routeList[i].creator,
-            publicity: routeList[i].publicity
+            publicity: routeList[i].publicity,
         });
     }
-    
 
     const groups = [];
     const groupList = await prisma.groups.findMany();
@@ -64,9 +63,8 @@ export async function load() {
             name: groupList[i].name,
             creator: groupList[i].creator,
             publicity: groupList[i].publicity,
-            users: []
+            users: [],
         });
-
     }
     const group_memberships = [];
     const groupMembershipList = await prisma.group_membership.findMany();
@@ -78,7 +76,7 @@ export async function load() {
             request: groupMembershipList[i].request,
             member: groupMembershipList[i].member,
             admin: groupMembershipList[i].admin,
-            invite: groupMembershipList[i].invite
+            invite: groupMembershipList[i].invite,
         });
     }
     //console.log(group_memberships);
@@ -90,7 +88,7 @@ export async function load() {
             id: groupRouteList[i].id,
             group_id: groupRouteList[i].group_id,
             route_id: groupRouteList[i].route_id,
-            priority: groupRouteList[i].priority
+            priority: groupRouteList[i].priority,
         });
     }
 
@@ -102,10 +100,10 @@ export async function load() {
             route_id: routeCoordinateList[i].route_id,
             latitude: routeCoordinateList[i].latitude.toString(),
             longitude: routeCoordinateList[i].longitude.toString(),
-            order_position: routeCoordinateList[i].order_position
+            order_position: routeCoordinateList[i].order_position,
         });
     }
-    
+
     return {
         users,
         relationships,
@@ -113,18 +111,18 @@ export async function load() {
         route_coordinates,
         groups,
         group_memberships,
-        group_routes
+        group_routes,
     };
 }
 
 //---------------------------------------------------------------Handles Form Data--------------------------------------------
 export const actions = {
     default: async ({ request }) => {
-      const data = await request.formData();
-      const type = data.get("type");
-      const id = Number(data.get("id"));
+        const data = await request.formData();
+        const type = data.get('type');
+        const id = Number(data.get('id'));
 
-        if (type === "deleteUser") {
+        if (type === 'deleteUser') {
             //delete user by id
             const deleted = await prisma.user.delete({
                 where: {
@@ -132,14 +130,14 @@ export const actions = {
                 },
             });
             return {
-            status: 200,
-            body: deleted
+                status: 200,
+                body: deleted,
             };
         }
 
-        if (type === "login") {
-            const username = data.get("username")?.toString();
-            const password = data.get("password")?.toString();
+        if (type === 'login') {
+            const username = data.get('username')?.toString();
+            const password = data.get('password')?.toString();
             //console.log(username + " " + password);
             if (username != null && password != null) {
                 const user = await prisma.user.findUnique({
@@ -155,117 +153,104 @@ export const actions = {
                         if (user.admin_status) {
                             return {
                                 status: 200,
-                                body: 'Success'
+                                body: 'Success',
                             };
                         } else {
                             return {
                                 status: 404,
-                                body: 'Access Denied'
+                                body: 'Access Denied',
                             };
                         }
                     } else {
                         return {
                             status: 404,
-                            body: 'Invalid username or password'
+                            body: 'Invalid username or password',
                         };
+                    }
                 }
+                return {
+                    status: 404,
+                    body: 'Invalid username or password',
+                };
             }
+        }
+
+        if (type === 'updateUser') {
+            //lookup user by id
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: id,
+                },
+            });
+            //create copy of user
+            const updatedUser = Object.assign({}, user);
+            //updates user with new values
+            if (data.get('username') != null) {
+                const username = data.get('username');
+                if (username != null) updatedUser.username = username.toString();
+            }
+            if (data.get('first_name') != null) {
+                const firstName = data.get('first_name');
+                if (firstName != null) updatedUser.first_name = firstName.toString();
+            }
+            if (data.get('last_name') != null) {
+                const lastName = data.get('last_name');
+                if (lastName != null) updatedUser.last_name = lastName.toString();
+            }
+            if (data.get('email') != null) {
+                const email = data.get('email');
+                if (email != null) updatedUser.email = email.toString();
+            }
+            if (data.get('password') != null) {
+                const password = data.get('password');
+                if (password != null) updatedUser.password = password.toString();
+            }
+            if (data.get('membership_type') != null) {
+                const membershipType = Number(data.get('membership_type'));
+                if (membershipType != null) updatedUser.membership_type = membershipType;
+            }
+            if (data.get('subscription_start_date') != null) {
+                const lastPayment = data.get('subscription_start_date');
+                if (lastPayment != null) updatedUser.subscription_start_date = new Date(lastPayment.toString());
+            }
+            if (data.get('next_payment_date') != null) {
+                const nextPayment = data.get('next_payment_date');
+                if (nextPayment != null) updatedUser.next_payment_date = new Date(nextPayment.toString());
+            }
+            if (data.get('paid') != null) {
+                const paid = data.get('paid') === 'true';
+                updatedUser.paid = paid;
+            }
+            if (data.get('default_publicity') != null) {
+                const defaultPublicity = Number(data.get('default_publicity'));
+                if (defaultPublicity != null) updatedUser.default_publicity = defaultPublicity;
+            }
+            //console.log(data.get("admin_status"));
+            if (data.get('admin_status') != null) {
+                const adminStatus = data.get('admin_status') === 'true';
+                updatedUser.admin_status = adminStatus;
+            }
+            if (data.get('stripe_token') != null) {
+                const stripeToken = Number(data.get('stripe_token'));
+                if (stripeToken != null) updatedUser.stripe_token = stripeToken.toString();
+            }
+            if (data.get('owner') != null) {
+                const owner = data.get('owner') === 'true';
+                if (owner != null && owner != undefined) updatedUser.owner = owner;
+            }
+            await prisma.user.update({
+                where: {
+                    id: id,
+                },
+                data: updatedUser,
+            });
             return {
-                status: 404,
-                body: 'Invalid username or password'
+                status: 200,
+                body: user,
             };
         }
-    }
-                
 
-
-      if (type === "updateUser" ) {
-        //lookup user by id
-        const user = await prisma.user.findUnique({
-            where: {
-                id: id,
-            },
-        });
-        //create copy of user
-        const updatedUser = Object.assign({}, user);
-        //updates user with new values
-        if (data.get("username") != null) {
-            const username = data.get("username");
-            if (username != null)
-            updatedUser.username = username.toString();
-        }
-        if (data.get("first_name") != null) {
-            const firstName = data.get("first_name");
-            if (firstName != null)
-            updatedUser.first_name = firstName.toString();
-        }
-        if (data.get("last_name") != null) {
-            const lastName = data.get("last_name");
-            if (lastName != null)
-            updatedUser.last_name = lastName.toString();
-        }
-        if (data.get("email") != null) {
-            const email = data.get("email");
-            if (email != null)
-            updatedUser.email = email.toString();
-        }
-        if (data.get("password") != null) {
-            const password = data.get("password");
-            if (password != null)
-            updatedUser.password = password.toString();
-        }
-        if (data.get("membership_type") != null) {
-            const membershipType = Number(data.get("membership_type"));
-            if (membershipType != null)
-            updatedUser.membership_type = membershipType;
-        }
-        if (data.get("subscription_start_date") != null) {
-            const lastPayment = data.get("subscription_start_date");
-            if (lastPayment != null)
-            updatedUser.subscription_start_date = new Date(lastPayment.toString());
-        }
-        if (data.get("next_payment_date") != null) {
-            const nextPayment = data.get("next_payment_date");
-            if (nextPayment != null)
-            updatedUser.next_payment_date = new Date(nextPayment.toString());
-        }
-        if ((data.get("paid") != null)) {
-            const paid = (data.get("paid") === "true");
-            updatedUser.paid = paid;
-        }
-        if (data.get("default_publicity") != null) {
-            const defaultPublicity = Number(data.get("default_publicity"));
-            if (defaultPublicity != null)
-            updatedUser.default_publicity = defaultPublicity;
-        }
-        //console.log(data.get("admin_status"));
-        if ((data.get("admin_status") != null)) {
-            const adminStatus = (data.get("admin_status") === "true");
-            updatedUser.admin_status = adminStatus;
-        }
-        if (data.get("stripe_token") != null) {
-            const stripeToken = Number(data.get("stripe_token"));
-            if (stripeToken != null)
-            updatedUser.stripe_token = stripeToken.toString();
-        }
-        if (data.get("owner") != null) {
-            const owner = (data.get("owner") === "true");
-            if (owner != null && owner != undefined)
-            updatedUser.owner = owner;
-        }
-        await prisma.user.update({
-            where: {
-                id: id,
-            },
-            data: updatedUser,
-        });
-        return {
-          status: 200,
-          body: user
-        };
-      }
-    
-        if (type === "deleteRelationship") {
+        if (type === 'deleteRelationship') {
             //delete relationship by id
             const deleted = await prisma.relationship.delete({
                 where: {
@@ -273,12 +258,12 @@ export const actions = {
                 },
             });
             return {
-            status: 200,
-            body: deleted
+                status: 200,
+                body: deleted,
             };
         }
-        
-        if (type === "updateRelationship") {
+
+        if (type === 'updateRelationship') {
             //lookup relationship by id
             const relationship = await prisma.relationship.findUnique({
                 where: {
@@ -288,31 +273,27 @@ export const actions = {
             //create copy of relationship
             const updatedRelationship = Object.assign({}, relationship);
             //updates relationship with new values
-            if (data.get("user_id1") != null) {
-                const user_id1 = Number(data.get("user_id1"));
-                if (user_id1 != null && user_id1 != undefined)
-                updatedRelationship.user_id1 = user_id1;
+            if (data.get('user_id1') != null) {
+                const user_id1 = Number(data.get('user_id1'));
+                if (user_id1 != null && user_id1 != undefined) updatedRelationship.user_id1 = user_id1;
             }
-            if (data.get("user_id2") != null) {
-                const user_id2 = Number(data.get("user_id2"));
+            if (data.get('user_id2') != null) {
+                const user_id2 = Number(data.get('user_id2'));
                 //console.log("here");
-                if (user_id2 != null && user_id2 != undefined)
-                updatedRelationship.user_id2 = user_id2;
+                if (user_id2 != null && user_id2 != undefined) updatedRelationship.user_id2 = user_id2;
             }
-            if (data.get("friend_request") != null) {
-                const friendRequest = (data.get("friend_request") === "true");
+            if (data.get('friend_request') != null) {
+                const friendRequest = data.get('friend_request') === 'true';
                 if (friendRequest != null && friendRequest != undefined)
-                updatedRelationship.friend_request = friendRequest;
+                    updatedRelationship.friend_request = friendRequest;
             }
-            if (data.get("is_friend") != null) {
-                const isFriend = (data.get("is_friend") === "true");
-                if (isFriend != null && isFriend != undefined)
-                updatedRelationship.is_friend = isFriend;
+            if (data.get('is_friend') != null) {
+                const isFriend = data.get('is_friend') === 'true';
+                if (isFriend != null && isFriend != undefined) updatedRelationship.is_friend = isFriend;
             }
-            if (data.get("is_blocked") != null) {
-                const isBlocked = (data.get("is_blocked") === "true");
-                if (isBlocked != null && isBlocked != undefined)
-                updatedRelationship.is_blocked = isBlocked;
+            if (data.get('is_blocked') != null) {
+                const isBlocked = data.get('is_blocked') === 'true';
+                if (isBlocked != null && isBlocked != undefined) updatedRelationship.is_blocked = isBlocked;
             }
             //update relationship in database
             await prisma.relationship.update({
@@ -322,12 +303,12 @@ export const actions = {
                 data: updatedRelationship,
             });
             return {
-            status: 200,
-            body: relationship
+                status: 200,
+                body: relationship,
             };
         }
 
-        if (type === "deleteRoute") {
+        if (type === 'deleteRoute') {
             //delete route by id
             const deleted = await prisma.routes.delete({
                 where: {
@@ -335,12 +316,12 @@ export const actions = {
                 },
             });
             return {
-            status: 200,
-            body: deleted
+                status: 200,
+                body: deleted,
             };
         }
 
-        if (type === "updateRoute") {
+        if (type === 'updateRoute') {
             //lookup route by id
             const route = await prisma.routes.findUnique({
                 where: {
@@ -350,35 +331,30 @@ export const actions = {
             //create copy of route
             const updatedRoute = Object.assign({}, route);
             //updates route with new values
-            if (data.get("route_name") != null) {
-                const routeName = data.get("route_name");
-                if (routeName != null)
-                updatedRoute.route_name = routeName.toString();
+            if (data.get('route_name') != null) {
+                const routeName = data.get('route_name');
+                if (routeName != null) updatedRoute.route_name = routeName.toString();
             }
-            if (data.get("created_on") != null) {
-                const createdOn = data.get("created_on");
-                if (createdOn != null)
-                updatedRoute.created_on = new Date(createdOn.toString());
+            if (data.get('created_on') != null) {
+                const createdOn = data.get('created_on');
+                if (createdOn != null) updatedRoute.created_on = new Date(createdOn.toString());
             }
-            if (data.get("length") != null) {
-                const length = Number(data.get("length"));
-                if (length != null)
-                updatedRoute.length = length;
+            if (data.get('length') != null) {
+                const length = Number(data.get('length'));
+                if (length != null) updatedRoute.length = length;
             }
-            if (data.get("approximate_completion_time") != null) {
-                const approximateCompletionTime = Number(data.get("approximate_completion_time"));
+            if (data.get('approximate_completion_time') != null) {
+                const approximateCompletionTime = Number(data.get('approximate_completion_time'));
                 if (approximateCompletionTime != null)
-                updatedRoute.approximate_completion_time = approximateCompletionTime;
+                    updatedRoute.approximate_completion_time = approximateCompletionTime;
             }
-            if (data.get("creator") != null) {
-                const creator = Number(data.get("creator"));
-                if (creator != null)
-                updatedRoute.creator = creator;
+            if (data.get('creator') != null) {
+                const creator = Number(data.get('creator'));
+                if (creator != null) updatedRoute.creator = creator;
             }
-            if (data.get("publicity") != null) {
-                const publicity = Number(data.get("publicity"));
-                if (publicity != null)
-                updatedRoute.publicity = publicity;
+            if (data.get('publicity') != null) {
+                const publicity = Number(data.get('publicity'));
+                if (publicity != null) updatedRoute.publicity = publicity;
             }
             //update route in database
             await prisma.routes.update({
@@ -388,12 +364,12 @@ export const actions = {
                 data: updatedRoute,
             });
             return {
-            status: 200,
-            body: route
+                status: 200,
+                body: route,
             };
         }
 
-        if (type === "deleteGroup") {
+        if (type === 'deleteGroup') {
             //delete group by id
             const deleted = await prisma.groups.delete({
                 where: {
@@ -401,12 +377,12 @@ export const actions = {
                 },
             });
             return {
-            status: 200,
-            body: deleted
+                status: 200,
+                body: deleted,
             };
         }
 
-        if (type === "updateGroup") {
+        if (type === 'updateGroup') {
             //lookup group by id
             const group = await prisma.groups.findUnique({
                 where: {
@@ -416,20 +392,17 @@ export const actions = {
             //create copy of group
             const updatedGroup = Object.assign({}, group);
             //updates group with new values
-            if (data.get("name") != null) {
-                const groupName = data.get("name");
-                if (groupName != null)
-                updatedGroup.name = groupName.toString();
+            if (data.get('name') != null) {
+                const groupName = data.get('name');
+                if (groupName != null) updatedGroup.name = groupName.toString();
             }
-            if (data.get("creator") != null) {
-                const creator = Number(data.get("creator"));
-                if (creator != null)
-                updatedGroup.creator = creator;
+            if (data.get('creator') != null) {
+                const creator = Number(data.get('creator'));
+                if (creator != null) updatedGroup.creator = creator;
             }
-            if (data.get("publicity") != null) {
-                const publicity = Number(data.get("publicity"));
-                if (publicity != null)
-                updatedGroup.publicity = publicity;
+            if (data.get('publicity') != null) {
+                const publicity = Number(data.get('publicity'));
+                if (publicity != null) updatedGroup.publicity = publicity;
             }
             //update group in database
             await prisma.groups.update({
@@ -439,12 +412,12 @@ export const actions = {
                 data: updatedGroup,
             });
             return {
-            status: 200,
-            body: group
+                status: 200,
+                body: group,
             };
         }
-        
-        if (type === "deleteGroupMembership") {
+
+        if (type === 'deleteGroupMembership') {
             //delete group membership by id
             const deleted = await prisma.group_membership.delete({
                 where: {
@@ -452,12 +425,12 @@ export const actions = {
                 },
             });
             return {
-            status: 200,
-            body: deleted
+                status: 200,
+                body: deleted,
             };
         }
 
-        if (type === "updateGroupMembership") {
+        if (type === 'updateGroupMembership') {
             //lookup group membership by id
             // console.log(data.get("group_id"), data.get("user_id"), data.get("admin"));
             const groupMembership = await prisma.group_membership.findUnique({
@@ -468,35 +441,29 @@ export const actions = {
             //create copy of group membership
             const updatedGroupMembership = Object.assign({}, groupMembership);
             //updates group membership with new values
-            if (data.get("group_id") != null) {
-                const groupId = Number(data.get("group_id"));
-                if (groupId != null)
-                updatedGroupMembership.group_id = groupId;
+            if (data.get('group_id') != null) {
+                const groupId = Number(data.get('group_id'));
+                if (groupId != null) updatedGroupMembership.group_id = groupId;
             }
-            if (data.get("user_id") != null) {
-                const userId = Number(data.get("user_id"));
-                if (userId != null)
-                updatedGroupMembership.user_id = userId;
+            if (data.get('user_id') != null) {
+                const userId = Number(data.get('user_id'));
+                if (userId != null) updatedGroupMembership.user_id = userId;
             }
-            if (data.get("request") != null) {
-                const request = (data.get("request") === "true");
-                if (request != null && request != undefined)
-                updatedGroupMembership.request = request;
+            if (data.get('request') != null) {
+                const request = data.get('request') === 'true';
+                if (request != null && request != undefined) updatedGroupMembership.request = request;
             }
-            if (data.get("member") != null) {
-                const member = (data.get("member") === "true");
-                if (member != null && member != undefined)
-                updatedGroupMembership.member = member;
+            if (data.get('member') != null) {
+                const member = data.get('member') === 'true';
+                if (member != null && member != undefined) updatedGroupMembership.member = member;
             }
-            if (data.get("admin") != null) {
-                const admin = (data.get("admin") === "true");
-                if (admin != null && admin != undefined)
-                updatedGroupMembership.admin = admin;
+            if (data.get('admin') != null) {
+                const admin = data.get('admin') === 'true';
+                if (admin != null && admin != undefined) updatedGroupMembership.admin = admin;
             }
-            if (data.get("invite") != null) {
-                const invite = (data.get("invite") === "true");
-                if (invite != null && invite != undefined)
-                updatedGroupMembership.invite = invite;
+            if (data.get('invite') != null) {
+                const invite = data.get('invite') === 'true';
+                if (invite != null && invite != undefined) updatedGroupMembership.invite = invite;
             }
             //update group membership in database
             await prisma.group_membership.update({
@@ -506,12 +473,12 @@ export const actions = {
                 data: updatedGroupMembership,
             });
             return {
-            status: 200,
-            body: groupMembership
+                status: 200,
+                body: groupMembership,
             };
         }
 
-        if (type === "deleteGroupRoute") {
+        if (type === 'deleteGroupRoute') {
             //delete group route by id
             const deleted = await prisma.group_routes.delete({
                 where: {
@@ -519,12 +486,12 @@ export const actions = {
                 },
             });
             return {
-            status: 200,
-            body: deleted
+                status: 200,
+                body: deleted,
             };
         }
-        
-        if (type === "updateGroupRoute") {
+
+        if (type === 'updateGroupRoute') {
             //lookup group route by id
             const groupRoute = await prisma.group_routes.findUnique({
                 where: {
@@ -534,20 +501,17 @@ export const actions = {
             //create copy of group route
             const updatedGroupRoute = Object.assign({}, groupRoute);
             //updates group route with new values
-            if (data.get("group_id") != null) {
-                const groupId = Number(data.get("group_id"));
-                if (groupId != null)
-                updatedGroupRoute.group_id = groupId;
+            if (data.get('group_id') != null) {
+                const groupId = Number(data.get('group_id'));
+                if (groupId != null) updatedGroupRoute.group_id = groupId;
             }
-            if (data.get("route_id") != null) {
-                const routeId = Number(data.get("route_id"));
-                if (routeId != null)
-                updatedGroupRoute.route_id = routeId;
+            if (data.get('route_id') != null) {
+                const routeId = Number(data.get('route_id'));
+                if (routeId != null) updatedGroupRoute.route_id = routeId;
             }
-            if (data.get("priority") != null) {
-                const priority = Number(data.get("priority"));
-                if (priority != null)
-                updatedGroupRoute.priority = priority;
+            if (data.get('priority') != null) {
+                const priority = Number(data.get('priority'));
+                if (priority != null) updatedGroupRoute.priority = priority;
             }
             //update group route in database
             await prisma.group_routes.update({
@@ -557,12 +521,12 @@ export const actions = {
                 data: updatedGroupRoute,
             });
             return {
-            status: 200,
-            body: groupRoute
+                status: 200,
+                body: groupRoute,
             };
         }
 
-        if (type === "deleteRouteCoordinate") {
+        if (type === 'deleteRouteCoordinate') {
             //delete route coordinate by id
             const deleted = await prisma.route_coordinates.delete({
                 where: {
@@ -570,12 +534,12 @@ export const actions = {
                 },
             });
             return {
-            status: 200,
-            body: deleted
+                status: 200,
+                body: deleted,
             };
         }
 
-        if (type === "updateRouteCoordinate") {
+        if (type === 'updateRouteCoordinate') {
             //lookup route coordinate by id
             const routeCoordinate = await prisma.route_coordinates.findUnique({
                 where: {
@@ -585,31 +549,29 @@ export const actions = {
             //create copy of route coordinate
             const updatedRouteCoordinate = Object.assign({}, routeCoordinate);
             //updates route coordinate with new values
-            if (data.get("route_id") != null) {
-                const routeId = Number(data.get("route_id"));
-                if (routeId != null)
-                updatedRouteCoordinate.route_id = routeId;
+            if (data.get('route_id') != null) {
+                const routeId = Number(data.get('route_id'));
+                if (routeId != null) updatedRouteCoordinate.route_id = routeId;
             }
-            if (data.get("latitude") != null) {
-                const latitude = Number(data.get("latitude"));
+            if (data.get('latitude') != null) {
+                const latitude = Number(data.get('latitude'));
                 if (!isNaN(latitude)) {
                     updatedRouteCoordinate.latitude = new Decimal(latitude);
                 } else {
                     console.error('Invalid latitude value');
                 }
             }
-            if (data.get("longitude") != null) {
-                const longitude = Number(data.get("longitude"));
+            if (data.get('longitude') != null) {
+                const longitude = Number(data.get('longitude'));
                 if (!isNaN(longitude)) {
                     updatedRouteCoordinate.longitude = new Decimal(longitude);
                 } else {
                     console.error('Invalid longitude value');
                 }
             }
-            if (data.get("order_position") != null) {
-                const orderPosition = Number(data.get("order_position"));
-                if (orderPosition != null)
-                updatedRouteCoordinate.order_position = orderPosition;
+            if (data.get('order_position') != null) {
+                const orderPosition = Number(data.get('order_position'));
+                if (orderPosition != null) updatedRouteCoordinate.order_position = orderPosition;
             }
             //update route coordinate in database
             await prisma.route_coordinates.update({
@@ -619,9 +581,8 @@ export const actions = {
                 data: updatedRouteCoordinate,
             });
             return {
-            status: 200
+                status: 200,
             };
         }
-        
-
-    }};
+    },
+};

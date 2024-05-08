@@ -1,6 +1,18 @@
 <script lang="ts">
     import type { group_membership } from '$lib/interfaces';
-    import {Alert, Button, Input,Select,P, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+    import {
+        Alert,
+        Button,
+        Input,
+        Select,
+        P,
+        Table,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+        TableHead,
+        TableHeadCell,
+    } from 'flowbite-svelte';
     export let prop: group_membership[];
     let group_memberships = prop;
 
@@ -101,19 +113,22 @@
     };
     var lockedFields = 1;
 </script>
+
 <Input type="text" bind:value={searchTerm} placeholder="Search" />
 <Table>
     <TableHead>
-            <TableHeadCell>ID</TableHeadCell>
-            <TableHeadCell>Group ID</TableHeadCell>
-            <TableHeadCell>User ID</TableHeadCell>
-            <TableHeadCell>Request</TableHeadCell>
-            <TableHeadCell>Member</TableHeadCell>
-            <TableHeadCell>Admin</TableHeadCell>
-            <TableHeadCell>Invite</TableHeadCell>
+        <TableHeadCell>ID</TableHeadCell>
+        <TableHeadCell>Group ID</TableHeadCell>
+        <TableHeadCell>User ID</TableHeadCell>
+        <TableHeadCell>Request</TableHeadCell>
+        <TableHeadCell>Member</TableHeadCell>
+        <TableHeadCell>Admin</TableHeadCell>
+        <TableHeadCell>Invite</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#each group_memberships.filter((gm) => (gm.group_id.toString().includes(searchTerm) || gm.user_id.toString().includes(searchTerm))).slice(currentPage * group_membershipsPerPage, (currentPage + 1) * group_membershipsPerPage) as group_membership}
+        {#each group_memberships
+            .filter((gm) => gm.group_id.toString().includes(searchTerm) || gm.user_id.toString().includes(searchTerm))
+            .slice(currentPage * group_membershipsPerPage, (currentPage + 1) * group_membershipsPerPage) as group_membership}
             {#if lockedFields == 1}
                 <TableBodyRow>
                     <TableBodyCell>{group_membership.id}</TableBodyCell>
@@ -154,7 +169,12 @@
                             <option value={false}>false</option>
                         </Select>
                     </TableBodyCell>
-                    <Button on:click={() => { currentErrors=[]; handleUpdate(group_membership); }}>Submit</Button>
+                    <Button
+                        on:click={() => {
+                            currentErrors = [];
+                            handleUpdate(group_membership);
+                        }}>Submit</Button
+                    >
                     <Button on:click={() => deleteGroupMembership(group_membership)}>Delete</Button>
                 </TableBodyRow>
             {/if}
@@ -166,10 +186,15 @@
     <Button on:click={handleUpdateAll}>Update All</Button>
 {/if}
 <Button pill color="light" on:click={prevPage} disabled={currentPage === 0}>Previous</Button>
-<Button pill color="light" on:click={nextPage} disabled={(currentPage + 1) * group_membershipsPerPage >= group_memberships.length}>Next</Button>
+<Button
+    pill
+    color="light"
+    on:click={nextPage}
+    disabled={(currentPage + 1) * group_membershipsPerPage >= group_memberships.length}>Next</Button
+>
 <div>
     Results Per Page
-    <Select bind:value={group_membershipsPerPage} on:change={() => currentPage = 0}>
+    <Select bind:value={group_membershipsPerPage} on:change={() => (currentPage = 0)}>
         <option value={10}>10</option>
         <option value={25}>25</option>
         <option value={50}>50</option>
