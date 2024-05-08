@@ -51,7 +51,7 @@
   </script>
   
   <Listgroup active class="w-full md:w-80">
-    <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-white">Groups</h3>
+    <h3 class="p-1 text-center text-xl font-medium text-gray-900 dark:text-white">Your Groups</h3>
     {#each filteredGroups as group}
       <ListgroupItem class="flex items-center justify-between text-base font-semibold gap-2">
           <a rel="external" href="../group/{group.name}" class="flex items-center font-semibold text-gray-900 dark:text-white">

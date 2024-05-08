@@ -73,13 +73,11 @@
         income = +0.0;
 
         for (let i = 0; i < users.length; i++) {
-            if (users[i].subscription_id != 'undefined' || users[i].subscription_id != '') {
+            if (users[i].membership_type != 4) {
                 subscriptionStartDate = new Date(users[i].subscription_start_date);
                 if (users[i].membership_type == 0) {
-                    if (subscriptionStartDate <= chosenDateObj) {
                         income += weeklyCost * Math.floor(numberOfWeeks);
                         weeklys = weeklys + Math.floor(numberOfWeeks);
-                    }
                 } else if (users[i].membership_type == 1) {
                     //console.log('number of months ' + numberOfMonths);
                     //console.log('user: ', users[i].username);

@@ -111,7 +111,7 @@
         
         <div class="feature-container">
             <div class="feature">
-                <Heading tag="h3" class="mb-4">Track Your Activities</Heading>
+                <Heading tag="h3" class="mb-4">Track activities</Heading>
                 <P color="text-gray-500 dark:text-gray-400">Record your runs, rides, and workouts with GPS tracking.</P>
             </div>
             
@@ -135,7 +135,7 @@
                 <h5 class="mb-4 text-xl font-medium text-gray-500 dark:text-gray-400">Weekly Plan</h5>
                 <div class="flex items-baseline text-gray-900 dark:text-white">
                 <span class="text-3xl font-semibold">£</span>
-                <span class="text-5xl font-extrabold tracking-tight">2.59</span>
+                <span class="text-5xl font-extrabold tracking-tight">1.50</span>
                 <span class="ms-1 text-xl font-normal text-gray-500 dark:text-gray-400">/week</span>
                 </div>
                 <ul class="my-7 space-y-4">
@@ -167,7 +167,7 @@
                 <h5 class="mb-4 text-xl font-medium text-gray-500 dark:text-gray-400">Monthly plan</h5>
                 <div class="flex items-baseline text-gray-900 dark:text-white">
                 <span class="text-3xl font-semibold">£</span>
-                <span class="text-5xl font-extrabold tracking-tight">12.59</span>
+                <span class="text-5xl font-extrabold tracking-tight">5.00</span>
                 <span class="ms-1 text-xl font-normal text-gray-500 dark:text-gray-400">/month</span>
                 </div>
                 <ul class="my-7 space-y-4">
@@ -201,7 +201,7 @@
                 </h5>
                 <div class="flex items-baseline text-gray-900 dark:text-white">
                 <span class="text-3xl font-semibold">£</span>
-                <span class="text-5xl font-extrabold tracking-tight">100</span>
+                <span class="text-5xl font-extrabold tracking-tight">45.00</span>
                 <span class="ms-1 text-xl font-normal text-gray-500 dark:text-gray-400">/year</span>
                 </div>
                 <ul class="my-7 space-y-4">

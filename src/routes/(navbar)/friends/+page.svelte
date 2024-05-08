@@ -40,22 +40,26 @@
   on:input={() => {
   }} />
 
-<div class="container">
+<div class="page-container">
+  {#if currentUserFriends.length > 0}
   <div class="friends-container">
     <FriendList {currentUserFriends} searchTerm={searchTerm}/>
   </div>
-
-<div class="requests-container">
-    <RequestsList friendRequests={friendRequests} searchTerm={searchTerm} />
+{/if}
+{#if friendRequests.length > 0}
+  <div class="requests-container">
+    <RequestsList {friendRequests} searchTerm={searchTerm}/>
   </div>
-
-<div class="unadded-people-container">
+{/if}
+{#if unaddedPeople.length > 0 || requested.length > 0}
+  <div class="unadded-people-container">
     <UnaddedList people={unaddedPeople} requested={requested} searchTerm={searchTerm}/>
   </div>
+{/if}
 </div>
 
 <style>
-  .container {
+  .page-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

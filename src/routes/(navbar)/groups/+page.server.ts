@@ -14,7 +14,7 @@ export const load = async ({ cookies }) => {
     })) as user;
 
     // Enforce the paywall
-    if (user?.membership_type == 4 || user.next_payment_date < new Date()) throw redirect(302, '/payments');
+    if (user?.membership_type == 4 || (user.next_payment_date !== null && user.next_payment_date < new Date())) throw redirect(302, '/payments');
 
     const currentUserGroups = await prisma.groups.findMany({
         where: {
@@ -101,6 +101,9 @@ export const load = async ({ cookies }) => {
                     ...invite.groups,
                     creator: creatorUser?.username,
                 },
+                users: {
+                    username: creatorUser?.username,
+                },
             };
         }),
     );
@@ -172,7 +175,7 @@ export const actions = {
         const type = data.get('type');
         const id = Number(data.get('id'));
         const groupName = String(data.get('groupName'));
-        const idList: number[] = data.getAll('friendIds[]').map((id: string) => Number(id));
+        const idList: number[] = data.getAll('friendIds[]').map((id: FormDataEntryValue) => Number(String(id)));
 
         try {
             if (type === 'leaveGroup') {

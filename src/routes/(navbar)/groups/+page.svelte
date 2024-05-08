@@ -14,7 +14,7 @@
   const requested = data.requested;
   const currentUsersFriends = data.currentUserFriends;
   const invitedGroups = data.invitedWithCreator;
-
+  let createToggle = false;
   let searchTerm = "";
 
 </script>
@@ -25,35 +25,45 @@
   on:input={() => {
   }} />
 
-<div class="container">
-  <div class="groups-container">
-    <Grouplist {memberOfGroups} searchTerm={searchTerm}/>
-  </div>
-
-<div class="requests-container">
-    <Requestlist groupRequests={groupRequests} groupInvites={invitedGroups} searchTerm={searchTerm}/>
-  </div>
-
-<div class="discover-groups-container">
-    <Discoverlist notMemberOfGroups={notMemberOfGroups} requested={requested} searchTerm={searchTerm}/>
-  </div>
-
-  <div class="add-groups-container">
+<div class="bigbox">
+  {#if currentUsersFriends.length > 0}
+    <div class="add-groups-container">
     <AddGroups currentUsersFriends={currentUsersFriends}/>
-  </div>
+    </div>
+  {/if}
+  {#if memberOfGroups.length > 0}
+    <div class="groups-container">
+    <Grouplist {memberOfGroups} searchTerm={searchTerm}/>
+    </div>
+  {/if}
+  {#if groupRequests.length > 0 || invitedGroups.length > 0}
+    <div class="requests-container">
+    <Requestlist groupRequests={groupRequests} groupInvites={invitedGroups} searchTerm={searchTerm}/>
+      </div>
+  {/if}
+  {#if notMemberOfGroups.length > 0 || requested.length > 0}
+    <div class="discover-groups-container">
+      <Discoverlist notMemberOfGroups={notMemberOfGroups} requested={requested} searchTerm={searchTerm}/>
+    </div>
+
+  {/if}
 </div>
 
+
 <style>
-  .container {
+  .bigbox {
+    width: 100%;
     display: flex;
+    height: fit-content;
     flex-direction: row;
+    padding: 50px;
     justify-content: space-between;
   }
 
   .groups-container,
   .requests-container,
   .discover-groups-container {
-    width: 45%;
+    width: 30%;
     margin: 20px;
     padding: 10px;
     border-radius: 5px;

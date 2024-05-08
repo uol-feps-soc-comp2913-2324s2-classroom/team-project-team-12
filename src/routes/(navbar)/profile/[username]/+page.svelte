@@ -106,16 +106,27 @@
  
 <style>
     body {
-        overflow: hidden; /* Hide scrollbars */
+        height: 100%;
+        overflow: scroll;
+        padding: 10px;
     }
     
+    .card-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+
     .main-container {
-        height: 80vh;
-        width: 100vw;
+        height: 100%;
+        width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        overflow-y: hidden;
     }
 
     .map-container {
@@ -126,15 +137,16 @@
     }
 
     .scroll-area {
-        max-height: 300px;
-        height: auto;
-        overflow-y: auto; 
+        height: 300px;
+        overflow-y: scroll;
+        width: 100%;
+        padding-bottom: 10px;
+
     }
 
 </style>
 
-<body>
-    <div class="main-container">
+        <div class="card-container">
         <Card padding="lg" size="lg">
             <div class="flex flex-col items-center pb-4">
                 <Avatar size="lg">{getInitials(user.first_name + " " + user.last_name)}</Avatar>
@@ -244,5 +256,4 @@
                 </div>
             {/if}
         </Card>
-    </div>
-</body>
+        </div>

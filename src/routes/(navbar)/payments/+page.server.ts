@@ -3,7 +3,7 @@ import type { user } from '$lib/interfaces'
 import { fail } from '@sveltejs/kit';
 import { stripe } from '$lib/stripe'
 
-let user: user
+let user: user | null;
 
 export const load = (async ({ cookies }) => {
     const username = cookies.get('sessionId');
@@ -62,6 +62,17 @@ export const actions = {
     },
     cancel: async ({ cookies, request }) => {
         const username = cookies.get('sessionId');
+        try { 
+        cookies.set('paymentPlan', '4', {
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: false,
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7
+        });
+        } catch (verificationError) {
+            return fail(400);
+        }
         user = await prisma.user.findUnique({
             where: {
             username: username as string,
@@ -80,35 +91,26 @@ export const actions = {
                 body: { message: 'Customer not found.' },
             };
         }
-        const subscriptions = await stripe.subscriptions.list({
-            limit: 3,
-            customer: customerId,
-        });
-        console.log(subscriptions.data[0].id);
-        const subscription = await stripe.subscriptions.update(
-            subscriptions.data[0].id,
-            {
-                cancel_at_period_end: true,
-            }
-        )
-        try {
+        
             await prisma.user.update({
                 where: {
                     username: username as string,
                 },
                 data: {
                     membership_type: 4,
-                    subscription_id: "",
+                    subscription_id: "NaN",
                 },
             })
-        }
-        catch (error) {
-            console.error('Error during cancellation update:', error);
-            return {
-                status: 500,
-                body: { message: 'Internal Server Error.' },
-            };
-        }
+            const subscriptions = await stripe.subscriptions.list({
+                limit: 3,
+                customer: customerId,
+            });
+        const subscription = await stripe.subscriptions.update(
+            subscriptions.data[0].id,
+            {
+                cancel_at_period_end: true,
+            }
+        );
         location.reload;
 
     }

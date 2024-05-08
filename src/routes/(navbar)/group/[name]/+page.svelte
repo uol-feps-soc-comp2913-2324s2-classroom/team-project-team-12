@@ -111,15 +111,12 @@
         overflow: hidden; 
     }    
     
-    .main-container {
-        height: 80vh;
-        width: 100vw;
+    .card-container {
         display: flex;
-        justify-content: center;
-        align-items: center;
         flex-direction: column;
-
-    
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
     }
 
     .map-container {
@@ -136,9 +133,7 @@
     }
     
 </style>
-
-<body>
-    <div class="main-container">
+<div class="card-container">
         <Card padding="lg" size="lg">
             <div class="flex flex-col items-center pb-4">
                 <Avatar size="lg">{getInitials(group.name)}</Avatar>
@@ -248,4 +243,3 @@
             {/if}
         </Card>
     </div>
-</body>
